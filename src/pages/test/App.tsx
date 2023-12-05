@@ -5,7 +5,7 @@ interface IProps {}
 
 export const App = (props: IProps) => {
   React.useEffect(() => {
-    console.log('[dodo] ', 'home');
+    console.log('[dodo] ', 'test');
   }, []);
 
   return <div className={styles.app}>TEST</div>;
