@@ -14,9 +14,9 @@ echo $PROJECT_NAME $PROJECT_PATH
 . /www/server/nvm/nvm.sh
 # . ~/.nvm/nvm.sh
 
-nvm use v16.10.0
+nvm use v18.17.0
 if [ $? != 0 ]; then
-  nvm install v16.10.0
+  nvm install v18.17.0
 fi
 
 node -v
