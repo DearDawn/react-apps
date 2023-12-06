@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "React 多页应用模板",
   "scripts": {
-    "start": "parcel src/pages/**/*.html -p 7777",
-    "build": "parcel build src/pages/**/*.html --public-url ./"
+    "start": "rm -rf .parcel-cache; parcel src/pages/*/index.html -p 7777",
+    "root": "rm -rf .parcel-cache; parcel src/pages/*.html -p 7777",
+    "build": "rm -rf .parcel-cache; parcel build src/pages/*.html --public-url ./;parcel build src/pages/*/*.html --public-url ../"
   },
+  "browserslist": "> 0.5%, last 2 versions, not dead",
   "keywords": [],
   "author": "",
   "license": "ISC",
