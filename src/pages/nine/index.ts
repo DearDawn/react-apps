@@ -79,7 +79,6 @@ window.addEventListener('keydown', (event) => {
 
 window.addEventListener('keyup', (event) => {
   const key = event.code;
-  console.log('[dodo] ', 'key', key);
 
   // 更新键盘按键状态
   if (key in keys) {
