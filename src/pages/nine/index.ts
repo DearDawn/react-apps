@@ -13,6 +13,8 @@ const bunny = new Bunny(app.screen.width / 2, app.screen.height / 2);
 app.stage.addChild(bunny.obj);
 const otherBunny: Record<string, Bunny> = {};
 
+console.log('[dodo] ', 'isDev', isDev);
+
 // 客户端代码
 const socket = io(isDev ? 'http://localhost:3000' : `${location.origin}:9010`); // 连接到服务器的Socket.IO实例
 
