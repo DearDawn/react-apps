@@ -19,15 +19,17 @@ console.log('[dodo] ', 'isDev', isDev);
 const socket = io(isDev ? 'http://localhost:3000' : `${location.origin}:9010`); // 连接到服务器的Socket.IO实例
 
 // 发送控制精灵的请求
-function controlSprite(data) {
+function controlSprite (data) {
   socket.emit('controlSprite', data);
 }
 
 // 监听更新精灵的消息
 socket.on('moveSprite', (data) => {
+  const { clientId, pos } = data;
   // 在这里更新精灵的状态
   // console.log('Received updateSprite message:', data);
-  otherBunny[data.clientId]?.setPos(data.pos);
+  // otherBunny[data.clientId]?.setPos(data.pos);
+  otherBunny[clientId].setTargetPos(pos);
 });
 
 // 连接到服务器
@@ -41,6 +43,7 @@ socket.on('userIn', (data = {}) => {
   const { clientId, pos } = data;
   const { x = app.screen.width / 2, y = app.screen.height / 2 } = pos || {};
   otherBunny[clientId] = new Bunny(x, y);
+  otherBunny[clientId].setTargetPos({ x, y });
   app.stage.addChild(otherBunny[clientId].obj);
 });
 
@@ -114,4 +117,12 @@ app.ticker.add((delta) => {
   if (moving) {
     controlSprite(bunny.position);
   }
+
+  Object.keys(otherBunny).forEach((id)=> {
+    const _bunny = otherBunny[id]
+
+    if (_bunny.needMove) {
+      bunny.autoMove(delta)
+    }
+  })
 });
