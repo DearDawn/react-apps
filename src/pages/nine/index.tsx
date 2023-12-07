@@ -1,8 +1,9 @@
-import './pixi';
 import './styles.less';
-import React from 'react'
-import ReactDOM from 'react-dom'
-import { App } from './App'
+import ReactDOM from 'react-dom';
+import { App } from './App';
+import { handleTalk, handleType } from './pixi';
 
-
-ReactDOM.render(<App />, document.getElementById('app'));
+ReactDOM.render(
+  <App onTyping={handleType} talk={handleTalk} />,
+  document.getElementById('app')
+);

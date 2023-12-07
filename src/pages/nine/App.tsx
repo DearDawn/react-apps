@@ -1,28 +1,109 @@
-import * as React from 'react'
-import * as styles from './App.module.less'
+import { useCallback, useEffect, useRef, useState } from 'react';
+import * as styles from './App.module.less';
+import { socket } from './socket';
+import clsx from 'clsx';
 
-interface IProps { }
+interface IProps {
+  talk: (text: string) => void;
+  onTyping: () => void;
+}
 
 export const App = (props: IProps) => {
-  const inputRef = React.useRef<HTMLInputElement>(null)
-  const handleTalkClick = React.useCallback(() => {
-    console.log('[dodo] ', '111', 111)
+  const { talk, onTyping } = props;
+  const inputRef = useRef<HTMLInputElement>(null);
+  const lastHolder = useRef<HTMLDivElement>(null);
+  const [text, setText] = useState('');
+  const [showHistory, setShowHistory] = useState(false);
+  const [historyList, setHistoryList] = useState<
+    { timestamp: string; sender: string; text: string }[]
+  >([]);
+
+  const handleTalkClick = useCallback(() => {
     inputRef.current?.focus();
-  }, [])
-  React.useEffect(() => {
-    console.log('[dodo] ', 'hello react multi page app!')
-  }, [])
+  }, []);
+
+  const handleHistoryClick = useCallback(() => {
+    if (showHistory) {
+      setShowHistory(false);
+    } else {
+      setShowHistory(true);
+      socket.emit('history');
+    }
+  }, [showHistory]);
+
+  const handleType = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setText(e.target.value);
+    onTyping();
+  }, []);
+
+  const handleSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      talk(text.trim());
+      setText('');
+    },
+    [text]
+  );
+
+  useEffect(() => {
+    lastHolder.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [historyList]);
+
+  useEffect(() => {
+    const listener = (data) => {
+      const { list } = data;
+      setHistoryList(list);
+    };
+    // 监听更新精灵的消息
+    socket.on('history', listener);
+
+    return () => {
+      socket.removeListener('history', listener);
+    };
+  }, []);
 
   return (
     <div className={styles.app}>
-      <button id='talk' onClick={handleTalkClick}>聊天</button>
-      <input
-        className={styles.talkInput}
-        id="talk-input"
-        placeholder='输入内容...'
-        maxLength={24}
-        ref={inputRef}
-      ></input>
+      <button id='history' onClick={handleHistoryClick}>
+        历史记录
+      </button>
+      <button id='talk' onClick={handleTalkClick}>
+        聊天
+      </button>
+      <form className={styles.talkInputWrap} onSubmit={handleSubmit}>
+        <input
+          className={styles.talkInput}
+          id='talk-input'
+          placeholder='输入内容...'
+          maxLength={24}
+          ref={inputRef}
+          value={text}
+          onChange={handleType}
+          autoComplete='off'
+          autoSave='false'
+        />
+        <button type='submit' disabled={!text.trim()} className={styles.submit}>
+          发送
+        </button>
+      </form>
+      <div
+        className={clsx(styles.historyListWrap, {
+          [styles.visible]: showHistory,
+        })}
+      >
+        <div className={styles.historyList}>
+          {historyList.map((it, idx) => (
+            <div key={it.timestamp + idx} className={styles.historyItem}>
+              <div className={styles.timestamp}>{it.timestamp}</div>
+              <div className={styles.content}>
+                <span className={styles.sender}>{it.sender}</span>
+                <span className={styles.text}>: {it.text}</span>
+              </div>
+            </div>
+          ))}
+          <div ref={lastHolder} className={styles.lastHolder} />
+        </div>
+      </div>
     </div>
-  )
-}
+  );
+};

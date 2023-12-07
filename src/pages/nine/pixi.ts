@@ -1,8 +1,7 @@
 import * as PIXI from 'pixi.js';
 import './styles.less';
 import { Bunny } from './Objects/bunny';
-import io from 'socket.io-client';
-import { isDev } from '@/utils';
+import { socket } from './socket';
 
 let lockKey = false;
 
@@ -12,7 +11,7 @@ const app = new PIXI.Application({
   resizeTo: window,
   width: window.innerWidth,
   height: window.innerHeight,
-  resolution: 2,       // default: 1 分辨率
+  resolution: 2, // default: 1 分辨率
   // antialias: true
 });
 
@@ -25,14 +24,17 @@ const bunny = new Bunny(app.screen.width / 2, app.screen.height / 2);
 app.stage.addChild(bunny.obj);
 const otherBunny: Record<string, Bunny> = {};
 
-console.log('[dodo] ', 'isDev', isDev);
-
-// 客户端代码
-const socket = io(isDev ? 'http://localhost:9009' : `${location.origin}:9010`); // 连接到服务器的Socket.IO实例
-
 // 发送控制精灵的请求
-function controlSprite (data) {
+function controlSprite(data) {
   socket.emit('controlSprite', data);
+}
+
+function talk(text = '') {
+  socket.emit('talking', text);
+}
+
+function type(typing = false) {
+  socket.emit('typing', typing);
 }
 
 // 监听更新精灵的消息
@@ -57,6 +59,16 @@ socket.on('userIn', (data = {}) => {
   app.stage.addChild(otherBunny[clientId].obj);
 });
 
+socket.on('talking', (data = {}) => {
+  const { clientId, text } = data;
+  otherBunny[clientId].say(text);
+});
+
+socket.on('typing', (data = {}) => {
+  const { clientId } = data;
+  otherBunny[clientId].typing();
+});
+
 socket.on('userOut', (data) => {
   console.log('[dodo] ', 'userOut', data);
   app.stage.removeChild(otherBunny[data.clientId].obj);
@@ -78,7 +90,7 @@ const keys = {
   KeyA: false,
   KeyS: false,
   KeyD: false,
-  KeyO: false
+  KeyO: false,
 };
 
 // 监听键盘按键按下和松开事件
@@ -88,10 +100,7 @@ window.addEventListener('keydown', (event) => {
   if (lockKey) return;
 
   if (key === 'KeyT') {
-    document.getElementById('talk')?.click()
-    document.getElementById('talk').onfocus = () => {
-      lockKey = true;
-    }
+    document.getElementById('talk')?.click();
   }
 
   // 更新键盘按键状态
@@ -110,6 +119,15 @@ window.addEventListener('keyup', (event) => {
     keys[key] = false;
   }
 });
+
+window.onload = () => {
+  document.getElementById('talk-input').onfocus = () => {
+    lockKey = true;
+  };
+  document.getElementById('talk-input').onblur = () => {
+    lockKey = false;
+  };
+};
 
 // Listen for animate update
 app.ticker.add((delta) => {
@@ -138,7 +156,7 @@ app.ticker.add((delta) => {
   }
 
   if (keys.KeyO) {
-    bunny.say("你好啊！")
+    bunny.say('你好啊！');
   }
 
   if (moving) {
@@ -153,3 +171,13 @@ app.ticker.add((delta) => {
     }
   });
 });
+
+export const handleTalk = (text = '') => {
+  bunny.say(text);
+  talk(text);
+};
+
+export const handleType = () => {
+  bunny.typing();
+  type();
+};
