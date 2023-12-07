@@ -42,7 +42,7 @@ console.log('[dodo] ', 'isDev', isDev);
 const socket = io(isDev ? 'http://localhost:9009' : `${location.origin}:9010`); // 连接到服务器的Socket.IO实例
 
 // 发送控制精灵的请求
-function controlSprite(data) {
+function controlSprite (data) {
   socket.emit('controlSprite', data);
 }
 
@@ -113,6 +113,7 @@ window.addEventListener('keyup', (event) => {
 // Listen for animate update
 app.ticker.add((delta) => {
   let moving = false;
+  let flag = false;
 
   // 根据键盘按键状态来移动精灵
   if (keys.ArrowLeft || keys.KeyA) {
@@ -136,7 +137,10 @@ app.ticker.add((delta) => {
   }
 
   if (moving) {
-    controlSprite(bunny.position);
+    flag = !flag;
+    if (flag) {
+      controlSprite(bunny.position);
+    }
   }
 
   Object.keys(otherBunny).forEach((id) => {
