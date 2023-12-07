@@ -3,16 +3,20 @@ import './styles.less';
 import { Bunny } from './Objects/bunny';
 import io from 'socket.io-client';
 import { isDev } from '@/utils';
-import { Bubble } from './Objects/bubble';
+
+let lockKey = false;
 
 const app = new PIXI.Application({
   background: '#1099bb',
+  // background: '#999',
   resizeTo: window,
-  resolution: window.devicePixelRatio,       // default: 1 分辨率
+  width: window.innerWidth,
+  height: window.innerHeight,
+  resolution: 2,       // default: 1 分辨率
   // antialias: true
 });
 
-app.renderer.resize(window.innerWidth / window.devicePixelRatio, window.innerHeight / window.devicePixelRatio);
+app.renderer.resize(window.innerWidth / 2, window.innerHeight / 2);
 
 document.body.appendChild(app.view as unknown as Node);
 
@@ -81,6 +85,15 @@ const keys = {
 window.addEventListener('keydown', (event) => {
   const key = event.code;
 
+  if (lockKey) return;
+
+  if (key === 'KeyT') {
+    document.getElementById('talk')?.click()
+    document.getElementById('talk').onfocus = () => {
+      lockKey = true;
+    }
+  }
+
   // 更新键盘按键状态
   if (key in keys) {
     keys[key] = true;
@@ -89,6 +102,8 @@ window.addEventListener('keydown', (event) => {
 
 window.addEventListener('keyup', (event) => {
   const key = event.code;
+
+  if (lockKey) return;
 
   // 更新键盘按键状态
   if (key in keys) {
@@ -99,7 +114,7 @@ window.addEventListener('keyup', (event) => {
 // Listen for animate update
 app.ticker.add((delta) => {
   let moving = false;
-  let flag = false;
+  let flag = 0;
 
   // 根据键盘按键状态来移动精灵
   if (keys.ArrowLeft || keys.KeyA) {
@@ -127,10 +142,7 @@ app.ticker.add((delta) => {
   }
 
   if (moving) {
-    flag = !flag;
-    if (flag) {
-      controlSprite(bunny.position);
-    }
+    controlSprite(bunny.position);
   }
 
   Object.keys(otherBunny).forEach((id) => {

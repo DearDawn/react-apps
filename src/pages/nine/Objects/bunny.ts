@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { Bubble } from './bubble';
+import BunnyImg from '@/assets/bunny.png';
 
 export class Bunny {
   bunny: PIXI.Sprite;
@@ -10,7 +11,7 @@ export class Bunny {
   targetY = 0;
   constructor (x, y) {
     // create a new Sprite from an image path
-    this.bunny = PIXI.Sprite.from('https://pixijs.com/assets/bunny.png');
+    this.bunny = PIXI.Sprite.from(BunnyImg);
     this.bunny.width = 27;
     this.bunny.height = 39;
     // move the sprite to the center of the screen

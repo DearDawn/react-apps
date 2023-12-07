@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as styles from './App.module.less'
 
-interface IProps {}
+interface IProps { }
 
 export const App = (props: IProps) => {
   React.useEffect(() => {
@@ -10,7 +10,7 @@ export const App = (props: IProps) => {
 
   return (
     <div className={styles.app}>
-      <a href='./home'>Home 1234567</a>
+      <textarea name="" id="" cols={30} rows={10}></textarea>
     </div>
   )
 }
