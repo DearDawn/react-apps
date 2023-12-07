@@ -3,9 +3,16 @@ import './styles.less';
 import { Bunny } from './Objects/bunny';
 import io from 'socket.io-client';
 import { isDev } from '@/utils';
-import Bubble from '@/assets/bubble.png';
+import { Bubble } from './Objects/bubble';
 
-const app = new PIXI.Application({ background: '#1099bb', resizeTo: window });
+const app = new PIXI.Application({
+  background: '#1099bb',
+  resizeTo: window,
+  resolution: window.devicePixelRatio,       // default: 1 分辨率
+  // antialias: true
+});
+
+app.renderer.resize(window.innerWidth / window.devicePixelRatio, window.innerHeight / window.devicePixelRatio);
 
 document.body.appendChild(app.view as unknown as Node);
 
@@ -13,28 +20,6 @@ document.body.appendChild(app.view as unknown as Node);
 const bunny = new Bunny(app.screen.width / 2, app.screen.height / 2);
 app.stage.addChild(bunny.obj);
 const otherBunny: Record<string, Bunny> = {};
-
-// // 创建跟随气泡的容器
-// const bubbleContainer = new PIXI.Container();
-
-// // 创建跟随气泡的背景图像
-// const bubbleBackground = new PIXI.Sprite(PIXI.Texture.from(Bubble));
-// bubbleBackground.anchor.set(0.5, 1); // 设置锚点为底部中心
-// bubbleBackground.y = -bunny.obj.height; // 设置背景图像相对于精灵的垂直位置
-// bubbleContainer.addChild(bubbleBackground);
-
-// // 创建跟随气泡中的文本
-// const text = new PIXI.Text('Hello!', {
-//   fontFamily: 'Arial',
-//   fontSize: 16,
-//   fill: 'black',
-// });
-// text.anchor.set(0.5, 1); // 设置锚点为底部中心
-// text.y = -bunny.obj.height + 10; // 设置文本相对于精灵的垂直位置
-// bubbleContainer.addChild(text);
-
-// // 将跟随气泡容器添加到精灵中
-// bunny.obj.addChild(bubbleContainer);
 
 console.log('[dodo] ', 'isDev', isDev);
 
@@ -89,6 +74,7 @@ const keys = {
   KeyA: false,
   KeyS: false,
   KeyD: false,
+  KeyO: false
 };
 
 // 监听键盘按键按下和松开事件
@@ -134,6 +120,10 @@ app.ticker.add((delta) => {
   if (keys.ArrowDown || keys.KeyS) {
     bunny.move('down', delta);
     moving = true;
+  }
+
+  if (keys.KeyO) {
+    bunny.say("你好啊！")
   }
 
   if (moving) {

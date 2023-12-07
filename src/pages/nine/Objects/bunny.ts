@@ -1,14 +1,18 @@
 import * as PIXI from 'pixi.js';
+import { Bubble } from './bubble';
+
 export class Bunny {
   bunny: PIXI.Sprite;
+  bubble: Bubble | null;
+  bubbleTimer = 0;
   rate = 4;
   targetX = 0;
   targetY = 0;
   constructor (x, y) {
     // create a new Sprite from an image path
     this.bunny = PIXI.Sprite.from('https://pixijs.com/assets/bunny.png');
-    this.bunny.width = 27 * 2;
-    this.bunny.height = 39 * 2;
+    this.bunny.width = 27;
+    this.bunny.height = 39;
     // move the sprite to the center of the screen
     this.bunny.x = x;
     this.bunny.y = y;
@@ -41,6 +45,21 @@ export class Bunny {
 
     this.bunny.x += Math.min(this.rate * delta, Math.abs(xDiff)) * (xDiff >= 0 ? 1 : -1);
     this.bunny.y += Math.min(this.rate * delta, Math.abs(yDiff)) * (yDiff >= 0 ? 1 : -1);
+  }
+
+  say (text = '') {
+    if (!this.bubble) {
+      // 创建跟随气泡的容器
+      this.bubble = new Bubble(this.obj.width, -this.obj.height / 2 - 10);
+      this.bubble.onDestroy(() => {
+        this.obj.removeChild(this.bubble.obj);
+        this.bubble = null;
+      })
+      // 将跟随气泡容器添加到精灵中
+      this.obj.addChild(this.bubble.obj);
+    }
+
+    this.bubble.setText(text)
   }
 
   get obj () {
