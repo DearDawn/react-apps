@@ -3,6 +3,7 @@ import './styles.less';
 import { Bunny } from './Objects/bunny';
 import io from 'socket.io-client';
 import { isDev } from '@/utils';
+import Bubble from '@/assets/bubble.png';
 
 const app = new PIXI.Application({ background: '#1099bb', resizeTo: window });
 
@@ -13,13 +14,35 @@ const bunny = new Bunny(app.screen.width / 2, app.screen.height / 2);
 app.stage.addChild(bunny.obj);
 const otherBunny: Record<string, Bunny> = {};
 
+// // 创建跟随气泡的容器
+// const bubbleContainer = new PIXI.Container();
+
+// // 创建跟随气泡的背景图像
+// const bubbleBackground = new PIXI.Sprite(PIXI.Texture.from(Bubble));
+// bubbleBackground.anchor.set(0.5, 1); // 设置锚点为底部中心
+// bubbleBackground.y = -bunny.obj.height; // 设置背景图像相对于精灵的垂直位置
+// bubbleContainer.addChild(bubbleBackground);
+
+// // 创建跟随气泡中的文本
+// const text = new PIXI.Text('Hello!', {
+//   fontFamily: 'Arial',
+//   fontSize: 16,
+//   fill: 'black',
+// });
+// text.anchor.set(0.5, 1); // 设置锚点为底部中心
+// text.y = -bunny.obj.height + 10; // 设置文本相对于精灵的垂直位置
+// bubbleContainer.addChild(text);
+
+// // 将跟随气泡容器添加到精灵中
+// bunny.obj.addChild(bubbleContainer);
+
 console.log('[dodo] ', 'isDev', isDev);
 
 // 客户端代码
-const socket = io(isDev ? 'http://localhost:3000' : `${location.origin}:9010`); // 连接到服务器的Socket.IO实例
+const socket = io(isDev ? 'http://localhost:9009' : `${location.origin}:9010`); // 连接到服务器的Socket.IO实例
 
 // 发送控制精灵的请求
-function controlSprite (data) {
+function controlSprite(data) {
   socket.emit('controlSprite', data);
 }
 
@@ -27,9 +50,7 @@ function controlSprite (data) {
 socket.on('moveSprite', (data) => {
   const { clientId, pos } = data;
   // 在这里更新精灵的状态
-  // console.log('Received updateSprite message:', data);
-  // otherBunny[data.clientId]?.setPos(data.pos);
-  otherBunny[clientId].setTargetPos(pos);
+  otherBunny[clientId]?.setTargetPos(pos);
 });
 
 // 连接到服务器
@@ -118,11 +139,11 @@ app.ticker.add((delta) => {
     controlSprite(bunny.position);
   }
 
-  Object.keys(otherBunny).forEach((id)=> {
-    const _bunny = otherBunny[id]
+  Object.keys(otherBunny).forEach((id) => {
+    const _bunny = otherBunny[id];
 
     if (_bunny.needMove) {
-      bunny.autoMove(delta)
+      _bunny.autoMove(delta);
     }
-  })
+  });
 });
