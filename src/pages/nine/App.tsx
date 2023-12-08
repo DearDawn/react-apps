@@ -13,6 +13,7 @@ export const App = (props: IProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const lastHolder = useRef<HTMLDivElement>(null);
   const [text, setText] = useState('');
+  const [onlineUserCount, setOnlineUserCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
   const [historyList, setHistoryList] = useState<
     { timestamp: string; sender: string; text: string }[]
@@ -62,6 +63,18 @@ export const App = (props: IProps) => {
     };
   }, []);
 
+  useEffect(() => {
+    const listener = (userCount) => {
+      setOnlineUserCount(userCount);
+    };
+    // 监听更新精灵的消息
+    socket.on('userCount', listener);
+
+    return () => {
+      socket.removeListener('userCount', listener);
+    };
+  }, []);
+
   return (
     <div className={styles.app}>
       <button id='history' onClick={handleHistoryClick}>
@@ -70,6 +83,7 @@ export const App = (props: IProps) => {
       <button id='talk' onClick={handleTalkClick}>
         聊天
       </button>
+      <div className={styles.onlineCount}>在线人数：{onlineUserCount}</div>
       <form className={styles.talkInputWrap} onSubmit={handleSubmit}>
         <input
           className={styles.talkInput}
