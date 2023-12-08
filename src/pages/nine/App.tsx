@@ -46,8 +46,10 @@ export const App = (props: IProps) => {
   );
 
   useEffect(() => {
+    if (!showHistory) return;
+
     lastHolder.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [historyList]);
+  }, [historyList, showHistory]);
 
   useEffect(() => {
     const listener = (data) => {
