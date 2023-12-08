@@ -11,7 +11,7 @@ interface IProps {
 export const App = (props: IProps) => {
   const { talk, onTyping } = props;
   const inputRef = useRef<HTMLInputElement>(null);
-  const lastHolder = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const [text, setText] = useState('');
   const [onlineUserCount, setOnlineUserCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
@@ -50,7 +50,7 @@ export const App = (props: IProps) => {
 
     setTimeout(() => {
       if (showHistory) {
-        lastHolder.current?.scrollIntoView({ behavior: 'smooth' });
+        listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
       }
     }, 300);
   }, [historyList.length, showHistory]);
@@ -125,7 +125,7 @@ export const App = (props: IProps) => {
           [styles.visible]: showHistory,
         })}
       >
-        <div className={styles.historyList}>
+        <div className={styles.historyList} ref={listRef}>
           {historyList.map((it, idx) => (
             <div key={it.timestamp + idx} className={styles.historyItem}>
               <div className={styles.timestamp}>{it.timestamp}</div>
@@ -135,7 +135,6 @@ export const App = (props: IProps) => {
               </div>
             </div>
           ))}
-          <div ref={lastHolder} className={styles.lastHolder} />
         </div>
       </div>
     </div>
