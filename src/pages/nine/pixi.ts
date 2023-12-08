@@ -70,6 +70,7 @@ socket.on('typing', (data = {}) => {
 });
 
 socket.on('userVisible', (data = {}) => {
+  console.log('[dodo] ', 'userVisible', data);
   const { clientId, visible } = data;
   otherBunny[clientId].visible(visible);
 });
