@@ -48,7 +48,11 @@ export const App = (props: IProps) => {
   useEffect(() => {
     if (!showHistory) return;
 
-    lastHolder.current?.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => {
+      if (showHistory) {
+        lastHolder.current?.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 300);
   }, [historyList.length, showHistory]);
 
   useEffect(() => {
