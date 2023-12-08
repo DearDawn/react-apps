@@ -1,9 +1,7 @@
 import './styles.less';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import { handleTalk, handleType } from './pixi';
 
-ReactDOM.render(
-  <App onTyping={handleType} talk={handleTalk} />,
-  document.getElementById('app')
-);
+const root = createRoot(document.getElementById('app'));
+root.render(<App onTyping={handleType} talk={handleTalk} />);

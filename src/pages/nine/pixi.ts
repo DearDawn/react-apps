@@ -25,15 +25,15 @@ app.stage.addChild(bunny.obj);
 const otherBunny: Record<string, Bunny> = {};
 
 // 发送控制精灵的请求
-function controlSprite(data) {
+function controlSprite (data) {
   socket.emit('controlSprite', data);
 }
 
-function talk(text = '') {
+function talk (text = '') {
   socket.emit('talking', text);
 }
 
-function type(typing = false) {
+function type (typing = false) {
   socket.emit('typing', typing);
 }
 
@@ -71,8 +71,10 @@ socket.on('typing', (data = {}) => {
 
 socket.on('userOut', (data) => {
   console.log('[dodo] ', 'userOut', data);
-  app.stage.removeChild(otherBunny[data.clientId].obj);
-  delete otherBunny[data.clientId];
+  if (otherBunny[data.clientId]) {
+    app.stage.removeChild(otherBunny[data.clientId].obj);
+    delete otherBunny[data.clientId];
+  }
 });
 
 // 断开与服务器的连接
