@@ -9,7 +9,7 @@ export class Bunny {
   rate = 4;
   targetX = 0;
   targetY = 0;
-  constructor(x, y) {
+  constructor (x, y) {
     // create a new Sprite from an image path
     this.bunny = PIXI.Sprite.from(BunnyImg);
     this.bunny.width = 27;
@@ -21,7 +21,7 @@ export class Bunny {
     this.targetY = y;
   }
 
-  move(dir: 'left' | 'right' | 'up' | 'down', delta = 1) {
+  move (dir: 'left' | 'right' | 'up' | 'down', delta = 1) {
     switch (dir) {
       case 'left':
         this.bunny.x -= this.rate * delta;
@@ -40,7 +40,7 @@ export class Bunny {
     }
   }
 
-  autoMove(delta = 1) {
+  autoMove (delta = 1) {
     const xDiff = this.targetX - this.bunny.x;
     const yDiff = this.targetY - this.bunny.y;
 
@@ -50,7 +50,7 @@ export class Bunny {
       Math.min(this.rate * delta, Math.abs(yDiff)) * (yDiff >= 0 ? 1 : -1);
   }
 
-  initBubble() {
+  initBubble () {
     if (!this.bubble) {
       // 创建跟随气泡的容器
       this.bubble = new Bubble(this.obj.width, -this.obj.height / 2 - 10);
@@ -63,37 +63,41 @@ export class Bunny {
     }
   }
 
-  say(text = '') {
+  say (text = '') {
     this.initBubble();
     this.bubble.setText(text);
   }
 
-  typing() {
+  typing () {
     this.initBubble();
     this.bubble.showLoading();
   }
 
-  get obj() {
+  visible (visible = false) {
+    this.bunny.alpha = visible ? 1 : 0.5;
+  }
+
+  get obj () {
     return this.bunny;
   }
 
-  get position() {
+  get position () {
     return { x: this.bunny.x, y: this.bunny.y };
   }
 
-  get needMove() {
+  get needMove () {
     const isStatic =
       this.bunny.x === this.targetX && this.bunny.y === this.targetY;
     return !isStatic;
   }
 
-  setPos({ x, y }) {
+  setPos ({ x, y }) {
     this.bunny.x = x;
     this.bunny.y = y;
     this.targetX = x;
     this.targetY = y;
   }
-  setTargetPos({ x, y }) {
+  setTargetPos ({ x, y }) {
     this.targetX = x;
     this.targetY = y;
   }

@@ -69,6 +69,11 @@ socket.on('typing', (data = {}) => {
   otherBunny[clientId].typing();
 });
 
+socket.on('userVisible', (data = {}) => {
+  const { clientId, visible } = data;
+  otherBunny[clientId].visible(visible);
+});
+
 socket.on('userOut', (data) => {
   console.log('[dodo] ', 'userOut', data);
   if (otherBunny[data.clientId]) {
@@ -130,6 +135,13 @@ window.onload = () => {
     lockKey = false;
   };
 };
+
+document.addEventListener('visibilitychange', () => {
+  const isVisible = document.visibilityState === 'visible'
+
+  socket.emit('userVisible', isVisible)
+  bunny.visible(isVisible)
+})
 
 // Listen for animate update
 app.ticker.add((delta) => {
