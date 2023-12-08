@@ -49,7 +49,7 @@ export const App = (props: IProps) => {
     if (!showHistory) return;
 
     lastHolder.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [historyList, showHistory]);
+  }, [historyList.length, showHistory]);
 
   useEffect(() => {
     const listener = (data) => {
