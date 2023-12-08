@@ -28,7 +28,6 @@ export const App = (props: IProps) => {
       setShowHistory(false);
     } else {
       setShowHistory(true);
-      socket.emit('history');
     }
   }, [showHistory]);
 
@@ -75,15 +74,30 @@ export const App = (props: IProps) => {
     };
   }, []);
 
+  useEffect(() => {
+    const getList = () => {
+      socket.emit('history');
+    }
+
+    const timer = setInterval(getList, 10000)
+
+    getList();
+    return () => {
+      clearInterval(timer)
+    }
+  }, [])
+
   return (
     <div className={styles.app}>
-      <button id='history' onClick={handleHistoryClick}>
-        历史记录
-      </button>
+      {!!historyList.length && (
+        <button id='history' onClick={handleHistoryClick}>
+          历史记录
+        </button>
+      )}
       <button id='talk' onClick={handleTalkClick}>
         聊天
       </button>
-      <div className={styles.onlineCount}>在线人数：{onlineUserCount}</div>
+      <div className={styles.onlineCount}>在线人数：{onlineUserCount || '加载中...'}</div>
       <form className={styles.talkInputWrap} onSubmit={handleSubmit}>
         <input
           className={styles.talkInput}
