@@ -81,7 +81,7 @@ export const App = (props: IProps) => {
       socket.emit('history');
     }
 
-    const timer = setInterval(getList, 10000)
+    const timer = setInterval(getList, 15000)
 
     getList();
     return () => {
