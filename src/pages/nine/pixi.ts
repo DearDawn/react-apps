@@ -143,6 +143,12 @@ document.addEventListener('visibilitychange', () => {
 
   socket.emit('userVisible', isVisible)
   bunny.visible(isVisible)
+
+  if (!isVisible) {
+    Object.keys(keys).filter(key => !!keys[key]).forEach(key => {
+      keys[key] = false;
+    })
+  }
 })
 
 // Listen for animate update
