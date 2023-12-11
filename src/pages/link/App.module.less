@@ -1,0 +1,126 @@
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 40px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.form {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.input {
+  flex: 1;
+  height: 40px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px; /* Updated margin */
+  box-sizing: border-box;
+}
+
+.button {
+  display: inline-block;
+  height: 40px;
+  padding: 0 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.result {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.result-label {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.copy-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.result-input {
+  width: 70%; /* Updated width */
+  height: 40px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  flex: 1;
+  margin: 0;
+  margin-right: 10px;
+}
+
+.copy-button {
+  background-color: #28a745;
+
+  &:hover {
+    background-color: #218838;
+  }
+}
+
+.link-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.link-table th,
+.link-table td {
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+.link-table th {
+  background-color: #f0f0f0;
+  font-weight: bold;
+  text-align: left;
+}
+
+.link-table td {
+  text-align: left;
+}
+
+.link-table .delete-button {
+  display: inline-block;
+  height: 30px;
+  padding: 0 12px;
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #c82333;
+  }
+}
