@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import styles from './App.module.less';
+import * as styles from './App.module.less';
+import { isDev } from '@/utils';
 
 export const App = () => {
   const [longUrl, setLongUrl] = useState('');
   const [shortUrl, setShortUrl] = useState('');
   const [copySuccess, setCopySuccess] = useState(false);
   const [links, setLinks] = useState([]);
+  const host = isDev
+    ? 'http://localhost:3000'
+    : 'https://www.dododawn.com:3000';
 
   const fetchLinkList = async () => {
     console.log('[dodo] ', '2123', 2123);
-    fetch('http://localhost:3000/link/list')
+    fetch(`${host}/link/list`)
       .then((res) => res.json())
       .then((data) => {
         setLinks(data);
@@ -25,7 +29,7 @@ export const App = () => {
 
   const generateShortLink = async () => {
     try {
-      const response = await fetch('http://localhost:3000/link', {
+      const response = await fetch(`${host}/link`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -51,7 +55,7 @@ export const App = () => {
 
   const deleteLink = async (code) => {
     try {
-      const response = await fetch(`http://localhost:3000/link/${code}`, {
+      const response = await fetch(`${host}/link/${code}`, {
         method: 'DELETE',
       });
 
