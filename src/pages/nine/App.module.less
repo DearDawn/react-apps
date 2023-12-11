@@ -1,5 +1,5 @@
 .app {
-  position: absolute;
+  position: relative;
   width: 100%;
   height: 100%;
   top: 0;
@@ -12,8 +12,7 @@
   }
 
   :global {
-    #history,
-    #talk {
+    #history {
       border: none;
       border-radius: 5px;
       background-color: #fff;
@@ -27,12 +26,14 @@
 
       &:hover {
         box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+        opacity: 0.8;
       }
 
       &:active {
         transform: scale(0.95);
       }
     }
+
     #talk {
       opacity: 0;
     }
@@ -40,6 +41,7 @@
 }
 
 .onlineCount {
+  width: fit-content;
   font-size: 16px;
   text-align: center;
   position: absolute;
@@ -173,9 +175,4 @@
     font-size: 16px;
     vertical-align: middle;
   }
-}
-
-.lastHolder {
-  width: 100%;
-  height: 0;
 }

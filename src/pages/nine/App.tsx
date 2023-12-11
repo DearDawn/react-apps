@@ -11,7 +11,7 @@ interface IProps {
 export const App = (props: IProps) => {
   const { talk, onTyping } = props;
   const inputRef = useRef<HTMLInputElement>(null);
-  const lastHolder = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const [text, setText] = useState('');
   const [onlineUserCount, setOnlineUserCount] = useState(0);
   const [showHistory, setShowHistory] = useState(false);
@@ -28,7 +28,6 @@ export const App = (props: IProps) => {
       setShowHistory(false);
     } else {
       setShowHistory(true);
-      socket.emit('history');
     }
   }, [showHistory]);
 
@@ -47,8 +46,14 @@ export const App = (props: IProps) => {
   );
 
   useEffect(() => {
-    lastHolder.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [historyList]);
+    if (!showHistory) return;
+
+    setTimeout(() => {
+      if (showHistory) {
+        listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
+      }
+    }, 300);
+  }, [historyList.length, showHistory]);
 
   useEffect(() => {
     const listener = (data) => {
@@ -75,15 +80,30 @@ export const App = (props: IProps) => {
     };
   }, []);
 
+  useEffect(() => {
+    const getList = () => {
+      socket.emit('history');
+    }
+
+    const timer = setInterval(getList, 15000)
+
+    getList();
+    return () => {
+      clearInterval(timer)
+    }
+  }, [])
+
   return (
     <div className={styles.app}>
-      <button id='history' onClick={handleHistoryClick}>
-        历史记录
-      </button>
+      {!!historyList.length && (
+        <button id='history' onClick={handleHistoryClick}>
+          历史记录
+        </button>
+      )}
       <button id='talk' onClick={handleTalkClick}>
         聊天
       </button>
-      <div className={styles.onlineCount}>在线人数：{onlineUserCount}</div>
+      <div className={styles.onlineCount}>在线人数：{onlineUserCount || '加载中...'}</div>
       <form className={styles.talkInputWrap} onSubmit={handleSubmit}>
         <input
           className={styles.talkInput}
@@ -105,7 +125,7 @@ export const App = (props: IProps) => {
           [styles.visible]: showHistory,
         })}
       >
-        <div className={styles.historyList}>
+        <div className={styles.historyList} ref={listRef}>
           {historyList.map((it, idx) => (
             <div key={it.timestamp + idx} className={styles.historyItem}>
               <div className={styles.timestamp}>{it.timestamp}</div>
@@ -115,7 +135,6 @@ export const App = (props: IProps) => {
               </div>
             </div>
           ))}
-          <div ref={lastHolder} className={styles.lastHolder} />
         </div>
       </div>
     </div>

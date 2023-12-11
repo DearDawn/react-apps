@@ -5,7 +5,7 @@
   "scripts": {
     "start": "parcel src/pages/*/index.html -p 7777",
     "root": "parcel src/pages/*.html -p 7777",
-    "build": "parcel build src/pages/*.html --public-url ./ && parcel build src/pages/*/*.html --public-url ../",
+    "build": "parcel build src/pages/*.html --public-url ./ --no-source-maps && parcel build src/pages/*/*.html --public-url ../ --no-source-maps",
     "clean": "rm -rf .parcel-cache"
   },
   "browserslist": "> 0.5%, last 2 versions, not dead",

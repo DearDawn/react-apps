@@ -52,10 +52,11 @@ socket.on('connect', () => {
 
 socket.on('userIn', (data = {}) => {
   console.log('[dodo] ', 'userIn', data);
-  const { clientId, pos } = data;
+  const { clientId, pos, visible } = data;
   const { x = app.screen.width / 2, y = app.screen.height / 2 } = pos || {};
   otherBunny[clientId] = new Bunny(x, y);
   otherBunny[clientId].setTargetPos({ x, y });
+  otherBunny[clientId].visible(visible);
   app.stage.addChild(otherBunny[clientId].obj);
 });
 
@@ -142,6 +143,12 @@ document.addEventListener('visibilitychange', () => {
 
   socket.emit('userVisible', isVisible)
   bunny.visible(isVisible)
+
+  if (!isVisible) {
+    Object.keys(keys).filter(key => !!keys[key]).forEach(key => {
+      keys[key] = false;
+    })
+  }
 })
 
 // Listen for animate update
