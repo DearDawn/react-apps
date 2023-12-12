@@ -12,7 +12,6 @@ export const App = () => {
     : 'https://www.dododawn.com:3000';
 
   const fetchLinkList = async () => {
-    console.log('[dodo] ', '2123', 2123);
     fetch(`${host}/link/list`)
       .then((res) => res.json())
       .then((data) => {
@@ -27,7 +26,9 @@ export const App = () => {
     setLongUrl(event.target.value);
   };
 
-  const generateShortLink = async () => {
+  const generateShortLink = async (e: Event) => {
+    e.preventDefault();
+
     try {
       const response = await fetch(`${host}/link`, {
         method: 'POST',
@@ -39,6 +40,9 @@ export const App = () => {
 
       const data = await response.json();
       setShortUrl(data.url);
+
+      if (links.find((it) => it.code === data.code)) return;
+
       setLinks((prevLinks) => [
         ...prevLinks,
         {
@@ -80,7 +84,7 @@ export const App = () => {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>短链接生成器</h1>
-      <div className={styles.form}>
+      <form className={styles.form} onSubmit={generateShortLink}>
         <input
           type='text'
           value={longUrl}
@@ -91,11 +95,11 @@ export const App = () => {
         <button
           className={styles.button}
           disabled={!longUrl.trim()}
-          onClick={generateShortLink}
+          type='submit'
         >
           生成
         </button>
-      </div>
+      </form>
       {shortUrl && (
         <div className={styles.result}>
           <p className={styles['result-label']}>短链接:</p>
