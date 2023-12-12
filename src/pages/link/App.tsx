@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, FormEventHandler } from 'react';
 import * as styles from './App.module.less';
 import { isDev } from '@/utils';
 
@@ -26,7 +26,7 @@ export const App = () => {
     setLongUrl(event.target.value);
   };
 
-  const generateShortLink = async (e: Event) => {
+  const generateShortLink = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
