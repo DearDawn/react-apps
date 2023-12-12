@@ -7,6 +7,7 @@ export const App = () => {
   const [shortUrl, setShortUrl] = useState('');
   const [copySuccess, setCopySuccess] = useState(false);
   const [links, setLinks] = useState([]);
+
   const host = isDev
     ? 'http://localhost:7020'
     : 'https://www.dododawn.com:7020';
