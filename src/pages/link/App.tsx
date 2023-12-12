@@ -8,8 +8,8 @@ export const App = () => {
   const [copySuccess, setCopySuccess] = useState(false);
   const [links, setLinks] = useState([]);
   const host = isDev
-    ? 'http://localhost:3000'
-    : 'https://www.dododawn.com:3000';
+    ? 'http://localhost:7020'
+    : 'https://www.dododawn.com:7020';
 
   const fetchLinkList = async () => {
     fetch(`${host}/link/list`)
