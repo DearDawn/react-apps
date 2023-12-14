@@ -1,5 +1,4 @@
 import * as PIXI from 'pixi.js';
-import './styles.less';
 import { Bunny } from './Objects/bunny';
 import { socket } from './socket';
 
