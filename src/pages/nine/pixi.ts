@@ -129,6 +129,7 @@ window.addEventListener('keyup', (event) => {
 });
 
 window.onload = () => {
+  window.focus();
   document.getElementById('talk-input').onfocus = () => {
     lockKey = true;
   };
