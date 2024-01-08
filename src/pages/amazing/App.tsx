@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as styles from './App.module.less';
-import { toast } from 'sweet-me';
+import { toast, notice, Button } from 'sweet-me';
 
 interface IProps { }
 
@@ -10,8 +10,11 @@ export const App = (props: IProps) => {
 
     setTimeout(() => {
       toast('123123213123213');
+      notice.info('耶耶耶')
     }, 3000);
   }, []);
 
-  return <div className={styles.app}>Home</div>;
+  return <div className={styles.app}>
+    <Button>你好啊</Button>
+  </div>;
 };
