@@ -16,5 +16,7 @@ export const App = (props: IProps) => {
 
   return <div className={styles.app}>
     <Button>你好啊</Button>
+    <Button status='success'>你好啊</Button>
+    <Button size='long'>你好啊</Button>
   </div>;
 };
