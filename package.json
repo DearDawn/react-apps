@@ -31,7 +31,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "socket.io-client": "^4.7.2",
-    "sweet-me": "^0.0.50"
+    "sweet-me": "^0.0.61"
   },
   "engines": {
     "node": ">=18.17.0",

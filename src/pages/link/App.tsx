@@ -1,6 +1,7 @@
 import React, { useState, useEffect, FormEventHandler } from 'react';
 import * as styles from './App.module.less';
 import { isDev } from '@/utils';
+import { HOST } from '@/utils/fetch';
 
 export const App = () => {
   const [longUrl, setLongUrl] = useState('');
@@ -8,12 +9,8 @@ export const App = () => {
   const [copySuccess, setCopySuccess] = useState(false);
   const [links, setLinks] = useState([]);
 
-  const host = isDev
-    ? 'http://localhost:7020'
-    : 'https://www.dododawn.com:7020';
-
   const fetchLinkList = async () => {
-    fetch(`${host}/link/list`)
+    fetch(`${HOST}/link/list`)
       .then((res) => res.json())
       .then((data) => {
         setLinks(data);
@@ -31,7 +28,7 @@ export const App = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`${host}/link`, {
+      const response = await fetch(`${HOST}/link`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -60,7 +57,7 @@ export const App = () => {
 
   const deleteLink = async (code) => {
     try {
-      const response = await fetch(`${host}/link/${code}`, {
+      const response = await fetch(`${HOST}/link/${code}`, {
         method: 'DELETE',
       });
 
@@ -79,6 +76,7 @@ export const App = () => {
   };
 
   useEffect(() => {
+    // 当时遇到了一个奇怪的 bug，请求都被延迟发送了，排查后发现是 Chrome 插件的问题
     fetchLinkList();
   }, []);
 
