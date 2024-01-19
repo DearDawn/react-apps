@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import * as styles from './App.module.less';
 import { apiGet } from '@/utils/fetch';
-import { Button, Header, Page } from 'sweet-me';
+import { Button, Header, Input, Page } from 'sweet-me';
 
 interface ApiResponse {
   cover: string;
@@ -27,10 +27,8 @@ export const App = () => {
     <Page className={styles.page}>
       <Header title="网页信息抓取" />
       <div className={styles.inputContainer}>
-        <input
-          type="text"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
+        <Input
+          onValueChange={(val) => setUrl(val)}
           placeholder="输入网址"
         />
         <Button onClick={handleButtonClick}>确认</Button>
