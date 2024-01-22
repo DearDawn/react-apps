@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import * as styles from './App.module.less';
-import { apiGet } from '@/utils/fetch';
-import { Button, Header, Input, Page } from 'sweet-me';
+import { myFetch } from '@/utils/fetch';
+import { Button, Header, Input, Page, loading, useRequest } from 'sweet-me';
 
 interface ApiResponse {
   cover: string;
@@ -11,16 +11,16 @@ interface ApiResponse {
 
 export const App = () => {
   const [url, setUrl] = useState("");
-  const [response, setResponse] = useState<ApiResponse | null>(null);
+  const { data: response, runApi, loading: isLoading, error } = useRequest({
+    url: "/api/web-info",
+    params: { url },
+    loadingFn: () => loading('加载中')
+  });
+
+  console.log('[dodo] ', 'error', error);
 
   const handleButtonClick = async () => {
-    try {
-      const apiResponse = await apiGet<any>("/web-info", { url });
-      console.log('[dodo] ', 'apiResponse', apiResponse);
-      setResponse(apiResponse);
-    } catch (error) {
-      console.error(error);
-    }
+    runApi();
   };
 
   return (
