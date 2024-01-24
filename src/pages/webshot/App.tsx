@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import * as styles from './App.module.less';
-import { Button, Header, Input, Page, Title, loading, useRequest } from 'sweet-me';
+import { Button, Header, Input, Page, Title, loading, toast, useRequest } from 'sweet-me';
+import { validUrl } from '@/utils/valid';
 
 interface ApiResponse {
   cover: string;
@@ -16,9 +17,13 @@ export const App = () => {
     loadingFn: () => loading('加载中')
   });
 
-  console.log('[dodo] ', 'error', error, url);
-
   const handleButtonClick = async () => {
+    if (!validUrl(url)) {
+      toast("链接格式校验失败，请重新输入");
+
+      return;
+    }
+
     runApi();
   };
 
@@ -27,7 +32,7 @@ export const App = () => {
       <Header title="网页信息抓取" />
       <div className={styles.inputContainer}>
         <Input
-          onValueChange={(val) => setUrl(val)}
+          onValueChange={(val = '') => setUrl(val.trim())}
           placeholder="输入网址"
         />
         <Button onClick={handleButtonClick}>开始抓取</Button>
