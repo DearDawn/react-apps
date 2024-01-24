@@ -19,14 +19,39 @@ input {
 }
 
 .responseContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  width: 100%;
   margin-top: 20px;
+  padding: 0 15px;
+  box-sizing: border-box;
 }
 
-img {
-  max-width: 100%;
-  height: auto;
-  margin-bottom: 10px;
+.titleWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: #f4fce3;
+  padding: 5px 10px;
+  margin: 0 auto 10px;
+  border: solid 1px #d8f5a2;
+  border-top: none;
+  box-sizing: border-box;
+
+  .icon {
+    flex: none;
+    height: 20px;
+    border-radius: 3px;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+}
+
+.cover {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 0 0 3px 3px;
+  border: solid 1px #d8f5a2;
+  border-top: none;
 }

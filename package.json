@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "React 多页应用模板",
   "scripts": {
-    "start": "parcel src/pages/*/index.html -p 7777",
+    "start": "npm run clean; parcel src/pages/*/index.html -p 7777",
     "root": "parcel src/pages/*.html -p 7777",
     "build": "parcel build src/pages/*.html --public-url ./ --no-source-maps && parcel build src/pages/*/*.html --public-url ../ --no-source-maps",
     "clean": "rm -rf .parcel-cache;rm -rf dist"
@@ -32,7 +32,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "socket.io-client": "^4.7.2",
-    "sweet-me": "^0.0.70"
+    "sweet-me": "^0.0.77"
   },
   "engines": {
     "node": ">=18.17.0",

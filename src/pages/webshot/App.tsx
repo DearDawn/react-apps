@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import * as styles from './App.module.less';
-import { myFetch } from '@/utils/fetch';
-import { Button, Header, Input, Page, loading, useRequest } from 'sweet-me';
+import { Button, Header, Input, Page, Title, loading, useRequest } from 'sweet-me';
 
 interface ApiResponse {
   cover: string;
@@ -13,11 +12,11 @@ export const App = () => {
   const [url, setUrl] = useState("");
   const { data: response, runApi, loading: isLoading, error } = useRequest({
     url: "/api/web-info",
-    params: { url },
+    params: { url, dodokey: 123 },
     loadingFn: () => loading('加载中')
   });
 
-  console.log('[dodo] ', 'error', error);
+  console.log('[dodo] ', 'error', error, url);
 
   const handleButtonClick = async () => {
     runApi();
@@ -31,13 +30,17 @@ export const App = () => {
           onValueChange={(val) => setUrl(val)}
           placeholder="输入网址"
         />
-        <Button onClick={handleButtonClick}>确认</Button>
+        <Button onClick={handleButtonClick}>开始抓取</Button>
       </div>
       {response && (
         <div className={styles.responseContainer}>
-          <img src={response.cover} alt="网页截图" />
-          <div>{response.title}</div>
-          <img src={response.favicon} alt="网页图标" />
+          <Title>网页标题</Title>
+          <div className={styles.titleWrap}>
+            <img className={styles.icon} src={response.favicon} alt="网页图标" />
+            <div className={styles.title}>{response.title}</div>
+          </div>
+          <Title>网页截图</Title>
+          <img className={styles.cover} src={response.cover} alt="网页截图" />
         </div>
       )}
     </Page>
