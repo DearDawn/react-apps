@@ -1,9 +1,3 @@
-.page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .inputContainer {
   display: flex;
   align-items: center;
@@ -18,9 +12,17 @@ input {
   flex: 1;
 }
 
+.listTitle {
+  margin-top: 15px;
+}
+
+.listWrap {
+  padding-bottom: 15px;
+}
+
 .responseContainer {
   width: 100%;
-  margin-top: 20px;
+  margin-top: 15px;
   padding: 0 15px;
   box-sizing: border-box;
 }
@@ -48,6 +50,23 @@ input {
   }
 }
 
+.itemTitle {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 5px 10px;
+  box-sizing: border-box;
+  gap: 10px;
+
+  .icon {
+    height: 16px;
+  }
+
+  .title {
+    font-size: 14px;
+  }
+}
+
 .cover {
   width: 100%;
   box-sizing: border-box;
@@ -58,4 +77,16 @@ input {
 
 img {
   font-size: 0;
+  display: block;
+}
+
+.emptyHolder {
+  height: 300px;
+  background-color: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 15px;
+  border-radius: 6px;
+  color: #aaa;
 }
