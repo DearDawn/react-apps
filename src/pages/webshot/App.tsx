@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import * as styles from './App.module.less';
-import { Button, Header, Input, Page, Title, loading, toast, useRequest } from 'sweet-me';
+import { Button, Header, Input, Page, Title, loading, toast } from 'sweet-me';
 import { validUrl } from '@/utils/valid';
+import { useFetch } from '@/utils/fetch';
 
 interface ApiResponse {
   cover: string;
@@ -11,9 +12,9 @@ interface ApiResponse {
 
 export const App = () => {
   const [url, setUrl] = useState("");
-  const { data: response, runApi, loading: isLoading, error } = useRequest({
-    url: "/api/web-info",
-    params: { url, dodokey: 123 },
+  const { data: response, runApi, loading: isLoading, error } = useFetch<ApiResponse>({
+    url: "/web-info",
+    params: { url },
     loadingFn: () => loading('加载中')
   });
 

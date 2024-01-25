@@ -1,4 +1,4 @@
-import { RequestUrl, apiGet } from "sweet-me";
+import { RequestUrl, apiGet, useRequest } from "sweet-me";
 import { isDev } from ".";
 
 export const HOST = isDev
@@ -9,4 +9,17 @@ export const myFetch = <T> (input: `/${string}`, params: Record<string, any> = {
   const _url: RequestUrl = `${HOST}${input}`
 
   return apiGet<T>(_url, { ...params, dodokey: "123" }, init);
+}
+
+export const useFetch: typeof useRequest = (props) => {
+  const { url: _url, params, ...rest } = props;
+  const url: RequestUrl = `${HOST}${_url}`
+
+  const res = useRequest({
+    url,
+    params: { dodokey: 123, ...params },
+    ...rest
+  });
+
+  return res;
 }
