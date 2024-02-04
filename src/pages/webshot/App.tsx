@@ -15,13 +15,13 @@ interface ApiResponse {
 export const App = () => {
   const [url, setUrl] = useState("");
   const { data: response, runApi } = useFetch<ApiResponse>({
-    url: "/api/web-info",
+    url: "/web-info",
     params: { url },
     loadingFn: () => loading('加载中')
   });
 
   const { data: listData, runApi: runListApi } = useFetch<ApiResponse[]>({
-    url: "/api/web-info/list",
+    url: "/web-info/list",
     params: { url },
     autoRun: true,
     loadingFn: () => loading('列表加载中...', undefined, false)
