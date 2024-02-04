@@ -3,7 +3,7 @@ import { isDev } from ".";
 
 export const HOST = isDev
   ? '/api'
-  : 'https://www.dododawn.com:7020';
+  : 'https://www.dododawn.com:7020/api';
 
 export const myFetch = <T> (input: `/${string}`, params: Record<string, any> = {}, init?: RequestInit) => {
   const _url: RequestUrl = `${HOST}${input}`
