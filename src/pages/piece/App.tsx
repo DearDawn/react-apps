@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as styles from './App.module.less';
-import { toast, notice, Button, Icon, ICON, Page, Header, loading, Modal, useBoolean } from 'sweet-me';
+import { toast, notice, Button, Icon, ICON, Page, Header, loading, Modal, useBoolean, Input } from 'sweet-me';
 import { useFetch } from '@/utils/fetch';
 
 interface ApiResponse {
@@ -23,29 +23,19 @@ export const App = () => {
     loadingFn: () => loading('列表加载中...', undefined, false)
   });
 
-  React.useEffect(() => {
-    console.log('[dodo] ', 'home');
-
-    setTimeout(() => {
-      toast('123123213123213');
-      notice.info('耶耶耶')
-    }, 3000);
-  }, []);
-
-  console.log('[dodo] ', 'listData', listData);
-
   return (
-    <Page maxWidth='100vw' className={styles.app}>
+    <Page maxWidth='100vw' minWidth='300px' className={styles.app}>
       <Header title="完整 & 破碎" isSticky />
-      121212121<Button>你好啊</Button>
-      <Button status='success'><Icon type={ICON.sugar} />你好啊</Button>
-      <Button size='long' onClick={showModal}>
-        <Icon /> 你好啊
-      </Button>
-      <Modal visible={modalVisible}>
-        <Button onClick={closeModal}>
-          <Icon /> 你好啊
-        </Button>
+      <Button className={styles.addBtn} status='success' onClick={showModal}>添加碎片</Button>
+      <Modal className={styles.modal} visible={modalVisible}>
+        <div className={styles.content}>
+          <Input className={styles.input} placeholder='标题' />
+          <Input className={styles.input} placeholder='内容' />
+          <div className={styles.btnWrap}>
+            <Button className={styles.addBtn} status='error' onClick={closeModal}>取消</Button>
+            <Button className={styles.addBtn} status='success' onClick={showModal}>添加</Button>
+          </div>
+        </div>
       </Modal>
     </Page >);
 };

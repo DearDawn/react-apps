@@ -1,4 +1,42 @@
 .app {
   color: red;
   font-size: 20px !important;
+
+  .addBtn {
+    position: fixed;
+    bottom: 15px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: calc(100% - 30px);
+  }
+}
+
+.modal {
+  .content {
+    width: 30rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 500px;
+
+    .input {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .btnWrap {
+      display: flex;
+      align-items: center;
+      justify-content: stretch;
+      gap: 10px;
+      width: 100%;
+
+      .addBtn {
+        flex: 1;
+      }
+    }
+  }
 }
