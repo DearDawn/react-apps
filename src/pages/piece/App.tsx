@@ -30,7 +30,7 @@ export const App = () => {
 
     const values = form.getFieldsValue();
     console.log('[dodo] ', 'values', values);
-    const { title, content } = values;
+    const { title = '', content = '' } = values;
     myPost<ApiResponse>('/piece/create', {}, {
       title: title.trim(),
       content: content.trim()
