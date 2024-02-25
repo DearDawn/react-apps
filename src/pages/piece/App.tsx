@@ -59,10 +59,10 @@ export const App = () => {
       <Modal className={styles.modal} visible={modalVisible}>
         <div className={styles.content}>
           <Form form={form}>
-            <Form.Item field='title' labelClassName={styles.label}>
+            <Form.Item field='title' labelClassName={styles.label} required>
               <Input className={styles.input} placeholder='标题' />
             </Form.Item>
-            <Form.Item field='content' labelClassName={styles.label}>
+            <Form.Item field='content' labelClassName={styles.label} required>
               <Textarea className={styles.input} placeholder='内容' />
             </Form.Item>
             <div className={styles.btnWrap}>
