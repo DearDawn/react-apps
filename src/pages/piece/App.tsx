@@ -2,19 +2,15 @@ import * as React from 'react';
 import * as styles from './App.module.less';
 import { toast, Button, Page, Header, loading, Modal, useBoolean, Input, Form, useFormState, Textarea } from 'sweet-me';
 import { myPost, useFetch } from '@/utils/fetch';
-
-interface ApiResponse {
-  _id?: string;
-  title: string;
-  content: string;
-}
+import { PieceInfo } from './constants';
+import { Card } from './components/card';
 
 
 export const App = () => {
   const [modalVisible, showModal, closeModal] = useBoolean();
-  const { form } = useFormState<ApiResponse>();
+  const { form } = useFormState<PieceInfo>();
 
-  const { data: listData = [], runApi } = useFetch<ApiResponse[]>({
+  const { data: listData = [], runApi } = useFetch<PieceInfo[]>({
     url: "/piece/list",
     autoRun: true,
     loadingFn: () => loading('列表加载中...', undefined, false)
@@ -31,7 +27,7 @@ export const App = () => {
     const values = form.getFieldsValue();
     console.log('[dodo] ', 'values', values);
     const { title = '', content = '' } = values;
-    myPost<ApiResponse>('/piece/create', {}, {
+    myPost<PieceInfo>('/piece/create', {}, {
       title: title.trim(),
       content: content.trim()
     }).then((res: any) => {
@@ -49,12 +45,11 @@ export const App = () => {
   return (
     <Page maxWidth='100vw' minWidth='300px' className={styles.app}>
       <Header title="完整 & 破碎" isSticky />
-      {listData?.map(it => (
-        <div key={it._id}>
-          <div>{it.title}</div>
-          <div>{it.content}</div>
-        </div>
-      ))}
+      <div className={styles.list}>
+        {listData?.map(it => (
+          <Card info={it} key={it._id} />
+        ))}
+      </div>
       <Button className={styles.addBtn} status='success' onClick={showModal}>添加碎片</Button>
       <Modal className={styles.modal} visible={modalVisible}>
         <div className={styles.content}>
