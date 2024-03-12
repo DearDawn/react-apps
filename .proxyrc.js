@@ -1,5 +1,5 @@
 const { createProxyMiddleware } = require("http-proxy-middleware");
-const useLocal = false;
+const useLocal = process.argv.at(-1) !== '--open';
 
 module.exports =  function (app) {
   app.use(

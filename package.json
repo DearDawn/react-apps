@@ -4,6 +4,7 @@
   "description": "React 多页应用模板",
   "scripts": {
     "start": "npm run clean; parcel src/pages/*/index.html -p 7777",
+    "start:api": "npm run clean; parcel src/pages/*/index.html -p 7777 --open",
     "root": "parcel src/pages/*.html -p 7777",
     "build": "parcel build src/pages/*.html --public-url ./ --no-source-maps && parcel build src/pages/*/*.html --public-url ../ --no-source-maps",
     "clean": "rm -rf .parcel-cache;rm -rf dist"

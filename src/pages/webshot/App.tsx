@@ -6,6 +6,8 @@ import { useFetch } from '@/utils/fetch';
 
 interface ApiResponse {
   cover: string;
+  cover_pad: string;
+  cover_mobile: string;
   title: string;
   date: string;
   url: string;
@@ -14,18 +16,23 @@ interface ApiResponse {
 
 export const App = () => {
   const [url, setUrl] = useState("");
+  const [device] = useState<'pc' | 'pad' | 'mobile'>('pc');
   const { data: response, runApi } = useFetch<ApiResponse>({
     url: "/web-info",
-    params: { url },
+    params: { url, device },
     loadingFn: () => loading('加载中')
   });
 
-  const { data: listData, runApi: runListApi } = useFetch<ApiResponse[]>({
+  const { data: listData } = useFetch<ApiResponse[]>({
     url: "/web-info/list",
     params: { url },
     autoRun: true,
     loadingFn: () => loading('列表加载中...', undefined, false)
   });
+
+  const getCover = (res: ApiResponse) => {
+    return res.cover || res.cover_pad || res.cover_mobile;
+  };
 
   console.log('[dodo] ', 'listData', listData);
 
@@ -57,7 +64,7 @@ export const App = () => {
             <div className={styles.title}>{response.title}</div>
           </div>
           <Title>网页截图</Title>
-          <img className={styles.cover} src={response.cover} alt="网页截图" />
+          <img className={styles.cover} src={getCover(response)} alt="网页截图" />
         </div>
       ) : (
         <div className={styles.emptyHolder}>
@@ -73,7 +80,7 @@ export const App = () => {
               <img className={styles.icon} src={info.favicon} alt="网页图标" />
               <div className={styles.title}>{info.title}</div>
             </Title>
-            <img className={styles.cover} src={info.cover} alt="网页截图" />
+            <img className={styles.cover} src={getCover(info)} alt="网页截图" />
           </div>
         ))}
       </div>

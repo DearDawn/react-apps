@@ -29,6 +29,12 @@
         "argsIgnorePattern": "^_"
       }
     ],
+    "max-len": [
+      "error",
+      {
+        "code": 120
+      }
+    ],
     // 检查 Hooks 的使用规则
     "react-hooks/rules-of-hooks": "error",
     // 检查依赖项的声明
