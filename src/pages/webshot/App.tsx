@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import * as styles from './App.module.less';
-import { Button, Header, Input, Page, Title, loading, toast } from 'sweet-me';
+import { Button, Header, ICON, Icon, Input, Page, Select, Title, loading, toast } from 'sweet-me';
 import { validUrl } from '@/utils/valid';
 import { useFetch } from '@/utils/fetch';
 
@@ -14,9 +14,11 @@ interface ApiResponse {
   favicon: string;
 }
 
+type IDevice = 'pc' | 'pad' | 'mobile';
+
 export const App = () => {
   const [url, setUrl] = useState("");
-  const [device] = useState<'pc' | 'pad' | 'mobile'>('pc');
+  const [device, setDevice] = useState<IDevice>('pc');
   const { data: response, runApi } = useFetch<ApiResponse>({
     url: "/web-info",
     params: { url, device },
@@ -51,8 +53,20 @@ export const App = () => {
       <Header title="网页信息抓取" isSticky />
       <div className={styles.inputContainer}>
         <Input
+          className={styles.input}
           onValueChange={(val = '') => setUrl(val.trim())}
           placeholder="输入网址"
+        />
+        <Select
+          className={styles.select}
+          type='icon'
+          value={device}
+          onValueChange={it => setDevice(it.value as IDevice)}
+          options={[
+            { label: <Icon type={ICON.pc} />, value: 'pc' },
+            { label: <Icon type={ICON.mobile} />, value: 'mobile' },
+            { label: <Icon type={ICON.pad} />, value: 'pad' }
+          ]}
         />
         <Button onClick={handleButtonClick}>开始抓取</Button>
       </div>
