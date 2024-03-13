@@ -33,7 +33,7 @@ export const App = () => {
   });
 
   const getCover = (res: ApiResponse) => {
-    return res.cover || res.cover_pad || res.cover_mobile;
+    return res.cover || res.cover_mobile || res.cover_pad;
   };
 
   console.log('[dodo] ', 'listData', listData);
