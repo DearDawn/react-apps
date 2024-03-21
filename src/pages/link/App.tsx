@@ -1,6 +1,5 @@
-import React, { useState, useEffect, FormEventHandler } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as styles from './App.module.less';
-import { isDev } from '@/utils';
 import { HOST } from '@/utils/fetch';
 
 export const App = () => {

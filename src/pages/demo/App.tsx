@@ -1,18 +1,18 @@
 import * as styles from './App.module.less';
 import { Page, Header, Modal, useBoolean, Button } from 'sweet-me';
 import Comps from './components';
-import { useCallback, useMemo, useState } from 'react';
+import React from 'react';
 
 export const App = () => {
   const [modalVisible, showModal, closeModal] = useBoolean();
-  const [compoKey, setCompoKey] = useState('');
+  const [compoKey, setCompoKey] = React.useState('');
 
-  const handleClickCompo = useCallback((key: string) => () => {
+  const handleClickCompo = React.useCallback((key: string) => () => {
     setCompoKey(key);
     showModal();
   }, [showModal]);
 
-  const TargetCompo = useMemo(() => {
+  const TargetCompo = React.useMemo(() => {
     if (!Comps[compoKey]) return '';
 
     return Comps[compoKey];
@@ -32,12 +32,12 @@ export const App = () => {
       <Modal
         className={styles.modal}
         visible={modalVisible}
+        maskClosable
+        onClose={closeModal}
         footer={<Button onClick={closeModal}>关闭</Button>}
       >
-        <div className={styles.content}>
-          <div className={styles.bigItem}>
-            <TargetCompo />
-          </div>
+        <div className={styles.bigItem}>
+          <TargetCompo />
         </div>
       </Modal>
     </Page >

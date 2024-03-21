@@ -1,4 +1,4 @@
-import styles from './index.module.less';
+import * as styles from './index.module.less';
 
 export const Card1 = () => {
   return (

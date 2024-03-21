@@ -1,5 +1,4 @@
-import React from 'react';
-import styles from './index.module.less';
+import * as styles from './index.module.less';
 import { PieceInfo } from '../../constants';
 
 interface IProps {

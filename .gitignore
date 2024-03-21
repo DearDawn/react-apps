@@ -105,3 +105,4 @@ dist
 
 # Parcel file serving cache
 .parcel-cache
+parcel-bundle-reports
