@@ -6,7 +6,8 @@ interface IProps { }
 
 export const App = (props: IProps) => {
   React.useEffect(() => {
-    console.log('[dodo] ', 'hello react multi page app!');
+    // eslint-disable-next-line no-console
+    console.log('%c[dodo] 小糖的 React 项目合集!', "color: #fff; background: orange;");
   }, []);
 
   return (
@@ -17,6 +18,7 @@ export const App = (props: IProps) => {
       <Title className={styles.title}><a href="./link/">短链接生成器</a></Title>
       <Title className={styles.title}><a href="./webshot/">网页截图</a></Title>
       <Title className={styles.title}><a href="./piece/">破碎 & 完整</a></Title>
+      <Title className={styles.title}><a href="./demo/">小玩意儿~</a></Title>
     </Page>
   );
 };

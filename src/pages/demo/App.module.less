@@ -1,0 +1,52 @@
+.app {
+  font-size: 20px !important;
+  padding-bottom: 100px;
+  box-sizing: border-box;
+}
+
+.list {
+  padding: 10px;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.item,
+.bigItem {
+  box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+  padding: 10px;
+  border-radius: 6px;
+  overflow: hidden;
+  white-space: pre-line;
+  word-break: break-all;
+  font-size: 14px;
+  min-width: 165px;
+  width: fit-content;
+  height: 165px;
+  min-height: fit-content;
+  flex: 1;
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bigItem {
+  width: 70vw;
+  max-width: 500px;
+  aspect-ratio: 1;
+  height: auto;
+}
+
+.modal {
+  :global {
+    .dodo-modal-footer {
+      box-shadow: none;
+      padding-top: 0;
+    }
+  }
+}
