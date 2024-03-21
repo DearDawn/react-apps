@@ -11,7 +11,7 @@
     "clean": "rm -rf .parcel-cache;rm -rf dist"
   },
   "alias": {
-    "pixi.js": "./node_modules/pixi.js/dist/pixi.min.js"
+    "pixi.js": "./node_modules/pixi.js/dist/pixi.min.mjs"
   },
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "keywords": [],
