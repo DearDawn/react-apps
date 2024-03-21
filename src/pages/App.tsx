@@ -13,7 +13,6 @@ export const App = (props: IProps) => {
   return (
     <Page maxWidth='100vw' className={styles.app}>
       <Header title="小糖的 React 项目合集" isSticky />
-      <Title className={styles.title}><a href="./basic/">Home 页</a></Title>
       <Title className={styles.title}><a href="./nine/">几点下班</a></Title>
       <Title className={styles.title}><a href="./link/">短链接生成器</a></Title>
       <Title className={styles.title}><a href="./webshot/">网页截图</a></Title>
