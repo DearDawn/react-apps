@@ -11,7 +11,12 @@ export const myFetch = <T> (input: `/${string}`, params: Record<string, any> = {
   return apiGet<T>(_url, { ...params, dodokey: "123" }, init);
 };
 
-export const myPost = <T> (input: `/${string}`, params: Record<string, any> = {}, body: Record<string, any>, init?: RequestInit) => {
+export const myPost = <T> (
+  input: `/${string}`,
+  params: Record<string, any> = {},
+  body: Record<string, any>,
+  init?: RequestInit
+) => {
   const _url: RequestUrl = `${HOST}${input}`;
 
   return apiPost<T>(_url, { ...params, dodokey: "123" }, body, init);
