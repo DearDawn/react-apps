@@ -10,6 +10,9 @@
     "build:analyze": "parcel build src/pages/*.html --public-url ./ --no-source-maps && parcel build src/pages/*/*.html --public-url ../ --no-source-maps --reporter @parcel/reporter-bundle-analyzer",
     "clean": "rm -rf .parcel-cache;rm -rf dist"
   },
+  "alias": {
+    "pixi.js": "./node_modules/pixi.js/dist/pixi.min.js"
+  },
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "keywords": [],
   "author": "",
