@@ -139,22 +139,22 @@ window.onload = () => {
 };
 
 document.addEventListener('visibilitychange', () => {
-  const isVisible = document.visibilityState === 'visible'
+  const isVisible = document.visibilityState === 'visible';
 
-  socket.emit('userVisible', isVisible)
-  bunny.visible(isVisible)
+  socket.emit('userVisible', isVisible);
+  bunny.visible(isVisible);
 
   if (!isVisible) {
     Object.keys(keys).filter(key => !!keys[key]).forEach(key => {
       keys[key] = false;
-    })
+    });
   }
-})
+});
 
 // Listen for animate update
 app.ticker.add((delta) => {
   let moving = false;
-  let flag = 0;
+  const flag = 0;
 
   // 根据键盘按键状态来移动精灵
   if (keys.ArrowLeft || keys.KeyA) {

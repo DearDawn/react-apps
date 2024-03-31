@@ -25,7 +25,12 @@ export const App = () => {
       <div className={styles.list}>
         {Object.entries(Comps).map(([key, Component]) => (
           <div className={styles.item} key={key} onClick={handleClickCompo(key)}>
-            <Component />
+            <div
+              className={styles.itemCell}
+              style={{ transform: `scale(${(Component as any).scale})` }}
+            >
+              <Component />
+            </div>
           </div>
         ))}
       </div>
