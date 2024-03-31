@@ -3,7 +3,12 @@ import * as styles from './index.module.less';
 
 export const Card1 = () => {
   const handleClick = () => {
-    alert(Notification.permission);
+    if ('Notification' in window) {
+      alert(Notification?.permission);
+    }else {
+      alert('不支持');
+    }
+
     Notification.requestPermission().then((result) => {
       alert(`result${result}`);
     }).catch(err => {
@@ -14,7 +19,7 @@ export const Card1 = () => {
   const handleNotice = () => {
     const notice = new Notification("你好呀~ 我是一个通知");
     notice.onshow = () => {
-      alert('show');
+      // alert('show');
     };
     notice.onerror = (err) => {
       console.log('[dodo] ', 'err', err);
