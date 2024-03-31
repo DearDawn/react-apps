@@ -3,6 +3,7 @@ import * as styles from './index.module.less';
 
 export const Card1 = () => {
   const handleClick = () => {
+    alert(Notification.permission);
     Notification.requestPermission().then((result) => {
       alert(`result${result}`);
     }).catch(err => {
