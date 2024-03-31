@@ -1,5 +1,6 @@
 import { Button } from 'sweet-me';
 import * as styles from './index.module.less';
+import Image from 'src/assets/bunny.png';
 
 export const Card1 = () => {
   const handleClick = () => {
@@ -17,7 +18,10 @@ export const Card1 = () => {
   };
 
   const handleNotice = () => {
-    const notice = new Notification("你好呀~ 我是一个通知");
+    const notice = new Notification("你好呀~ 我是一个通知", {
+      body: 'Notification Body',
+      icon: Image
+    });
 
     notice.onshow = () => {
       // alert('show');
