@@ -5,7 +5,7 @@ export const Card1 = () => {
   const handleClick = () => {
     if ('Notification' in window) {
       alert(Notification?.permission);
-    }else {
+    } else {
       alert('不支持');
     }
 
@@ -18,6 +18,7 @@ export const Card1 = () => {
 
   const handleNotice = () => {
     const notice = new Notification("你好呀~ 我是一个通知");
+
     notice.onshow = () => {
       // alert('show');
     };
