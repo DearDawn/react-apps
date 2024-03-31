@@ -1,0 +1,14 @@
+{
+  "name": "dodoDemo",
+  "short_name": "dodoDemo",
+  "description": "dodoDemo",
+  "display": "standalone",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/src/assets/sugar.png",
+      "sizes": "192x192",
+      "type": "image&#x2F;png"
+    }
+  ]
+}
