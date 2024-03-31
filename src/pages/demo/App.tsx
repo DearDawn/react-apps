@@ -1,5 +1,5 @@
 import * as styles from './App.module.less';
-import { Page, Header, Modal, useBoolean, Button } from 'sweet-me';
+import { Page, Header, Modal, useBoolean, Button, Icon, ICON } from 'sweet-me';
 import Comps from './components';
 import React from 'react';
 
@@ -24,12 +24,17 @@ export const App = () => {
 
       <div className={styles.list}>
         {Object.entries(Comps).map(([key, Component]) => (
-          <div className={styles.item} key={key} onClick={handleClickCompo(key)}>
+          <div className={styles.item} key={key}>
             <div
               className={styles.itemCell}
               style={{ transform: `scale(${(Component as any).scale})` }}
             >
               <Component />
+              <Icon
+                className={styles.detail}
+                type={ICON.magicBar}
+                onClick={handleClickCompo(key)}
+              />
             </div>
           </div>
         ))}
