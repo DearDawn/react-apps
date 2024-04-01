@@ -32,10 +32,37 @@ export const Card1 = () => {
     };
   };
 
+  function showNotification () {
+    Notification.requestPermission().then((result) => {
+      console.log('[dodo] ', 'result', result, navigator.serviceWorker);
+      if (result === "granted") {
+        navigator.serviceWorker.ready.then((registration) => {
+          console.log('[dodo] ', '1111', 1111);
+          registration.showNotification("Vibration Sample", {
+            body: "Buzz! Buzz!",
+            // icon: "../images/touch/chrome-touch-icon-192x192.png",
+            // vibrate: [200, 100, 200, 100, 200, 100, 200],
+            // tag: "123",
+          });
+        }).catch(err => {
+          console.log('[dodo] ', 'err', err);
+        });
+      }
+    });
+  }
+
+  const handleNoticeSW = () => {
+    if ('serviceWorker' in navigator) {
+      // navigator.serviceWorker.controller.postMessage({ action: 'notice' });
+      showNotification();
+    }
+  };
+
   return (
     <div className={styles.card}>
       <Button onClick={handleClick}>授权</Button>
       <Button onClick={handleNotice}>通知</Button>
+      <Button onClick={handleNoticeSW}>SW 通知</Button>
     </div>
   );
 };

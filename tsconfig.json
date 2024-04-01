@@ -6,6 +6,7 @@
       "ESNext",
       "DOM"
     ],
+    "module": "CommonJS",
     "esModuleInterop": true,
     "paths": {
       "@/*": [
