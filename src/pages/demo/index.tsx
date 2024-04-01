@@ -8,7 +8,7 @@ root.render(<App />);
 
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register(new URL('../demo-service-worker.js', import.meta.url), { type: 'module', scope: '/' })
+  navigator.serviceWorker.register(new URL('../demo-service-worker.js', import.meta.url), { type: 'module' })
     .then(function (registration) {
       console.log('Service Worker registered with scope:', registration.scope);
     })
