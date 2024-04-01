@@ -44,6 +44,14 @@ export const Card1 = () => {
             // vibrate: [200, 100, 200, 100, 200, 100, 200],
             // tag: "123",
           });
+          setTimeout(() => {
+            registration.showNotification("Vibration Sample123", {
+              body: "Buzz! Buzz!",
+              // icon: "../images/touch/chrome-touch-icon-192x192.png",
+              // vibrate: [200, 100, 200, 100, 200, 100, 200],
+              // tag: "123",
+            });
+          }, 5000);
         }).catch(err => {
           console.log('[dodo] ', 'err', err);
         });
