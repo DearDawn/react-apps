@@ -16,8 +16,6 @@ const app = new PIXI.Application({
 
 app.renderer.resize(window.innerWidth / 2, window.innerHeight / 2);
 
-document.body.appendChild(app.view as unknown as Node);
-
 // create a new Sprite from an image path
 const bunny = new Bunny(app.screen.width / 2, app.screen.height / 2);
 app.stage.addChild(bunny.obj);
@@ -129,6 +127,9 @@ window.addEventListener('keyup', (event) => {
 });
 
 window.onload = () => {
+  const gameRoot = document.getElementById('dodo-game-root');
+  gameRoot.appendChild(app.view as unknown as Node);
+
   window.focus();
   document.getElementById('talk-input').onfocus = () => {
     lockKey = true;

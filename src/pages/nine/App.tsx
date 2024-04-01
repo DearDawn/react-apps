@@ -42,7 +42,7 @@ export const App = (props: IProps) => {
       talk(text.trim());
       setText('');
     },
-    [text]
+    [talk, text]
   );
 
   useEffect(() => {
@@ -83,26 +83,28 @@ export const App = (props: IProps) => {
   useEffect(() => {
     const getList = () => {
       socket.emit('history');
-    }
+    };
 
-    const timer = setInterval(getList, 15000)
+    const timer = setInterval(getList, 15000);
 
     getList();
     return () => {
-      clearInterval(timer)
-    }
-  }, [])
+      clearInterval(timer);
+    };
+  }, []);
 
   return (
     <div className={styles.app}>
-      {!!historyList.length && (
-        <button id='history' onClick={handleHistoryClick}>
-          历史记录
+      <div className={styles.buttonWrap}>
+        {!!historyList.length && (
+          <button id='history' onClick={handleHistoryClick}>
+            历史记录
+          </button>
+        )}
+        <button id='talk' onClick={handleTalkClick}>
+          聊天
         </button>
-      )}
-      <button id='talk' onClick={handleTalkClick}>
-        聊天
-      </button>
+      </div>
       <div className={styles.onlineCount}>在线人数：{onlineUserCount || '加载中...'}</div>
       <form className={styles.talkInputWrap} onSubmit={handleSubmit}>
         <input
@@ -137,6 +139,7 @@ export const App = (props: IProps) => {
           ))}
         </div>
       </div>
+      <div id="dodo-game-root" className={styles.dodoGameRoot}></div>
     </div>
   );
 };
