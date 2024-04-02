@@ -44,7 +44,7 @@ export const App = () => {
 
   return (
     <Page maxWidth='100vw' minWidth='300px' className={styles.app}>
-      <Header title="完整 & 破碎" isSticky />
+      <Header title="赏金猎人" isSticky />
       <div className={styles.list}>
         {listData?.map(it => (
           <Card info={it} key={it._id} />
