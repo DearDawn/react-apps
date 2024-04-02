@@ -50,7 +50,7 @@ export const App = () => {
           <Card info={it} key={it._id} />
         ))}
       </div>
-      <Button className={styles.addBtn} status='success' onClick={showModal}>添加碎片</Button>
+      <Button className={styles.addBtn} status='success' onClick={showModal}>添加赏金任务</Button>
       <Modal className={styles.modal} visible={modalVisible}>
         <div className={styles.content}>
           <Form form={form}>
