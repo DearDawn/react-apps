@@ -34,7 +34,7 @@ export const App = (props: IProps) => {
   const handleType = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setText(e.target.value);
     onTyping();
-  }, []);
+  }, [onTyping]);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
