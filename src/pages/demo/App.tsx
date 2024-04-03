@@ -1,22 +1,17 @@
 import * as styles from './App.module.less';
-import { Page, Header, Modal, useBoolean, Button, Icon, ICON } from 'sweet-me';
+import { Page, Header, Modal, Button, Icon, ICON } from 'sweet-me';
 import Comps from './components';
 import React from 'react';
+import { useCardDetailModal } from '@/utils/hooks';
 
 export const App = () => {
-  const [modalVisible, showModal, closeModal] = useBoolean();
-  const [compoKey, setCompoKey] = React.useState('');
-
-  const handleClickCompo = React.useCallback((key: string) => () => {
-    setCompoKey(key);
-    showModal();
-  }, [showModal]);
+  const { handleClickCard, closeModal, detail, modalVisible } = useCardDetailModal();
 
   const TargetCompo = React.useMemo(() => {
-    if (!Comps[compoKey]) return '';
+    if (!Comps[detail]) return '';
 
-    return Comps[compoKey];
-  }, [compoKey]);
+    return Comps[detail];
+  }, [detail]);
 
   return (
     <Page maxWidth='100vw' minWidth='300px' className={styles.app}>
@@ -33,7 +28,7 @@ export const App = () => {
               <Icon
                 className={styles.detail}
                 type={ICON.magicBar}
-                onClick={handleClickCompo(key)}
+                onClick={handleClickCard(key)}
               />
             </div>
           </div>

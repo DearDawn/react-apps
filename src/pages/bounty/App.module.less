@@ -34,6 +34,10 @@
     gap: 10px;
     max-width: 500px;
 
+    .formItemZ1 {
+      z-index: 1;
+    }
+
     .label {
       display: none;
     }
@@ -41,6 +45,15 @@
     .input {
       width: 100%;
       box-sizing: border-box;
+    }
+
+    .select {
+      text-align: left;
+      width: 100%;
+    }
+
+    .holder {
+      margin-bottom: 50px;
     }
 
     .btnWrap {
@@ -54,5 +67,20 @@
         flex: 1;
       }
     }
+  }
+}
+
+.detailModal {
+  :global {
+    .dodo-modal-footer {
+      box-shadow: none;
+      padding-top: 0;
+    }
+  }
+
+  .cardItem {
+    height: fit-content;
+    max-height: 70vh;
+    overflow: auto;
   }
 }

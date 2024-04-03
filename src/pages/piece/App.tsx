@@ -4,10 +4,12 @@ import { toast, Button, Page, Header, loading, Modal, useBoolean, Input, Form, u
 import { myPost, useFetch } from '@/utils/fetch';
 import { PieceInfo } from './constants';
 import { Card } from './components/card';
+import { useCardDetailModal } from '@/utils/hooks';
 
 
 export const App = () => {
-  const [modalVisible, showModal, closeModal] = useBoolean();
+  const [createModalVisible, showCreateModal, closeCreateModal] = useBoolean();
+  const { handleClickCard, closeModal, detail, modalVisible } = useCardDetailModal<PieceInfo>();
   const { form } = useFormState<PieceInfo>();
 
   const { data: listData = [], runApi } = useFetch<PieceInfo[]>({
@@ -36,22 +38,22 @@ export const App = () => {
       } else {
         console.log('[dodo] ', 'res', res);
         form.resetField();
-        closeModal();
+        closeCreateModal();
         runApi();
       }
     }).catch(console.error);
-  }, [closeModal, form, runApi]);
+  }, [closeCreateModal, form, runApi]);
 
   return (
     <Page maxWidth='100vw' minWidth='300px' className={styles.app}>
       <Header title="完整 & 破碎" isSticky />
       <div className={styles.list}>
         {listData?.map(it => (
-          <Card info={it} key={it._id} />
+          <Card info={it} key={it._id} onClick={handleClickCard(it)} />
         ))}
       </div>
-      <Button className={styles.addBtn} status='success' onClick={showModal}>添加碎片</Button>
-      <Modal className={styles.modal} visible={modalVisible}>
+      <Button className={styles.addBtn} status='success' onClick={showCreateModal}>添加碎片</Button>
+      <Modal className={styles.modal} visible={createModalVisible}>
         <div className={styles.content}>
           <Form form={form}>
             <Form.Item field='title' labelClassName={styles.label} required>
@@ -61,11 +63,23 @@ export const App = () => {
               <Textarea className={styles.input} placeholder='内容' />
             </Form.Item>
             <div className={styles.btnWrap}>
-              <Button className={styles.addBtn} status='error' onClick={closeModal}>取消</Button>
+              <Button className={styles.addBtn} status='error' onClick={closeCreateModal}>取消</Button>
               <Button className={styles.addBtn} status='success' onClick={handleCreate}>添加</Button>
             </div>
           </Form>
         </div>
       </Modal>
-    </Page >);
+      <Modal
+        className={styles.detailModal}
+        visible={modalVisible}
+        maskClosable
+        onClose={closeModal}
+        footer={<Button onClick={closeModal}>关闭</Button>}
+      >
+        <div className={styles.bigItem}>
+          <Card className={styles.cardItem} info={detail} />
+        </div>
+      </Modal>
+    </Page>
+  );
 };

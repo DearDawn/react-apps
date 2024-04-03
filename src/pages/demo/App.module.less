@@ -49,10 +49,20 @@
     right: 0;
     opacity: 0.1;
     transition: opacity 0.1s linear;
+    transition-delay: 0.3s;
     cursor: pointer;
     z-index: 1000;
 
-    &:hover {
+
+    @media (any-hover: hover) {
+      &:hover {
+        transition-delay: 0s;
+        opacity: 1;
+      }
+    }
+
+    &:active:not(:visited) {
+      transition-delay: 0s;
       opacity: 1;
     }
   }
