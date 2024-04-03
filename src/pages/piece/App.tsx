@@ -76,9 +76,7 @@ export const App = () => {
         onClose={closeModal}
         footer={<Button onClick={closeModal}>关闭</Button>}
       >
-        <div className={styles.bigItem}>
-          <Card className={styles.cardItem} info={detail} />
-        </div>
+        <Card className={styles.cardItem} info={detail} />
       </Modal>
     </Page>
   );
