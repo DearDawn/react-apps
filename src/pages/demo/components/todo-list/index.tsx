@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import * as styles from './index.module.less';
-import { Button, Form, Input, Space, dodoStorage, useFormState } from 'sweet-me';
+import { Button, Form, Input, Space, storage, useFormState } from 'sweet-me';
 import { Comp } from '../type';
 
-dodoStorage.config({ namespace: 'todo-list', sync: true, params: { dodokey: 777 } });
+storage.config({ namespace: 'todo-list', sync: true, params: { dodokey: 777 } });
 
 export const TodoList: Comp = ({ style, visible }) => {
   const [todos, setTodos] = useState([]);
@@ -12,7 +12,8 @@ export const TodoList: Comp = ({ style, visible }) => {
   useEffect(() => {
     if (!visible) return;
 
-    dodoStorage.get('todos').then(storedTodos => {
+    setTodos(storage.localGet('todos') || []);
+    storage.get('todos').then(storedTodos => {
       if (storedTodos) {
         setTodos(storedTodos);
       }
@@ -21,7 +22,7 @@ export const TodoList: Comp = ({ style, visible }) => {
 
   const updateTodoStore = (todoInfo) => {
     setTodos(todoInfo);
-    dodoStorage.set('todos', todoInfo);
+    storage.set('todos', todoInfo);
   };
 
   const handleFormSubmit = (values?: { title: string }) => {
