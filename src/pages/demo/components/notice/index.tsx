@@ -1,8 +1,9 @@
 import { Button } from 'sweet-me';
 import * as styles from './index.module.less';
 import Image from 'src/assets/bunny.png';
+import { Comp } from '../type';
 
-export const Card1 = () => {
+export const Notice: Comp = () => {
   const handleClick = () => {
     if ('Notification' in window) {
       alert(Notification?.permission);

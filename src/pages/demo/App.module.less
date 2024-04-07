@@ -73,6 +73,12 @@
   max-width: 500px;
   aspect-ratio: 1;
   height: auto;
+
+
+  &.fitHeight {
+    aspect-ratio: unset;
+    height: fit-content;
+  }
 }
 
 .modal {
@@ -80,6 +86,7 @@
     .dodo-modal-footer {
       box-shadow: none;
       padding-top: 0;
+      overflow: visible;
     }
   }
 }

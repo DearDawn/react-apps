@@ -3,6 +3,7 @@ import { Page, Header, Modal, Button, Icon, ICON } from 'sweet-me';
 import Comps from './components';
 import React from 'react';
 import { useCardDetailModal } from '@/utils/hooks';
+import clsx from 'clsx';
 
 export const App = () => {
   const { handleClickCard, closeModal, detail, modalVisible } = useCardDetailModal();
@@ -20,11 +21,11 @@ export const App = () => {
       <div className={styles.list}>
         {Object.entries(Comps).map(([key, Component]) => (
           <div className={styles.item} key={key}>
-            <div
-              className={styles.itemCell}
-              style={{ transform: `scale(${(Component as any).scale})` }}
-            >
-              <Component />
+            <div className={styles.itemCell}>
+              <Component
+                style={{ transform: `scale(${(Component as any).scale})` }}
+                visible={!modalVisible}
+              />
               <Icon
                 className={styles.detail}
                 type={ICON.magicBar}
@@ -41,8 +42,8 @@ export const App = () => {
         onClose={closeModal}
         footer={<Button onClick={closeModal}>关闭</Button>}
       >
-        <div className={styles.bigItem}>
-          <TargetCompo />
+        <div className={clsx(styles.bigItem, { [styles.fitHeight]: TargetCompo.fitHeight })}>
+          <TargetCompo visible />
         </div>
       </Modal>
     </Page >

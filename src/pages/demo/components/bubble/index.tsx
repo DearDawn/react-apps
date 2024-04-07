@@ -1,6 +1,7 @@
+import { Comp } from '../type';
 import * as styles from './index.module.less';
 
-export const Card = () => {
+export const Bubble: Comp = () => {
   return (
     <div className={styles.card}>
       <div className={styles.text}>我是一个泡泡</div>
@@ -12,4 +13,4 @@ export const Card = () => {
   );
 };
 
-Card.scale = 1;
+Bubble.scale = 1;

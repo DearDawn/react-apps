@@ -1,7 +1,9 @@
-import { Card } from './card';
-import { Card1 } from './card1';
+import { Bubble } from './bubble';
+import { Notice } from './notice';
+import { TodoList } from './todo-list';
 
 export default {
-  Card: Card,
-  Card1: Card1
+  Bubble,
+  Notice,
+  TodoList
 };
