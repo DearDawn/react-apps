@@ -63,6 +63,7 @@ export const App = () => {
     if (!modalVisible) {
       form.resetField();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modalVisible]);
 
   return (
