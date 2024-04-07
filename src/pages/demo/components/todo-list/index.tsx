@@ -60,7 +60,7 @@ export const TodoList: Comp = ({ style, visible }) => {
     <div className={styles.todoCard} style={style}>
       <div className={styles.title}>Todo List</div>
       <Form form={form} onSubmit={handleFormSubmit}>
-        <Space className={styles.line} padding='10px 0'>
+        <Space padding='10px 0'>
           <Form.Item field='title' className={styles.formItem}>
             <Input placeholder="输入待办..." />
           </Form.Item>
