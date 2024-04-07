@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react';
 import * as styles from './index.module.less';
-import { Button, Form, Input, Space, storage, useFormState } from 'sweet-me';
+import { Button, Form, Input, Space, storage, useFormState, usePageVisible } from 'sweet-me';
 import { Comp } from '../type';
 
 storage.config({ namespace: 'todo-list', sync: true, params: { dodokey: 777 } });
 
 export const TodoList: Comp = ({ style, visible }) => {
   const [todos, setTodos] = useState([]);
+  const { pageVisible } = usePageVisible();
   const { form } = useFormState();
 
   useEffect(() => {
-    if (!visible) return;
+    if (!visible && !pageVisible) return;
 
     setTodos(storage.localGet('todos') || []);
     storage.get('todos').then(storedTodos => {
@@ -18,7 +19,7 @@ export const TodoList: Comp = ({ style, visible }) => {
         setTodos(storedTodos);
       }
     });
-  }, [visible]);
+  }, [visible, pageVisible]);
 
   const updateTodoStore = (todoInfo) => {
     setTodos(todoInfo);
