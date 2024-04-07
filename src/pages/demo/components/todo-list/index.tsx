@@ -1,9 +1,21 @@
 import { useState, useEffect } from 'react';
 import * as styles from './index.module.less';
-import { Button, Form, Input, Space, storage, useFormState, usePageVisible } from 'sweet-me';
+import {
+  Button,
+  Form,
+  Input,
+  Space,
+  storage,
+  useFormState,
+  usePageVisible,
+} from 'sweet-me';
 import { Comp } from '../type';
 
-storage.config({ namespace: 'todo-list', sync: true, params: { dodokey: 777 } });
+storage.config({
+  namespace: 'todo-list',
+  sync: true,
+  params: { dodokey: 777 },
+});
 
 export const TodoList: Comp = ({ style, visible }) => {
   const [todos, setTodos] = useState([]);
@@ -14,9 +26,9 @@ export const TodoList: Comp = ({ style, visible }) => {
     if (!visible && !pageVisible) return;
 
     setTodos(storage.localGet('todos') || []);
-    storage.get('todos').then(storedTodos => {
+    storage.get('todos').then((storedTodos) => {
       if (storedTodos) {
-        setTodos(storedTodos);
+        updateTodoStore(storedTodos);
       }
     });
   }, [visible, pageVisible]);
@@ -36,7 +48,7 @@ export const TodoList: Comp = ({ style, visible }) => {
     const newTodo = {
       id: Date.now(),
       text: title,
-      completed: false
+      completed: false,
     };
 
     updateTodoStore([newTodo, ...todos]);
@@ -48,12 +60,14 @@ export const TodoList: Comp = ({ style, visible }) => {
   };
 
   const handleTodoComplete = (id) => {
-    const updatedTodos = todos.map((todo) => {
-      if (todo.id === id) {
-        return { ...todo, completed: !todo.completed };
-      }
-      return todo;
-    }).sort((a) => a.completed ? 1 : -1);
+    const updatedTodos = todos
+      .map((todo) => {
+        if (todo.id === id) {
+          return { ...todo, completed: !todo.completed };
+        }
+        return todo;
+      })
+      .sort((a) => (a.completed ? 1 : -1));
 
     updateTodoStore(updatedTodos);
   };
@@ -64,16 +78,18 @@ export const TodoList: Comp = ({ style, visible }) => {
       <Form form={form} onSubmit={handleFormSubmit}>
         <Space padding='10px 0'>
           <Form.Item field='title' className={styles.formItem}>
-            <Input placeholder="输入待办..." />
+            <Input placeholder='输入待办...' />
           </Form.Item>
-          <Button type="submit" status='success'>添加</Button>
+          <Button type='submit' status='success'>
+            添加
+          </Button>
         </Space>
       </Form>
       <div className={styles.todoList}>
         {todos.map((todo) => (
           <Space className={styles.todoItem} key={todo.id} padding='10px 0 0'>
             <input
-              type="checkbox"
+              type='checkbox'
               checked={todo.completed}
               onChange={() => handleTodoComplete(todo.id)}
             />
@@ -82,7 +98,11 @@ export const TodoList: Comp = ({ style, visible }) => {
             ) : (
               <span className={styles.text}>{todo.text}</span>
             )}
-            <Button className={styles.btn} onClick={() => handleTodoDelete(todo.id)} size='small'>
+            <Button
+              className={styles.btn}
+              onClick={() => handleTodoDelete(todo.id)}
+              size='small'
+            >
               删除
             </Button>
           </Space>
