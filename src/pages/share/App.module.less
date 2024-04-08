@@ -1,0 +1,60 @@
+@import url('/src/assets/mixin.less');
+
+.app {
+  font-size: 20px !important;
+  box-sizing: border-box;
+  .dfxc();
+
+  .addBtn {
+    position: fixed;
+    bottom: 15px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: calc(100% - 30px);
+    box-shadow: 0 10px 20px 20px rgba(255, 255, 255, 1);
+  }
+
+  .list {
+    padding: 10px;
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}
+
+.contentWrap {
+  height: calc(100% - 50px);
+  padding: 10px;
+  box-sizing: border-box;
+  flex: 1;
+  width: 100%;
+}
+
+.footer {
+  flex: none;
+  padding: 10px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2);
+  width: 100%;
+  gap: 10px;
+  padding-bottom: 20px;
+
+  .inputWrap {
+    flex: 1;
+    margin-bottom: 0;
+  }
+
+  .input {
+    flex: 1;
+  }
+
+  .submit.submit {
+    flex: none;
+  }
+}
