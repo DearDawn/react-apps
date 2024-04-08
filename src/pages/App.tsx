@@ -19,6 +19,7 @@ export const App = (props: IProps) => {
       <Title className={styles.title}><a href="./piece/">破碎 & 完整</a></Title>
       <Title className={styles.title}><a href="./demo/">小玩意儿~</a></Title>
       <Title className={styles.title}><a href="./bounty/">赏金猎人</a></Title>
+      <Title className={styles.title}><a href="./share/">共享</a></Title>
     </Page>
   );
 };
