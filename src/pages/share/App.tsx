@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as styles from './App.module.less';
-import { Page, Header, Input, Button, Form, useFormState } from 'sweet-me';
+import { Page, Header, Input, Button, Form, useFormState, Textarea } from 'sweet-me';
 import { socket } from './socket';
 
 const ROOM_ID = 'dodo';
@@ -9,6 +9,13 @@ const ROOM_ID = 'dodo';
 export const App = () => {
   const { form } = useFormState();
   const [messageList, setMessageList] = React.useState<Array<{ type: string, content: string }>>([]);
+  const fileRef = React.useRef(null);
+
+  const handleFileChange = React.useCallback(() => {
+    const file = fileRef.current.files[0];
+    console.log('[dodo] ', 'fiel', file);
+    socket.emit('file', file);
+  }, []);
 
   const handleSubmit = React.useCallback((values) => {
     console.log('[dodo] ', 'values', values);
@@ -34,6 +41,11 @@ export const App = () => {
       setMessageList((list) => list.concat({ type: 'text', content: val }));
     });
 
+    socket.on('file', (val: ArrayBuffer) => {
+      console.log('[dodo] ', 'get file', val);
+      setMessageList((list) => list.concat({ type: 'file', content: new TextDecoder().decode(val) }));
+    });
+
     return () => {
       socket.removeAllListeners();
     };
@@ -48,8 +60,9 @@ export const App = () => {
         ))}
       </div>
       <Form className={styles.footer} form={form} onSubmit={handleSubmit}>
-        <Form.Item field='text' className={styles.inputWrap}>
-          <Input className={styles.input} placeholder='请输入...' />
+        <input type="file" ref={fileRef} onChange={handleFileChange} />
+        <Form.Item noMargin field='text' className={styles.inputWrap}>
+          <Textarea className={styles.input} placeholder='请输入...' />
         </Form.Item>
         <Button className={styles.submit} type='submit'>发送</Button>
       </Form>

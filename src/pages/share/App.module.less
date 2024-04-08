@@ -39,7 +39,7 @@
   padding: 10px;
   box-sizing: border-box;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2);
   width: 100%;
   gap: 10px;
@@ -47,14 +47,15 @@
 
   .inputWrap {
     flex: 1;
-    margin-bottom: 0;
   }
 
   .input {
     flex: 1;
+    max-height: 200px;
   }
 
   .submit {
     flex: none;
+    height: 100%;
   }
 }
