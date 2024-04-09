@@ -51,7 +51,25 @@
   .copyIcon {
     position: absolute;
     right: -40px;
-    top: 0px;
+    top: 3px;
+    opacity: 0.3;
+    transition: opacity 0.1s linear;
+    transition-delay: 0.3s;
+    cursor: pointer;
+
+    @media (any-hover: hover) {
+      transition-delay: 0s;
+
+      &:hover {
+        transition-delay: 0.1s;
+        opacity: 1;
+      }
+    }
+
+    &:active:not(:visited) {
+      transition-delay: 0s;
+      opacity: 1;
+    }
   }
 }
 

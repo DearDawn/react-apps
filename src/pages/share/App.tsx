@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as styles from './App.module.less';
-import { Page, Header, Button, Form, useFormState, Textarea, Icon, ICON } from 'sweet-me';
+import { Page, Header, Button, Form, useFormState, Textarea, Icon, ICON, toast } from 'sweet-me';
 import { socket } from './socket';
 
 const ROOM_ID = 'dodo';
@@ -59,6 +59,17 @@ export const App = () => {
     form.resetField();
   }, []);
 
+  const handleCopyText = (text = '') => () => {
+    navigator.clipboard.writeText(text)
+      .then(function () {
+        toast('文案已复制到剪贴板');
+      })
+      .catch(function (error) {
+        toast('复制失败');
+        console.error('Failed to copy text:', error);
+      });
+  };
+
   React.useEffect(() => {
     // 连接到服务器
     socket.on('connect', () => {
@@ -100,9 +111,9 @@ export const App = () => {
         {messageList.map((it, idx) => (
           <div className={styles.itemWrap} key={idx}>
             {it.type === 'text' && (
-              <div className={styles.textItem}>
+              <div className={styles.textItem} onClick={handleCopyText(it.content)}>
                 {it.content}
-                <Icon className={styles.copyIcon} type={ICON.magicBar} />
+                <Icon className={styles.copyIcon} type={ICON.copy} />
               </div>
             )}
             {it.type === 'img' && (
