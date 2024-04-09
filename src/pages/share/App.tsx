@@ -1,20 +1,50 @@
 import * as React from 'react';
 import * as styles from './App.module.less';
-import { Page, Header, Input, Button, Form, useFormState, Textarea } from 'sweet-me';
+import { Page, Header, Button, Form, useFormState, Textarea, Icon, ICON } from 'sweet-me';
 import { socket } from './socket';
 
 const ROOM_ID = 'dodo';
 
+const formatText = (content = ''): IFileType => {
+  return { type: 'text', content };
+};
+
+const formatFile = (fileInfo: { buffer: ArrayBuffer, name: string, mimeType: string }): IFileType => {
+  const { buffer, name, mimeType } = fileInfo || {};
+  const file = new File([buffer], name, { type: mimeType });
+  const fileUrl = URL.createObjectURL(file);
+
+  if (mimeType.startsWith('image/')) {
+    return {
+      type: 'img',
+      fileName: name,
+      url: fileUrl
+    };
+  }
+
+  return {
+    type: 'file',
+    content: new TextDecoder().decode(buffer),
+    fileName: name,
+    mimeType,
+    url: fileUrl
+  };
+};
+
+
+type IFileType = { type: 'text', content: string } |
+{ type: 'img', url: string, fileName: string } |
+{ type: 'file', content: string, url: string, fileName: string, mimeType: string };
 
 export const App = () => {
   const { form } = useFormState();
-  const [messageList, setMessageList] = React.useState<Array<{ type: string, content: string }>>([]);
+  const [messageList, setMessageList] = React.useState<Array<IFileType>>([]);
   const fileRef = React.useRef(null);
 
   const handleFileChange = React.useCallback(() => {
     const file = fileRef.current.files[0];
     console.log('[dodo] ', 'fiel', file);
-    socket.emit('file', file);
+    socket.emit('file', { file, name: file.name, mimeType: file.type });
   }, []);
 
   const handleSubmit = React.useCallback((values) => {
@@ -38,12 +68,24 @@ export const App = () => {
 
     socket.on('text', (val) => {
       console.log('[dodo] ', 'get text', val);
-      setMessageList((list) => list.concat({ type: 'text', content: val }));
+      setMessageList((list) => list.concat(formatText(val)));
     });
 
-    socket.on('file', (val: ArrayBuffer) => {
-      console.log('[dodo] ', 'get file', val);
-      setMessageList((list) => list.concat({ type: 'file', content: new TextDecoder().decode(val) }));
+    socket.on('history', (historyList = []) => {
+      const newList = historyList.map((it: { type: string, data: any }) => {
+        if (it.type === 'text') {
+          return formatText(it.data);
+        }
+        return formatFile(it.data);
+      });
+
+      console.log('[dodo] ', 'get history', newList);
+      setMessageList((list) => list.concat(...newList));
+    });
+
+    socket.on('file', (fileInfo: { buffer: ArrayBuffer, name: string, mimeType: string }) => {
+      console.log('[dodo] ', 'get file', fileInfo);
+      setMessageList((list) => list.concat(formatFile(fileInfo)));
     });
 
     return () => {
@@ -56,7 +98,24 @@ export const App = () => {
       <Header title="共享" isSticky />
       <div className={styles.contentWrap}>
         {messageList.map((it, idx) => (
-          <div key={idx}>{it.content}</div>
+          <div className={styles.itemWrap} key={idx}>
+            {it.type === 'text' && (
+              <div className={styles.textItem}>
+                {it.content}
+                <Icon className={styles.copyIcon} type={ICON.magicBar} />
+              </div>
+            )}
+            {it.type === 'img' && (
+              <div>
+                <img src={it.url} alt={it.fileName} />
+              </div>
+            )}
+            {it.type === 'file' && (
+              <div>
+                <a href={it.url} download={it.fileName}>下载 {it.fileName}</a>
+              </div>
+            )}
+          </div>
         ))}
       </div>
       <Form className={styles.footer} form={form} onSubmit={handleSubmit}>
@@ -66,6 +125,6 @@ export const App = () => {
         </Form.Item>
         <Button className={styles.submit} type='submit'>发送</Button>
       </Form>
-    </Page>
+    </Page >
   );
 };
