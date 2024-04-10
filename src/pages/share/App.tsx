@@ -10,6 +10,7 @@ import {
   Icon,
   ICON,
   toast,
+  Input,
 } from 'sweet-me';
 import { socket } from './socket';
 import {
@@ -72,17 +73,18 @@ type IFileType = TextT | ImgT | FileT;
 export const App = () => {
   const { form } = useFormState();
   const [messageList, setMessageList] = React.useState<Array<IFileType>>([]);
-  const fileRef = React.useRef(null);
   const listRef = React.useRef<HTMLDivElement>(null);
   const bottomHolderRef = React.useRef<HTMLDivElement>(null);
   const { scrollToBottom } = useAutoScrollToBottom({ listRef }, [messageList]);
   const { showBack } = useShowBackToBottom({ listRef, bottomHolderRef });
   const { isPageFocused } = usePageFocus();
 
-  const handleFileChange = React.useCallback(() => {
-    const file = fileRef.current.files[0];
-    socket.emit('file', { file, name: file.name, mimeType: file.type });
-    fileRef.current.value = '';
+  const handleFileChange = React.useCallback((file) => {
+    if (file) {
+      socket.emit('file', { file, name: file.name, mimeType: file.type });
+      // form.resetField();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSubmit = React.useCallback((values) => {
@@ -182,12 +184,14 @@ export const App = () => {
     }
 
     if (clipboardData.types.includes('Files')) {
-      fileRef.current.files = clipboardData.files;
+      const file = clipboardData.files[0];
+
+      form.setFieldValue(file, file);
 
       // 手动触发 change 事件
-      fileRef.current.dispatchEvent(
-        new Event('change', { bubbles: true, cancelable: true })
-      );
+      // fileRef.current.dispatchEvent(
+      //   new Event('change', { bubbles: true, cancelable: true })
+      // );
     }
   };
 
@@ -271,9 +275,15 @@ export const App = () => {
         <Icon type={ICON.rocket} />
       </Button>
       <Form className={styles.footer} form={form} onSubmit={handleSubmit}>
-        <input type='file' ref={fileRef} onChange={handleFileChange} />
         <Form.Item noMargin field='text' className={styles.inputWrap}>
           <Textarea className={styles.input} placeholder='请输入...' />
+        </Form.Item>
+        <Form.Item noMargin field='file' className={styles.inputFile}>
+          <Input.File onValueChange={handleFileChange}>
+            <Button className={styles.inputFileBtn}>
+              <Icon type={ICON.file} />
+            </Button>
+          </Input.File>
         </Form.Item>
         <Button className={styles.submit} type='submit'>
           发送
