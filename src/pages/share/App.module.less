@@ -25,6 +25,32 @@
     flex-wrap: wrap;
     gap: 10px;
   }
+
+  &.isDragging,
+  &.blur {
+    &::after {
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.7);
+      content: '页面失焦';
+      color: #999;
+      .posa();
+      .dfx();
+      font-size: 50px;
+      z-index: 1000001;
+      opacity: 0;
+      animation: fade_in 0.1s linear forwards;
+    }
+  }
+
+  &.isDragging {
+    &::after {
+      background-color: rgba(212, 221, 255, 0.7);
+      content: '粘贴到此';
+      color: #777;
+      z-index: 1000002;
+    }
+  }
 }
 
 .contentWrap {
@@ -44,14 +70,29 @@
 
 .rocketBottom {
   position: absolute;
-  right: 50px;
-  bottom: 150px;
+  right: 30px;
+  bottom: 200px;
   border-radius: 50%;
   border: #879ceb 1px solid;
   width: 50px;
   height: 50px;
   padding: 0;
   min-width: 0;
+  opacity: 0;
+  transition: all 0.1s linear;
+  cursor: pointer;
+  pointer-events: none;
+
+  &.visible {
+    pointer-events: all;
+    opacity: 1;
+  }
+
+  :global {
+    i {
+      transform: rotate(135deg);
+    }
+  }
 }
 
 .itemWrap {

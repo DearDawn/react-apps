@@ -12,7 +12,15 @@ import {
   toast,
 } from 'sweet-me';
 import { socket } from './socket';
-import { useAutoScrollToBottom, useShowBackToBottom } from './hooks';
+import {
+  useAutoScrollToBottom,
+  useDragEvent,
+  useEnterKeyDown,
+  usePageFocus,
+  usePasteEvent,
+  useShowBackToBottom,
+} from './hooks';
+import clsx from 'clsx';
 
 const ROOM_ID = 'dodo';
 
@@ -69,17 +77,15 @@ export const App = () => {
   const bottomHolderRef = React.useRef<HTMLDivElement>(null);
   const { scrollToBottom } = useAutoScrollToBottom({ listRef }, [messageList]);
   const { showBack } = useShowBackToBottom({ listRef, bottomHolderRef });
-  const handleFileChange = React.useCallback((e) => {
-    console.log('[dodo] ', 'change e', e);
+  const { isPageFocused } = usePageFocus();
+
+  const handleFileChange = React.useCallback(() => {
     const file = fileRef.current.files[0];
-    console.log('[dodo] ', 'fiel', file);
     socket.emit('file', { file, name: file.name, mimeType: file.type });
     fileRef.current.value = '';
   }, []);
 
   const handleSubmit = React.useCallback((values) => {
-    console.log('[dodo] ', 'values', values);
-
     const { text = '' } = values || {};
 
     if (text.trim()) {
@@ -87,6 +93,7 @@ export const App = () => {
     }
 
     form.resetField();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCopyText =
@@ -123,7 +130,6 @@ export const App = () => {
 
   const handleDownloadFile = (img: ImgT | FileT) => () => {
     const { url, fileName } = img || {};
-    console.log('[dodo] ', 'file', url, fileName);
 
     const link = document.createElement('a');
     link.href = url;
@@ -153,6 +159,7 @@ export const App = () => {
 
       console.log('[dodo] ', 'get history', newList);
       setMessageList((list) => list.concat(...newList));
+      setTimeout(scrollToBottom, 500);
     });
 
     socket.on(
@@ -166,40 +173,47 @@ export const App = () => {
     return () => {
       socket.removeAllListeners();
     };
-  }, []);
+  }, [scrollToBottom]);
 
-  React.useEffect(() => {
-    const pasteHandler = (event: ClipboardEvent) => {
-      const clipboardData = event.clipboardData;
+  const handlePasteOrDrop = (clipboardData: DataTransfer) => {
+    if (clipboardData.types.includes('text/plain')) {
+      const pastedText = clipboardData.getData('text/plain');
+      form.setFieldValue('text', pastedText);
+    }
 
-      if (clipboardData.types.includes('text/plain')) {
-        const pastedText = clipboardData.getData('text/plain');
-        form.setFieldValue('text', pastedText);
-      }
+    if (clipboardData.types.includes('Files')) {
+      fileRef.current.files = clipboardData.files;
 
-      if (clipboardData.types.includes('Files')) {
-        fileRef.current.files = clipboardData.files;
+      // 手动触发 change 事件
+      fileRef.current.dispatchEvent(
+        new Event('change', { bubbles: true, cancelable: true })
+      );
+    }
+  };
 
-        // 手动触发 change 事件
-        fileRef.current.dispatchEvent(
-          new Event('change', { bubbles: true, cancelable: true })
-        );
-      }
-    };
-    document.addEventListener('paste', pasteHandler);
-
-    return () => {
-      document.removeEventListener('paste', pasteHandler);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { isDragging } = useDragEvent(handlePasteOrDrop);
+  usePasteEvent(handlePasteOrDrop);
+  useEnterKeyDown(() => {
+    form.formRef.current.dispatchEvent(
+      new Event('submit', {
+        bubbles: true,
+        cancelable: true,
+      })
+    );
+  });
 
   return (
-    <Page minWidth='300px' className={styles.app}>
+    <Page
+      minWidth='300px'
+      className={clsx(styles.app, {
+        [styles.blur]: !isPageFocused,
+        [styles.isDragging]: isDragging,
+      })}
+    >
       <Header title='共享' isSticky />
       <div className={styles.contentWrap} ref={listRef}>
         {messageList.map((it, idx) => (
-          <div className={styles.itemWrap} key={idx}>
+          <div className={styles.itemWrap} key={idx} draggable={false}>
             {it.type === 'text' && (
               <div
                 className={styles.textItem}
@@ -235,7 +249,7 @@ export const App = () => {
               </div>
             )}
             {it.type === 'file' && (
-              <div className={styles.fileItem} onClick={handleDownloadFile(it)}>
+              <div className={styles.fileItem}>
                 <Icon className={styles.fileIcon} type={ICON.file} size={40} />
                 {it.fileName}
                 <Icon
@@ -250,11 +264,12 @@ export const App = () => {
         ))}
         <div className={styles.holder} ref={bottomHolderRef} />
       </div>
-      {showBack && (
-        <Button className={styles.rocketBottom} onClick={scrollToBottom}>
-          <Icon type={ICON.rocket} />
-        </Button>
-      )}
+      <Button
+        className={clsx(styles.rocketBottom, showBack && styles.visible)}
+        onClick={scrollToBottom}
+      >
+        <Icon type={ICON.rocket} />
+      </Button>
       <Form className={styles.footer} form={form} onSubmit={handleSubmit}>
         <input type='file' ref={fileRef} onChange={handleFileChange} />
         <Form.Item noMargin field='text' className={styles.inputWrap}>
