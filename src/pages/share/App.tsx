@@ -12,6 +12,7 @@ import {
   toast,
 } from 'sweet-me';
 import { socket } from './socket';
+import { useAutoScrollToBottom, useShowBackToBottom } from './hooks';
 
 const ROOM_ID = 'dodo';
 
@@ -64,8 +65,12 @@ export const App = () => {
   const { form } = useFormState();
   const [messageList, setMessageList] = React.useState<Array<IFileType>>([]);
   const fileRef = React.useRef(null);
-
-  const handleFileChange = React.useCallback(() => {
+  const listRef = React.useRef<HTMLDivElement>(null);
+  const bottomHolderRef = React.useRef<HTMLDivElement>(null);
+  const { scrollToBottom } = useAutoScrollToBottom({ listRef }, [messageList]);
+  const { showBack } = useShowBackToBottom({ listRef, bottomHolderRef });
+  const handleFileChange = React.useCallback((e) => {
+    console.log('[dodo] ', 'change e', e);
     const file = fileRef.current.files[0];
     console.log('[dodo] ', 'fiel', file);
     socket.emit('file', { file, name: file.name, mimeType: file.type });
@@ -163,10 +168,36 @@ export const App = () => {
     };
   }, []);
 
+  React.useEffect(() => {
+    const pasteHandler = (event: ClipboardEvent) => {
+      const clipboardData = event.clipboardData;
+
+      if (clipboardData.types.includes('text/plain')) {
+        const pastedText = clipboardData.getData('text/plain');
+        form.setFieldValue('text', pastedText);
+      }
+
+      if (clipboardData.types.includes('Files')) {
+        fileRef.current.files = clipboardData.files;
+
+        // 手动触发 change 事件
+        fileRef.current.dispatchEvent(
+          new Event('change', { bubbles: true, cancelable: true })
+        );
+      }
+    };
+    document.addEventListener('paste', pasteHandler);
+
+    return () => {
+      document.removeEventListener('paste', pasteHandler);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <Page minWidth='300px' className={styles.app}>
       <Header title='共享' isSticky />
-      <div className={styles.contentWrap}>
+      <div className={styles.contentWrap} ref={listRef}>
         {messageList.map((it, idx) => (
           <div className={styles.itemWrap} key={idx}>
             {it.type === 'text' && (
@@ -197,15 +228,15 @@ export const App = () => {
                 />
                 <Icon
                   className={styles.saveIcon}
-                  type={ICON.file}
+                  type={ICON.download}
                   title='下载'
                   onClick={handleDownloadFile(it)}
                 />
               </div>
             )}
             {it.type === 'file' && (
-              <div className={styles.fileItem}>
-                <Icon className={styles.fileIcon} type={ICON.file} />
+              <div className={styles.fileItem} onClick={handleDownloadFile(it)}>
+                <Icon className={styles.fileIcon} type={ICON.file} size={40} />
                 {it.fileName}
                 <Icon
                   className={styles.saveIcon}
@@ -217,7 +248,13 @@ export const App = () => {
             )}
           </div>
         ))}
+        <div className={styles.holder} ref={bottomHolderRef} />
       </div>
+      {showBack && (
+        <Button className={styles.rocketBottom} onClick={scrollToBottom}>
+          <Icon type={ICON.rocket} />
+        </Button>
+      )}
       <Form className={styles.footer} form={form} onSubmit={handleSubmit}>
         <input type='file' ref={fileRef} onChange={handleFileChange} />
         <Form.Item noMargin field='text' className={styles.inputWrap}>
