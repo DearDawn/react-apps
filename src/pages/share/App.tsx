@@ -22,6 +22,7 @@ import {
   useShowBackToBottom,
 } from './hooks';
 import clsx from 'clsx';
+// import { waitTime } from '@/utils';
 
 const ROOM_ID = 'dodo';
 
@@ -79,24 +80,32 @@ export const App = () => {
   const { showBack } = useShowBackToBottom({ listRef, bottomHolderRef });
   const { isPageFocused } = usePageFocus();
 
-  const handleFileChange = React.useCallback((file) => {
-    if (file) {
-      socket.emit('file', { file, name: file.name, mimeType: file.type });
-      // form.resetField();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const handleFileChange = React.useCallback(
+    (file) => {
+      console.log('[dodo] ', 'file', file);
+      if (file) {
+        form.dispatchSubmit();
+      }
+    },
+    [form]
+  );
 
-  const handleSubmit = React.useCallback((values) => {
-    const { text = '' } = values || {};
+  const handleSubmit = React.useCallback(
+    (values) => {
+      const { text = '', file } = values || {};
 
-    if (text.trim()) {
-      socket.emit('text', text);
-    }
+      if (text.trim()) {
+        socket.emit('text', text);
+      }
 
-    form.resetField();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      if (file) {
+        socket.emit('file', { file, name: file.name, mimeType: file.type });
+      }
+
+      form.resetField();
+    },
+    [form]
+  );
 
   const handleCopyText =
     (text = '') =>
@@ -187,24 +196,14 @@ export const App = () => {
       const file = clipboardData.files[0];
 
       form.setFieldValue(file, file);
-
-      // 手动触发 change 事件
-      // fileRef.current.dispatchEvent(
-      //   new Event('change', { bubbles: true, cancelable: true })
-      // );
+      // await waitTime(500);
+      form.dispatchSubmit();
     }
   };
 
   const { isDragging } = useDragEvent(handlePasteOrDrop);
   usePasteEvent(handlePasteOrDrop);
-  useEnterKeyDown(() => {
-    form.formRef.current.dispatchEvent(
-      new Event('submit', {
-        bubbles: true,
-        cancelable: true,
-      })
-    );
-  });
+  useEnterKeyDown(form.dispatchSubmit);
 
   return (
     <Page
