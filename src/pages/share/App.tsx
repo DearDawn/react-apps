@@ -87,9 +87,10 @@ export const App = () => {
   const { isPageFocused } = usePageFocus();
 
   const handleFileChange = React.useCallback(
-    (file) => {
+    async (file) => {
       if (!file) return;
 
+      await waitTime(500);
       form.dispatchSubmit();
     },
     [form]
@@ -145,6 +146,23 @@ export const App = () => {
       });
   };
 
+  const handlePasteOrDrop = async (data: DataTransfer) => {
+    console.log('[dodo] ', 'clipboardData', data, data.types);
+
+    if (data.types.includes('text/plain')) {
+      const pastedText = data.getData('text/plain');
+      form.setFieldValue('text', pastedText);
+    }
+
+    if (data.types.includes('Files')) {
+      const file = data.files[0];
+
+      form.setFieldValue('file', file);
+      await waitTime(500);
+      form.dispatchSubmit();
+    }
+  };
+
   const handleDownloadFile = (img: ImgT | FileT) => () => {
     const { url, fileName } = img || {};
 
@@ -196,23 +214,6 @@ export const App = () => {
       socket.removeAllListeners();
     };
   }, [scrollToBottom]);
-
-  const handlePasteOrDrop = async (data: DataTransfer) => {
-    console.log('[dodo] ', 'clipboardData', data, data.types);
-
-    if (data.types.includes('text/plain')) {
-      const pastedText = data.getData('text/plain');
-      form.setFieldValue('text', pastedText);
-    }
-
-    if (data.types.includes('Files')) {
-      const file = data.files[0];
-
-      form.setFieldValue('file', file);
-      await waitTime(500);
-      form.dispatchSubmit();
-    }
-  };
 
   const { isDragging } = useDragEvent(handlePasteOrDrop);
   usePasteEvent(handlePasteOrDrop);
