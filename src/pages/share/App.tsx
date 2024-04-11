@@ -22,6 +22,8 @@ import {
   useShowBackToBottom,
 } from './hooks';
 import clsx from 'clsx';
+import { waitTime } from '@/utils';
+import { getBlob } from './utils';
 // import { waitTime } from '@/utils';
 
 const ROOM_ID = 'dodo';
@@ -76,16 +78,18 @@ export const App = () => {
   const [messageList, setMessageList] = React.useState<Array<IFileType>>([]);
   const listRef = React.useRef<HTMLDivElement>(null);
   const bottomHolderRef = React.useRef<HTMLDivElement>(null);
-  const { scrollToBottom } = useAutoScrollToBottom({ listRef }, [messageList]);
+  const [isMe, setIsMe] = React.useState(false);
+  const { scrollToBottom } = useAutoScrollToBottom({ listRef, force: isMe }, [
+    messageList,
+  ]);
   const { showBack } = useShowBackToBottom({ listRef, bottomHolderRef });
   const { isPageFocused } = usePageFocus();
 
   const handleFileChange = React.useCallback(
     (file) => {
-      console.log('[dodo] ', 'file', file);
-      if (file) {
-        form.dispatchSubmit();
-      }
+      if (!file) return;
+
+      form.dispatchSubmit();
     },
     [form]
   );
@@ -121,15 +125,12 @@ export const App = () => {
         });
     };
 
-  const handleCopyImage = (img: ImgT) => () => {
-    const { file } = img || {};
+  const handleCopyImage = (img: ImgT) => async () => {
+    const { url, file } = img || {};
+    const imgBold: Blob = file.type === 'image/png' ? file : await getBlob(url);
 
     navigator.clipboard
-      .write([
-        new ClipboardItem({
-          [file.type]: file,
-        }),
-      ])
+      .write([new ClipboardItem({ 'image/png': imgBold })])
       .then(function () {
         toast('图片已复制到剪贴板');
       })
@@ -155,12 +156,13 @@ export const App = () => {
       socket.emit('join', ROOM_ID);
     });
 
-    socket.on('text', (val) => {
-      console.log('[dodo] ', 'get text', val);
+    socket.on('text', (val, clientId) => {
+      console.log('[dodo] ', 'get text', val, clientId);
       setMessageList((list) => list.concat(formatText(val)));
+      setIsMe(socket.id === clientId);
     });
 
-    socket.on('history', (historyList = []) => {
+    socket.on('history', (historyList = [], clientId) => {
       const newList = historyList.map((it: { type: string; data: any }) => {
         if (it.type === 'text') {
           return formatText(it.data);
@@ -175,9 +177,13 @@ export const App = () => {
 
     socket.on(
       'file',
-      (fileInfo: { buffer: ArrayBuffer; name: string; mimeType: string }) => {
-        console.log('[dodo] ', 'get file', fileInfo);
+      (
+        fileInfo: { buffer: ArrayBuffer; name: string; mimeType: string },
+        clientId
+      ) => {
+        console.log('[dodo] ', 'get file', fileInfo, clientId);
         setMessageList((list) => list.concat(formatFile(fileInfo)));
+        setIsMe(socket.id === clientId);
       }
     );
 
@@ -186,17 +192,19 @@ export const App = () => {
     };
   }, [scrollToBottom]);
 
-  const handlePasteOrDrop = (clipboardData: DataTransfer) => {
-    if (clipboardData.types.includes('text/plain')) {
-      const pastedText = clipboardData.getData('text/plain');
+  const handlePasteOrDrop = async (data: DataTransfer) => {
+    console.log('[dodo] ', 'clipboardData', data, data.types);
+
+    if (data.types.includes('text/plain')) {
+      const pastedText = data.getData('text/plain');
       form.setFieldValue('text', pastedText);
     }
 
-    if (clipboardData.types.includes('Files')) {
-      const file = clipboardData.files[0];
+    if (data.types.includes('Files')) {
+      const file = data.files[0];
 
-      form.setFieldValue(file, file);
-      // await waitTime(500);
+      form.setFieldValue('file', file);
+      await waitTime(500);
       form.dispatchSubmit();
     }
   };

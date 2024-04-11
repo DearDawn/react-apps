@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 
-export const useAutoScrollToBottom = ({ listRef }: {
-  listRef: React.MutableRefObject<HTMLDivElement>
+export const useAutoScrollToBottom = ({ listRef, force = false }: {
+  listRef: React.MutableRefObject<HTMLDivElement>,
+  force: boolean
 },
   deps: React.DependencyList = []) => {
   const scrollToBottom = useCallback(() => {
@@ -18,7 +19,7 @@ export const useAutoScrollToBottom = ({ listRef }: {
       const clientHeight = container.clientHeight;
       const isAtBottom = scrollHeight - scrollTop - clientHeight < 300;
 
-      if (isAtBottom) {
+      if (isAtBottom || force) {
         scrollToBottom();
       }
     }, 100);
@@ -26,8 +27,8 @@ export const useAutoScrollToBottom = ({ listRef }: {
     return () => {
       clearTimeout(timer);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [listRef, scrollToBottom, ...deps]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listRef, scrollToBottom, force, ...deps]);
 
   return { scrollToBottom };
 };
