@@ -24,6 +24,7 @@ import {
 import clsx from 'clsx';
 import { waitTime } from '@/utils';
 import { getBlob } from './utils';
+import { FileList } from './components/fileList';
 // import { waitTime } from '@/utils';
 
 const ROOM_ID = 'dodo';
@@ -89,10 +90,15 @@ export const App = () => {
     (file) => {
       if (!file) return;
 
+      console.log('[dodo] ', 'file', file);
       form.dispatchSubmit();
     },
     [form]
   );
+
+  const handleDeleteFile = () => {
+    form.setFieldValue('file', undefined);
+  };
 
   const handleSubmit = React.useCallback(
     (values) => {
@@ -282,6 +288,7 @@ export const App = () => {
         <Icon type={ICON.rocket} />
       </Button>
       <Form className={styles.footer} form={form} onSubmit={handleSubmit}>
+        <FileList className={styles.fileList} onDelete={handleDeleteFile} />
         <Form.Item noMargin field='text' className={styles.inputWrap}>
           <Textarea className={styles.input} placeholder='请输入...' />
         </Form.Item>

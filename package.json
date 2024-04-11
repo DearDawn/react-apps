@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "description": "React 多页应用模板",
   "scripts": {
-    "start": "npm run clean; parcel src/pages/*/index.html -p 7777",
-    "start:api": "npm run clean; parcel src/pages/*/index.html -p 7777 --open",
+    "start": "npm run clean && parcel src/pages/*/index.html -p 7777",
+    "start:api": "npm run clean && parcel src/pages/*/index.html -p 7777 --open",
     "root": "parcel src/pages/*.html -p 7777",
     "build": "parcel build src/pages/*.html --public-url ./ --no-source-maps && parcel build src/pages/*/*.html --public-url ../ --no-source-maps",
     "build:analyze": "parcel build src/pages/*.html --public-url ./ --no-source-maps && parcel build src/pages/*/*.html --public-url ../ --no-source-maps --reporter @parcel/reporter-bundle-analyzer",
-    "clean": "rm -rf .parcel-cache;rm -rf dist"
+    "clean": "run-script-os",
+    "clean:win32": "(rmdir /s /q .parcel-cache || (echo Failed to delete .parcel-cache)) && (rmdir /s /q dist  || (echo Failed to delete dist))",
+    "clean:default": "rm -rf .parcel-cache;rm -rf dist"
   },
   "alias": {
     "pixi.js": "./node_modules/pixi.js/dist/pixi.min.mjs"
@@ -43,8 +45,9 @@
     "pixi.js": "^7.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "run-script-os": "^1.1.6",
     "socket.io-client": "^4.7.2",
-    "sweet-me": "^0.0.142"
+    "sweet-me": "^0.0.144"
   },
   "engines": {
     "node": ">=18.17.0",
