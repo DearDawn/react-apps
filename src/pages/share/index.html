@@ -14,8 +14,12 @@
     <title>共享</title>
     <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
     <script>
-      // VConsole 默认会挂载到 `window.VConsole` 上
-      const vConsole = new window.VConsole();
+      const urlParams = new URLSearchParams(window.location.search);
+      const testParam = urlParams.get('test');
+
+      if (testParam === '1') {
+        const vConsole = new window.VConsole();
+      }
     </script>
   </head>
 
