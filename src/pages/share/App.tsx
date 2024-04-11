@@ -90,7 +90,6 @@ export const App = () => {
     (file) => {
       if (!file) return;
 
-      console.log('[dodo] ', 'file', file);
       form.dispatchSubmit();
     },
     [form]
