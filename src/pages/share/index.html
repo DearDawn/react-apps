@@ -1,16 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1, maximum-scale=1,user-scalable=no"
+    />
+    <link
+      rel="shortcut icon"
+      href="/src/assets/sugar.png"
+      type="image/x-icon"
+    />
+    <title>共享</title>
+    <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
+    <script>
+      // VConsole 默认会挂载到 `window.VConsole` 上
+      const vConsole = new window.VConsole();
+    </script>
+  </head>
 
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1,user-scalable=no">
-  <link rel="shortcut icon" href="/src/assets/sugar.png" type="image/x-icon">
-  <title>共享</title>
-</head>
-
-<body>
-  <div id="app"></div>
-  <script type="module" src="./index.tsx"></script>
-</body>
-
+  <body>
+    <div id="app"></div>
+    <script type="module" src="./index.tsx"></script>
+  </body>
 </html>
