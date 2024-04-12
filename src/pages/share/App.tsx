@@ -133,10 +133,14 @@ export const App = () => {
 
   const handleCopyImage = (img: ImgT) => async () => {
     const { url, file } = img || {};
-    const imgBold: Blob = file.type === 'image/png' ? file : await getBlob(url);
+
+    // safari 需要通过传入 promise 实现，不可先获取结果
+    const getImgBold = async (): Promise<Blob> => {
+      return file.type === 'image/png' ? file : await getBlob(url);
+    };
 
     navigator.clipboard
-      .write([new ClipboardItem({ 'image/png': imgBold })])
+      .write([new ClipboardItem({ 'image/png': getImgBold() })])
       .then(function () {
         toast('图片已复制到剪贴板');
       })
