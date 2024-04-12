@@ -179,6 +179,12 @@ export const App = () => {
       socket.emit('join', ROOM_ID);
     });
 
+    socket.on('disconnect', () => {
+      console.log('[dodo] ', 'out');
+      // 断开连接时自动重新连接
+      // socket.io.opts.transports = ['websocket'];
+    });
+
     socket.on('text', (val, clientId) => {
       console.log('[dodo] ', 'get text', val, clientId);
       setMessageList((list) => list.concat(formatText(val)));
