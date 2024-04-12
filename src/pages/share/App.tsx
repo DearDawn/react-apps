@@ -43,11 +43,13 @@ export const App = () => {
   const listRef = React.useRef<HTMLDivElement>(null);
   const bottomHolderRef = React.useRef<HTMLDivElement>(null);
   const [isMe, setIsMe] = React.useState(false);
+  const [isOnline, setIsOnline] = React.useState(false);
   const { scrollToBottom } = useAutoScrollToBottom({ listRef, force: isMe }, [
     messageList,
   ]);
   const { showBack } = useShowBackToBottom({ listRef, bottomHolderRef });
   const { isPageFocused } = usePageFocus();
+  const onlineController = React.useRef();
 
   const handleFileChange = React.useCallback(
     async (file) => {
@@ -63,22 +65,28 @@ export const App = () => {
     form.setFieldValue('file', undefined);
   };
 
-  const handleSubmit = React.useCallback(
-    (values) => {
-      const { text = '', file } = values || {};
+  const sendData = (values) => {
+    const { text = '', file } = values || {};
 
-      if (text.trim()) {
-        socket.emit('text', text);
-      }
+    if (text.trim()) {
+      socket.emit('text', text);
+    }
 
-      if (file) {
-        socket.emit('file', { file, name: file.name, mimeType: file.type });
-      }
+    if (file) {
+      socket.emit('file', { file, name: file.name, mimeType: file.type });
+    }
 
-      form.resetField();
-    },
-    [form]
-  );
+    form.resetField();
+  };
+
+  const handleSubmit = React.useCallback(async (values) => {
+    console.log('[dodo] ', 'socket.connected', socket.connected);
+    if (socket.connected) {
+      sendData(values);
+    } else {
+      socket.once('connect', () => sendData(values));
+    }
+  }, []);
 
   const handleCopyText =
     (text = '') =>
@@ -145,10 +153,12 @@ export const App = () => {
     socket.on('connect', () => {
       console.log('[dodo] ', 'Connected to server', socket.id);
       socket.emit('join', ROOM_ID);
+      setIsOnline(true);
     });
 
     socket.on('disconnect', () => {
       console.log('[dodo] ', 'out');
+      setIsOnline(false);
       // 断开连接时自动重新连接
       // socket.io.opts.transports = ['websocket'];
     });
@@ -193,6 +203,7 @@ export const App = () => {
       className={clsx(styles.app, {
         [styles.blur]: !isPageFocused,
         [styles.isDragging]: isDragging,
+        [styles.isOffline]: !isOnline,
       })}
     >
       <Header title='共享' isSticky />
