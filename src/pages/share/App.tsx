@@ -23,56 +23,19 @@ import {
 } from './hooks';
 import clsx from 'clsx';
 import { waitTime } from '@/utils';
-import { getBlob } from './utils';
+import { formatFile, formatText, getBlob, mergeArrays } from './utils';
 import { FileList } from './components/fileList';
-// import { waitTime } from '@/utils';
-
-const ROOM_ID = 'dodo';
-
-const formatText = (content = ''): IFileType => {
-  return { type: 'text', content };
-};
-
-const formatFile = (fileInfo: {
-  buffer: ArrayBuffer;
-  name: string;
-  mimeType: string;
-}): IFileType => {
-  const { buffer, name, mimeType } = fileInfo || {};
-  const file = new File([buffer], name, { type: mimeType });
-  const fileUrl = URL.createObjectURL(file);
-
-  if (mimeType.startsWith('image/')) {
-    return {
-      file,
-      type: 'img',
-      fileName: name,
-      url: fileUrl,
-    };
-  }
-
-  return {
-    file,
-    type: 'file',
-    content: new TextDecoder().decode(buffer),
-    fileName: name,
-    mimeType,
-    url: fileUrl,
-  };
-};
-
-type TextT = { type: 'text'; content: string };
-type ImgT = { type: 'img'; file: File; url: string; fileName: string };
-type FileT = {
-  file: File;
-  type: 'file';
-  content: string;
-  url: string;
-  fileName: string;
-  mimeType: string;
-};
-
-type IFileType = TextT | ImgT | FileT;
+import {
+  FileT,
+  IFileType,
+  ImgT,
+  ROOM_ID,
+  ServerFile,
+  ServerFileRes,
+  ServerHistory,
+  ServerText,
+  ServerTextRes,
+} from './constants';
 
 export const App = () => {
   const { form } = useFormState();
@@ -155,7 +118,8 @@ export const App = () => {
 
     if (data.types.includes('text/plain')) {
       const pastedText = data.getData('text/plain');
-      form.setFieldValue('text', pastedText);
+      const currentText = form.getFieldValue('text') || '';
+      form.setFieldValue('text', `${currentText}${pastedText}`);
     }
 
     if (data.types.includes('Files')) {
@@ -189,36 +153,30 @@ export const App = () => {
       // socket.io.opts.transports = ['websocket'];
     });
 
-    socket.on('text', (val, clientId) => {
+    socket.on('text', (val: ServerTextRes, clientId) => {
       console.log('[dodo] ', 'get text', val, clientId);
       setMessageList((list) => list.concat(formatText(val)));
       setIsMe(socket.id === clientId);
     });
 
-    socket.on('history', (historyList = [], clientId) => {
-      const newList = historyList.map((it: { type: string; data: any }) => {
+    socket.on('history', (historyList: ServerHistory = []) => {
+      const newList = historyList.map((it) => {
         if (it.type === 'text') {
-          return formatText(it.data);
+          return formatText(it);
         }
-        return formatFile(it.data);
+        return formatFile(it);
       });
 
-      console.log('[dodo] ', 'get history', newList);
-      setMessageList((list) => list.concat(...newList));
+      console.log('[dodo] ', 'get history', historyList, newList);
+      setMessageList((list) => mergeArrays(list, newList));
       setTimeout(scrollToBottom, 500);
     });
 
-    socket.on(
-      'file',
-      (
-        fileInfo: { buffer: ArrayBuffer; name: string; mimeType: string },
-        clientId
-      ) => {
-        console.log('[dodo] ', 'get file', fileInfo, clientId);
-        setMessageList((list) => list.concat(formatFile(fileInfo)));
-        setIsMe(socket.id === clientId);
-      }
-    );
+    socket.on('file', (fileInfo: ServerFileRes, clientId) => {
+      console.log('[dodo] ', 'get file', fileInfo, clientId);
+      setMessageList((list) => list.concat(formatFile(fileInfo)));
+      setIsMe(socket.id === clientId);
+    });
 
     return () => {
       socket.removeAllListeners();

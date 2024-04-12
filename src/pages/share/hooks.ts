@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { isInputDom } from "./utils";
 
 export const useAutoScrollToBottom = ({ listRef, force = false }: {
   listRef: React.MutableRefObject<HTMLDivElement>,
@@ -90,6 +91,11 @@ export const usePageFocus = () => {
 export const usePasteEvent = (handler: (event: DataTransfer) => void, root = document) => {
   const pasteHandler = useCallback((event: ClipboardEvent) => {
     const clipboardData = event.clipboardData;
+
+    if (isInputDom(event.target) && clipboardData.types.includes('text/plain')) {
+      return;
+    }
+
     handler(clipboardData);
   }, [handler]);
 
