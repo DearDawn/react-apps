@@ -190,6 +190,7 @@ export const App = () => {
     });
 
     socket.on('history', (historyList: ServerHistory = []) => {
+      console.log('[dodo] ', 'get history', historyList);
       const newList = historyList.map((it) => {
         if (it.type === 'text') {
           return formatText(it);
@@ -197,7 +198,6 @@ export const App = () => {
         return formatFile(it);
       });
 
-      console.log('[dodo] ', 'get history', historyList);
       console.table(newList);
       setMessageList((list) => mergeArrays(list, newList));
       setTimeout(scrollToBottom, 500);
