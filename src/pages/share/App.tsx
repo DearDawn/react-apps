@@ -52,8 +52,10 @@ export const App = () => {
   const onlineController = React.useRef();
 
   const handleFileChange = React.useCallback(
-    async (file) => {
+    async (file: File) => {
       if (!file) return;
+
+      console.log('[dodo] ', 'file', file.size, file.name);
 
       await waitTime(500);
       form.dispatchSubmit();
