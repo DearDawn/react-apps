@@ -23,7 +23,13 @@ import {
 } from './hooks';
 import clsx from 'clsx';
 import { waitTime } from '@/utils';
-import { formatFile, formatText, getBlob, mergeArrays } from './utils';
+import {
+  formatFile,
+  formatText,
+  getBlob,
+  mergeArrays,
+  splitFiles,
+} from './utils';
 import { FileList } from './components/fileList';
 import {
   FileT,
@@ -52,7 +58,9 @@ export const App = () => {
   const onlineController = React.useRef();
 
   const handleFileChange = React.useCallback(
-    async (file: File) => {
+    async (_file: any) => {
+      const file = _file as File;
+
       if (!file) return;
 
       console.log('[dodo] ', 'file', file.size, file.name);
@@ -67,7 +75,7 @@ export const App = () => {
     form.setFieldValue('file', undefined);
   };
 
-  const sendData = (values) => {
+  const sendData = (values: { text: string; file: File }) => {
     const { text = '', file } = values || {};
 
     if (text.trim()) {
@@ -75,7 +83,17 @@ export const App = () => {
     }
 
     if (file) {
-      socket.emit('file', { file, name: file.name, mimeType: file.type });
+      const chunks = splitFiles({ file });
+      console.log('[dodo] ', 'chunks', chunks);
+      chunks.forEach((chunk, index) => {
+        socket.emit('file', {
+          file: chunk,
+          name: file.name,
+          mimeType: file.type,
+          index,
+          totalChunks: chunks.length,
+        });
+      });
     }
 
     form.resetField();
