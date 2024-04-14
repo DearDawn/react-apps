@@ -197,7 +197,8 @@ export const App = () => {
         return formatFile(it);
       });
 
-      console.log('[dodo] ', 'get history', historyList, newList);
+      console.log('[dodo] ', 'get history', historyList);
+      console.table(newList);
       setMessageList((list) => mergeArrays(list, newList));
       setTimeout(scrollToBottom, 500);
     });
