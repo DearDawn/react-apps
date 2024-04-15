@@ -24,6 +24,7 @@ import {
 import clsx from 'clsx';
 import { waitTime } from '@/utils';
 import {
+  downloadFile,
   formatFile,
   formatText,
   getBlob,
@@ -42,6 +43,7 @@ import {
   ServerText,
   ServerTextRes,
 } from './constants';
+import { ImgFile } from './components/imgFile';
 
 export const App = () => {
   const { form } = useFormState();
@@ -55,7 +57,6 @@ export const App = () => {
   ]);
   const { showBack } = useShowBackToBottom({ listRef, bottomHolderRef });
   const { isPageFocused } = usePageFocus();
-  const onlineController = React.useRef();
 
   const handleFileChange = React.useCallback(
     async (_file: any) => {
@@ -122,25 +123,6 @@ export const App = () => {
         });
     };
 
-  const handleCopyImage = (img: ImgT) => async () => {
-    const { url, file } = img || {};
-
-    // safari 需要通过传入 promise 实现，不可先获取结果
-    const getImgBold = async (): Promise<Blob> => {
-      return file.type === 'image/png' ? file : await getBlob(url);
-    };
-
-    navigator.clipboard
-      .write([new ClipboardItem({ 'image/png': getImgBold() })])
-      .then(function () {
-        toast('图片已复制到剪贴板');
-      })
-      .catch(function (error) {
-        toast('复制失败');
-        console.error('Failed to copy image data:', error);
-      });
-  };
-
   const handlePasteOrDrop = async (data: DataTransfer) => {
     console.log('[dodo] ', 'clipboardData', data, data.types);
 
@@ -161,11 +143,7 @@ export const App = () => {
 
   const handleDownloadFile = (img: ImgT | FileT) => () => {
     const { url, fileName } = img || {};
-
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = fileName;
-    link.click();
+    downloadFile(url, fileName);
   };
 
   React.useEffect(() => {
@@ -244,27 +222,7 @@ export const App = () => {
                 />
               </div>
             )}
-            {it.type === 'img' && (
-              <div className={styles.imgItem}>
-                <img
-                  src={it.url}
-                  alt={it.fileName}
-                  onClick={handleCopyImage(it)}
-                />
-                <Icon
-                  className={styles.copyIcon}
-                  type={ICON.copy}
-                  title='复制'
-                  onClick={handleCopyImage(it)}
-                />
-                <Icon
-                  className={styles.saveIcon}
-                  type={ICON.download}
-                  title='下载'
-                  onClick={handleDownloadFile(it)}
-                />
-              </div>
-            )}
+            {it.type === 'img' && <ImgFile imgInfo={it} />}
             {it.type === 'file' && (
               <div className={styles.fileItem}>
                 <Icon className={styles.fileIcon} type={ICON.file} size={40} />

@@ -1,4 +1,4 @@
-import { IFileType, ServerFile, ServerFileRes, ServerText, ServerTextRes } from "./constants";
+import { IFileType, ServerFileRes, ServerTextRes } from "./constants";
 
 
 export const formatText = (textData: ServerTextRes): IFileType => {
@@ -10,28 +10,23 @@ export const formatText = (textData: ServerTextRes): IFileType => {
 
 export const formatFile = (fileData: ServerFileRes): IFileType => {
   const { data, id } = fileData || {};
-  const { buffer, name, mimeType } = data || {};
-  const file = new File([buffer], name, { type: mimeType });
-  const fileUrl = URL.createObjectURL(file);
+  const { fileID, name, mimeType } = data || {};
 
   if (mimeType.startsWith('image/')) {
     return {
       id,
-      file,
       type: 'img',
       fileName: name,
-      url: fileUrl,
+      fileID
     };
   }
 
   return {
     id,
-    file,
     type: 'file',
-    content: new TextDecoder().decode(buffer),
     fileName: name,
     mimeType,
-    url: fileUrl,
+    fileID
   };
 };
 
@@ -75,7 +70,7 @@ export const mergeArrays = (arr1: IFileType[], arr2: IFileType[]): IFileType[] =
   });
 
   return merged;
-}
+};
 
 export const splitFiles = ({ file, chunkSize = 800 * 1024 }: {
   file: File,
@@ -92,8 +87,15 @@ export const splitFiles = ({ file, chunkSize = 800 * 1024 }: {
     const start = i * chunkSize;
     const end = Math.min(start + chunkSize, file.size);
     const chunk = file.slice(start, end);
-    chunks.push(chunk)
+    chunks.push(chunk);
   }
 
   return chunks;
-}
+};
+
+export const downloadFile = (url: string, fileName: string) => () => {
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = fileName;
+  link.click();
+};

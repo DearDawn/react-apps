@@ -8,16 +8,14 @@ export type TextT = {
 export type ImgT = {
   id: string;
   type: 'img';
-  file: File;
-  url: string;
+  fileID: string;
   fileName: string
 };
+
 export type FileT = {
   id: string;
-  file: File;
   type: 'file';
-  content: string;
-  url: string;
+  fileID: string;
   fileName: string;
   mimeType: string;
 };
@@ -25,7 +23,7 @@ export type FileT = {
 export type IFileType = TextT | ImgT | FileT;
 
 export type ServerText = { content: string }
-export type ServerFile = { buffer: ArrayBuffer; name: string; mimeType: string }
+export type ServerFile = { fileID: string; name: string; mimeType: string }
 export type ServerTextRes = { type: 'text', data: ServerText, id: string }
 export type ServerFileRes = { type: 'file', data: ServerFile, id: string }
 export type ServerHistory = Array<ServerTextRes | ServerFileRes>
