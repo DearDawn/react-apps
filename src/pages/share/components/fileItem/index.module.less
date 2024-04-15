@@ -1,3 +1,30 @@
+.imgItem {
+  position: relative;
+  overflow: visible;
+  width: fit-content;
+  cursor: pointer;
+
+  :global {
+    img {
+      object-fit: contain;
+      display: block;
+      max-width: 100%;
+      border-radius: 8px;
+      box-sizing: border-box;
+      max-height: 200px;
+      border: 2px solid rgb(135, 206, 235);
+    }
+  }
+
+  .loadingHolder {
+    width: 200px;
+    height: 200px;
+    border-radius: 8px;
+    .dfx();
+    border: 2px solid rgb(135, 206, 235);
+  }
+}
+
 .fileItem {
   background-color: #879ceb;
   border-radius: 8px;

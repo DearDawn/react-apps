@@ -34,7 +34,6 @@ import {
   ServerHistory,
   ServerTextRes,
 } from './constants';
-import { ImgItem } from './components/imgItem';
 import { FileStore, fileStore } from './fileStore';
 import { FileItem } from './components/fileItem';
 
@@ -171,6 +170,12 @@ export const App = () => {
     });
 
     socket.on('fileContent', (fileInfo: ServerFileContentRes) => {
+      const { index, fileID, totalChunks } = fileInfo;
+
+      if (index < totalChunks - 1) {
+        socket.emit('fileContent', fileID, index + 1);
+      }
+
       fileStore.receive(fileInfo, setFileMap, setProgressMap);
     });
 
@@ -211,7 +216,7 @@ export const App = () => {
                 </div>
               )}
               {it.type === 'img' && (
-                <ImgItem className={styles.imgItem} imgInfo={it} />
+                <FileItem className={styles.imgItem} fileInfo={it} />
               )}
               {it.type === 'file' && (
                 <FileItem className={styles.fileItem} fileInfo={it} />
