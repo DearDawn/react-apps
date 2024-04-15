@@ -51,6 +51,7 @@ export const App = () => {
   const [progressMap, setProgressMap] = React.useState<
     FileStore['progressMap']
   >(new Map());
+  const [socketID, setSocketID] = React.useState('');
   const { scrollToBottom } = useAutoScrollToBottom({ listRef, force: isMe }, [
     messageList,
   ]);
@@ -136,6 +137,7 @@ export const App = () => {
       console.log('[dodo] ', 'Connected to server', socket.id);
       socket.emit('join', ROOM_ID);
       setIsOnline(true);
+      setSocketID(socket.id);
     });
 
     socket.on('disconnect', () => {
@@ -182,7 +184,7 @@ export const App = () => {
   useEnterKeyDown(form.dispatchSubmit);
 
   return (
-    <PageContext.Provider value={{ fileMap, progressMap }}>
+    <PageContext.Provider value={{ fileMap, progressMap, socketID }}>
       <Page
         minWidth='300px'
         className={clsx(styles.app, {

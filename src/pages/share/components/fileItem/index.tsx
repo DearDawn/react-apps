@@ -13,7 +13,7 @@ interface IProps {
 
 export const FileItem = (props: IProps) => {
   const { fileInfo, className } = props;
-  const { fileMap, progressMap } = useContext(PageContext);
+  const { fileMap, progressMap, socketID } = useContext(PageContext);
   const { fileID, fileName } = fileInfo || {};
   const [url, setUrl] = useState('');
   const [file, setFile] = useState<File>();
@@ -30,8 +30,10 @@ export const FileItem = (props: IProps) => {
   }, [fileName, loading, url]);
 
   useEffect(() => {
+    if (!loading) return;
+
     socket.emit('fileContent', fileID);
-  }, [fileID]);
+  }, [fileID, socketID]);
 
   useEffect(() => {
     if (fileMap.has(fileID)) {
