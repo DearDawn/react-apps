@@ -1,4 +1,4 @@
-import { IFileType, ServerFileRes, ServerTextRes } from "./constants";
+import { FILE_CHUNK_SIZE, IFileType, ServerFileRes, ServerTextRes } from "./constants";
 
 
 export const formatText = (textData: ServerTextRes): IFileType => {
@@ -72,7 +72,7 @@ export const mergeArrays = (arr1: IFileType[], arr2: IFileType[]): IFileType[] =
   return merged;
 };
 
-export const splitFiles = ({ file, chunkSize = 500 * 1024 }: {
+export const splitFiles = ({ file, chunkSize = FILE_CHUNK_SIZE }: {
   file: File,
   /** 每个切片的大小, 默认 1MB */
   chunkSize?: number

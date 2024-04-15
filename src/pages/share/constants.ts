@@ -2,6 +2,7 @@ import React from "react";
 import { FileStore } from "./fileStore";
 
 export const ROOM_ID = 'dodo';
+export const FILE_CHUNK_SIZE = 100 * 1024;
 
 export const PageContext = React.createContext<{
   fileMap: FileStore['fileStoreMap'];
