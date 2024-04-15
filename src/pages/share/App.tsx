@@ -11,6 +11,7 @@ import {
   ICON,
   toast,
   Input,
+  loading,
 } from 'sweet-me';
 import { socket } from './socket';
 import {
@@ -56,6 +57,7 @@ export const App = () => {
   ]);
   const { showBack } = useShowBackToBottom({ listRef, bottomHolderRef });
   const { isPageFocused } = usePageFocus();
+  const loadingRef = React.useRef(() => {});
 
   const handleFileChange = React.useCallback(
     async (_file: any) => {
@@ -91,6 +93,7 @@ export const App = () => {
           totalChunks: chunks.length,
         });
       });
+      loadingRef.current = loading('发送中...');
     }
 
     form.resetField();
@@ -177,6 +180,11 @@ export const App = () => {
       }
 
       fileStore.receive(fileInfo, setFileMap, setProgressMap);
+    });
+
+    socket.on('file_done', (fileID: string, clientId) => {
+      console.log('[dodo] ', 'fileID done', fileID);
+      loadingRef.current();
     });
 
     return () => {
