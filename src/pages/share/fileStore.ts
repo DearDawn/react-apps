@@ -2,14 +2,17 @@ import { ServerFileContentRes } from "./constants";
 
 export class FileStore {
   fileStoreMap: Map<string, Blob> = new Map();
+  progressMap: Map<string, number> = new Map();
   receivedChunks = new Map<string, Buffer[]>();
-  constructor () {
+  constructor() {
 
   }
 
-  receive (info: ServerFileContentRes, setStore: React.Dispatch<React.SetStateAction<FileStore['fileStoreMap']>>) {
+  receive(
+    info: ServerFileContentRes,
+    setStore: React.Dispatch<React.SetStateAction<FileStore['fileStoreMap']>>,
+    setProgress: React.Dispatch<React.SetStateAction<FileStore['progressMap']>>) {
     const { fileID, chunk, totalChunks, index } = info;
-
 
     if (!this.receivedChunks.has(fileID)) {
       this.receivedChunks.set(fileID, []);
@@ -17,6 +20,9 @@ export class FileStore {
 
     const chunks = this.receivedChunks.get(fileID);
     chunks[index] = chunk;
+
+    this.progressMap.set(fileID, Math.floor((index + 1) / totalChunks * 100));
+    setProgress(new Map(this.progressMap));
 
     if (chunks.length === totalChunks) {
       const mergedFile = new Blob(chunks.map(chunk => new Blob([chunk])));
@@ -27,7 +33,7 @@ export class FileStore {
     }
   }
 
-  getFile (id: string) {
+  getFile(id: string) {
     const chunks = this.fileStoreMap.get(id);
 
     return chunks;

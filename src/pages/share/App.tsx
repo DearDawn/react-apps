@@ -23,26 +23,15 @@ import {
 } from './hooks';
 import clsx from 'clsx';
 import { waitTime } from '@/utils';
-import {
-  downloadFile,
-  formatFile,
-  formatText,
-  getBlob,
-  mergeArrays,
-  splitFiles,
-} from './utils';
+import { formatFile, formatText, mergeArrays, splitFiles } from './utils';
 import { FileList } from './components/fileList';
 import {
-  FileT,
   IFileType,
-  ImgT,
   ROOM_ID,
   PageContext,
-  ServerFile,
   ServerFileContentRes,
   ServerFileRes,
   ServerHistory,
-  ServerText,
   ServerTextRes,
 } from './constants';
 import { ImgItem } from './components/imgItem';
@@ -59,6 +48,9 @@ export const App = () => {
   const [fileMap, setFileMap] = React.useState<FileStore['fileStoreMap']>(
     new Map()
   );
+  const [progressMap, setProgressMap] = React.useState<
+    FileStore['progressMap']
+  >(new Map());
   const { scrollToBottom } = useAutoScrollToBottom({ listRef, force: isMe }, [
     messageList,
   ]);
@@ -70,8 +62,6 @@ export const App = () => {
       const file = _file as File;
 
       if (!file) return;
-
-      console.log('[dodo] ', 'file', file.size, file.name);
 
       await waitTime(500);
       form.dispatchSubmit();
@@ -92,7 +82,6 @@ export const App = () => {
 
     if (file) {
       const chunks = splitFiles({ file });
-      console.log('[dodo] ', 'chunks', chunks);
       chunks.forEach((chunk, index) => {
         socket.emit('file', {
           file: chunk,
@@ -107,14 +96,9 @@ export const App = () => {
     form.resetField();
   };
 
-  const handleSubmit = React.useCallback(async (values) => {
-    console.log('[dodo] ', 'socket.connected', socket.connected);
-    if (socket.connected) {
-      sendData(values);
-    } else {
-      socket.once('connect', () => sendData(values));
-    }
-  }, []);
+  const handleSubmit = (values) => {
+    sendData(values);
+  };
 
   const handleCopyText =
     (text = '') =>
@@ -131,8 +115,6 @@ export const App = () => {
     };
 
   const handlePasteOrDrop = async (data: DataTransfer) => {
-    console.log('[dodo] ', 'clipboardData', data, data.types);
-
     if (data.types.includes('text/plain')) {
       const pastedText = data.getData('text/plain');
       const currentText = form.getFieldValue('text') || '';
@@ -159,8 +141,6 @@ export const App = () => {
     socket.on('disconnect', () => {
       console.log('[dodo] ', 'out');
       setIsOnline(false);
-      // 断开连接时自动重新连接
-      // socket.io.opts.transports = ['websocket'];
     });
 
     socket.on('text', (val: ServerTextRes, clientId) => {
@@ -189,7 +169,7 @@ export const App = () => {
     });
 
     socket.on('fileContent', (fileInfo: ServerFileContentRes) => {
-      fileStore.receive(fileInfo, setFileMap);
+      fileStore.receive(fileInfo, setFileMap, setProgressMap);
     });
 
     return () => {
@@ -202,7 +182,7 @@ export const App = () => {
   useEnterKeyDown(form.dispatchSubmit);
 
   return (
-    <PageContext.Provider value={{ fileMap }}>
+    <PageContext.Provider value={{ fileMap, progressMap }}>
       <Page
         minWidth='300px'
         className={clsx(styles.app, {

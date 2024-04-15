@@ -13,11 +13,12 @@ interface IProps {
 
 export const ImgItem = (props: IProps) => {
   const { imgInfo, className } = props;
-  const { fileMap } = useContext(PageContext);
+  const { fileMap, progressMap } = useContext(PageContext);
   const { fileID, fileName } = imgInfo || {};
   const [url, setUrl] = useState('');
   const [file, setFile] = useState<File>();
   const loading = !url || !file;
+  const progress = progressMap.get(fileID);
 
   const handleCopyImage = async () => {
     if (loading) {
@@ -66,7 +67,11 @@ export const ImgItem = (props: IProps) => {
 
   return (
     <div className={clsx(styles.imgItem, className)}>
-      <img src={url} alt={fileName} onClick={handleCopyImage} />
+      {loading ? (
+        <div className={styles.loadingHolder}>加载中...({progress}%)</div>
+      ) : (
+        <img src={url} alt={fileName} onClick={handleCopyImage} />
+      )}
       <Icon
         className={styles.copyIcon}
         type={ICON.copy}

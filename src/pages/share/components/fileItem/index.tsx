@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import * as styles from './index.module.less';
-import { FileT, ImgT, PageContext } from '../../constants';
+import { FileT, PageContext } from '../../constants';
 import { downloadFile } from '../../utils';
 import { ICON, Icon, toast } from 'sweet-me';
 import { socket } from '../../socket';
@@ -13,11 +13,12 @@ interface IProps {
 
 export const FileItem = (props: IProps) => {
   const { fileInfo, className } = props;
-  const { fileMap } = useContext(PageContext);
+  const { fileMap, progressMap } = useContext(PageContext);
   const { fileID, fileName } = fileInfo || {};
   const [url, setUrl] = useState('');
   const [file, setFile] = useState<File>();
   const loading = !url || !file;
+  const progress = progressMap.get(fileID);
 
   const handleDownloadFile = useCallback(() => {
     if (loading) {
@@ -45,7 +46,7 @@ export const FileItem = (props: IProps) => {
   return (
     <div className={clsx(styles.fileItem, className)}>
       <Icon className={styles.fileIcon} type={ICON.file} size={40} />
-      {fileName}
+      {loading ? `加载中...(${progress}%)` : fileName}
       <Icon
         className={styles.saveIcon}
         type={ICON.download}

@@ -5,6 +5,7 @@ export const ROOM_ID = 'dodo';
 
 export const PageContext = React.createContext<{
   fileMap: FileStore['fileStoreMap'];
+  progressMap: FileStore['progressMap'];
 }>(null);
 
 export type TextT = {
