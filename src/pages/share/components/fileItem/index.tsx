@@ -5,6 +5,7 @@ import { downloadFile, getBlob } from '../../utils';
 import { ICON, Icon, toast } from 'sweet-me';
 import { socket } from '../../socket';
 import clsx from 'clsx';
+import { Image } from '../image';
 
 interface IProps {
   fileInfo: FileT | ImgT;
@@ -67,7 +68,7 @@ export const FileItem = (props: IProps) => {
       setUrl(fileUrl);
 
       if (type === 'img') {
-        const image = new Image();
+        const image = new window.Image();
         image.onload = () => {
           setImgReady(true);
         };
@@ -82,7 +83,7 @@ export const FileItem = (props: IProps) => {
         {loading ? (
           <div className={styles.loadingHolder}>加载中...({progress}%)</div>
         ) : (
-          <img src={url} alt={fileName} onClick={handleCopyImage} />
+          <Image src={url} alt={fileName} />
         )}
         <Icon
           className={styles.copyIcon}
