@@ -72,7 +72,7 @@ export const mergeArrays = (arr1: IFileType[], arr2: IFileType[]): IFileType[] =
   return merged;
 };
 
-export const splitFiles = ({ file, chunkSize = 800 * 1024 }: {
+export const splitFiles = ({ file, chunkSize = 500 * 1024 }: {
   file: File,
   /** 每个切片的大小, 默认 1MB */
   chunkSize?: number
