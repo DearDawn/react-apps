@@ -38,12 +38,14 @@ import {
   ImgT,
   ROOM_ID,
   ServerFile,
+  ServerFileContentRes,
   ServerFileRes,
   ServerHistory,
   ServerText,
   ServerTextRes,
 } from './constants';
 import { ImgFile } from './components/imgFile';
+import { fileStore } from './fileStore';
 
 export const App = () => {
   const { form } = useFormState();
@@ -185,6 +187,11 @@ export const App = () => {
       console.log('[dodo] ', 'get file', fileInfo, clientId);
       setMessageList((list) => list.concat(formatFile(fileInfo)));
       setIsMe(socket.id === clientId);
+    });
+
+    socket.on('fileContent', (fileInfo: ServerFileContentRes, clientId) => {
+      console.log('[dodo] ', 'get file', fileInfo, clientId);
+      fileStore.receive(fileInfo);
     });
 
     return () => {

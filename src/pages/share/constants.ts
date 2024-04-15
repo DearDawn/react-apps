@@ -26,4 +26,5 @@ export type ServerText = { content: string }
 export type ServerFile = { fileID: string; name: string; mimeType: string }
 export type ServerTextRes = { type: 'text', data: ServerText, id: string }
 export type ServerFileRes = { type: 'file', data: ServerFile, id: string }
+export type ServerFileContentRes = { fileID: string, chunk: Buffer, index: number, totalChunks: number }
 export type ServerHistory = Array<ServerTextRes | ServerFileRes>

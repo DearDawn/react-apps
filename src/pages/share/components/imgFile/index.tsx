@@ -3,6 +3,7 @@ import styles from './index.module.less';
 import { ImgT } from '../../constants';
 import { downloadFile, getBlob } from '../../utils';
 import { ICON, Icon, toast } from 'sweet-me';
+import { socket } from '../../socket';
 
 interface IProps {
   imgInfo: ImgT;
@@ -48,6 +49,7 @@ export const ImgFile = (props: IProps) => {
 
   useEffect(() => {
     console.log('[dodo] ', 'fileID', fileID);
+    socket.emit('fileContent', fileID);
   }, [fileID]);
 
   return (
