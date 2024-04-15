@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import styles from './index.module.less';
+import * as styles from './index.module.less';
 import { ImgT, PageContext } from '../../constants';
 import { downloadFile, getBlob } from '../../utils';
 import { ICON, Icon, toast } from 'sweet-me';
