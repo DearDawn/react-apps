@@ -21,10 +21,6 @@ export const FileItem = (props: IProps) => {
   const loading = !url || !file || !imgReady;
   const progress = progressMap.get(fileID);
 
-  const handleLoad = useCallback(() => {
-    setImgReady(true);
-  }, []);
-
   const handleCopyImage = async () => {
     if (loading) {
       toast('加载中，请稍后...');
@@ -69,8 +65,16 @@ export const FileItem = (props: IProps) => {
       const fileUrl = URL.createObjectURL(file);
       setFile(file);
       setUrl(fileUrl);
+
+      if (type === 'img') {
+        const image = new Image();
+        image.onload = () => {
+          setImgReady(true);
+        };
+        image.src = fileUrl;
+      }
     }
-  }, [fileMap, fileName, fileID]);
+  }, [fileMap, fileName, fileID, type]);
 
   if (type === 'img') {
     return (
@@ -78,12 +82,7 @@ export const FileItem = (props: IProps) => {
         {loading ? (
           <div className={styles.loadingHolder}>加载中...({progress}%)</div>
         ) : (
-          <img
-            onLoad={handleLoad}
-            src={url}
-            alt={fileName}
-            onClick={handleCopyImage}
-          />
+          <img src={url} alt={fileName} onClick={handleCopyImage} />
         )}
         <Icon
           className={styles.copyIcon}
