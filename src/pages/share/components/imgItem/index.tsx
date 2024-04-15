@@ -1,16 +1,19 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import styles from './index.module.less';
-import { ImgT } from '../../constants';
+import { ImgT, PageContext } from '../../constants';
 import { downloadFile, getBlob } from '../../utils';
 import { ICON, Icon, toast } from 'sweet-me';
 import { socket } from '../../socket';
+import clsx from 'clsx';
 
 interface IProps {
   imgInfo: ImgT;
+  className?: string;
 }
 
-export const ImgFile = (props: IProps) => {
-  const { imgInfo } = props;
+export const ImgItem = (props: IProps) => {
+  const { imgInfo, className } = props;
+  const { fileMap } = useContext(PageContext);
   const { fileID, fileName } = imgInfo || {};
   const [url, setUrl] = useState('');
   const [file, setFile] = useState<File>();
@@ -48,12 +51,21 @@ export const ImgFile = (props: IProps) => {
   }, [fileName, loading, url]);
 
   useEffect(() => {
-    console.log('[dodo] ', 'fileID', fileID);
     socket.emit('fileContent', fileID);
   }, [fileID]);
 
+  useEffect(() => {
+    if (fileMap.has(fileID)) {
+      const blob = fileMap.get(fileID);
+      const file = new File([blob], fileName, { type: blob.type });
+      const fileUrl = URL.createObjectURL(file);
+      setFile(file);
+      setUrl(fileUrl);
+    }
+  }, [fileMap, fileName, fileID]);
+
   return (
-    <div className={styles.imgItem}>
+    <div className={clsx(styles.imgItem, className)}>
       <img src={url} alt={fileName} onClick={handleCopyImage} />
       <Icon
         className={styles.copyIcon}

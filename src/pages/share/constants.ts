@@ -1,4 +1,11 @@
+import React from "react";
+import { FileStore } from "./fileStore";
+
 export const ROOM_ID = 'dodo';
+
+export const PageContext = React.createContext<{
+  fileMap: FileStore['fileStoreMap'];
+}>(null);
 
 export type TextT = {
   id: string;

@@ -93,7 +93,7 @@ export const splitFiles = ({ file, chunkSize = 800 * 1024 }: {
   return chunks;
 };
 
-export const downloadFile = (url: string, fileName: string) => () => {
+export const downloadFile = (url: string, fileName: string) => {
   const link = document.createElement('a');
   link.href = url;
   link.download = fileName;

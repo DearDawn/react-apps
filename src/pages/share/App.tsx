@@ -37,6 +37,7 @@ import {
   IFileType,
   ImgT,
   ROOM_ID,
+  PageContext,
   ServerFile,
   ServerFileContentRes,
   ServerFileRes,
@@ -44,8 +45,9 @@ import {
   ServerText,
   ServerTextRes,
 } from './constants';
-import { ImgFile } from './components/imgFile';
-import { fileStore } from './fileStore';
+import { ImgItem } from './components/imgItem';
+import { FileStore, fileStore } from './fileStore';
+import { FileItem } from './components/fileItem';
 
 export const App = () => {
   const { form } = useFormState();
@@ -54,6 +56,9 @@ export const App = () => {
   const bottomHolderRef = React.useRef<HTMLDivElement>(null);
   const [isMe, setIsMe] = React.useState(false);
   const [isOnline, setIsOnline] = React.useState(false);
+  const [fileMap, setFileMap] = React.useState<FileStore['fileStoreMap']>(
+    new Map()
+  );
   const { scrollToBottom } = useAutoScrollToBottom({ listRef, force: isMe }, [
     messageList,
   ]);
@@ -143,11 +148,6 @@ export const App = () => {
     }
   };
 
-  const handleDownloadFile = (img: ImgT | FileT) => () => {
-    const { url, fileName } = img || {};
-    downloadFile(url, fileName);
-  };
-
   React.useEffect(() => {
     // 连接到服务器
     socket.on('connect', () => {
@@ -184,14 +184,12 @@ export const App = () => {
     });
 
     socket.on('file', (fileInfo: ServerFileRes, clientId) => {
-      console.log('[dodo] ', 'get file', fileInfo, clientId);
       setMessageList((list) => list.concat(formatFile(fileInfo)));
       setIsMe(socket.id === clientId);
     });
 
-    socket.on('fileContent', (fileInfo: ServerFileContentRes, clientId) => {
-      console.log('[dodo] ', 'get file', fileInfo, clientId);
-      fileStore.receive(fileInfo);
+    socket.on('fileContent', (fileInfo: ServerFileContentRes) => {
+      fileStore.receive(fileInfo, setFileMap);
     });
 
     return () => {
@@ -204,70 +202,65 @@ export const App = () => {
   useEnterKeyDown(form.dispatchSubmit);
 
   return (
-    <Page
-      minWidth='300px'
-      className={clsx(styles.app, {
-        [styles.blur]: !isPageFocused,
-        [styles.isDragging]: isDragging,
-        [styles.isOffline]: !isOnline,
-      })}
-    >
-      <Header title='共享' isSticky />
-      <div className={styles.contentWrap} ref={listRef}>
-        {messageList.map((it, idx) => (
-          <div className={styles.itemWrap} key={idx} draggable={false}>
-            {it.type === 'text' && (
-              <div
-                className={styles.textItem}
-                onClick={handleCopyText(it.content)}
-              >
-                {it.content}
-                <Icon
-                  className={styles.copyIcon}
-                  type={ICON.copy}
-                  title='复制'
-                />
-              </div>
-            )}
-            {it.type === 'img' && <ImgFile imgInfo={it} />}
-            {it.type === 'file' && (
-              <div className={styles.fileItem}>
-                <Icon className={styles.fileIcon} type={ICON.file} size={40} />
-                {it.fileName}
-                <Icon
-                  className={styles.saveIcon}
-                  type={ICON.download}
-                  title='下载'
-                  onClick={handleDownloadFile(it)}
-                />
-              </div>
-            )}
-          </div>
-        ))}
-        <div className={styles.holder} ref={bottomHolderRef} />
-      </div>
-      <Button
-        className={clsx(styles.rocketBottom, showBack && styles.visible)}
-        onClick={scrollToBottom}
+    <PageContext.Provider value={{ fileMap }}>
+      <Page
+        minWidth='300px'
+        className={clsx(styles.app, {
+          [styles.blur]: !isPageFocused,
+          [styles.isDragging]: isDragging,
+          [styles.isOffline]: !isOnline,
+        })}
       >
-        <Icon type={ICON.rocket} />
-      </Button>
-      <Form className={styles.footer} form={form} onSubmit={handleSubmit}>
-        <FileList className={styles.fileList} onDelete={handleDeleteFile} />
-        <Form.Item noMargin field='text' className={styles.inputWrap}>
-          <Textarea className={styles.input} placeholder='请输入...' />
-        </Form.Item>
-        <Form.Item noMargin field='file' className={styles.inputFile}>
-          <Input.File onValueChange={handleFileChange}>
-            <Button className={styles.inputFileBtn}>
-              <Icon type={ICON.file} />
-            </Button>
-          </Input.File>
-        </Form.Item>
-        <Button className={styles.submit} type='submit'>
-          发送
+        <Header title='共享' isSticky />
+        <div className={styles.contentWrap} ref={listRef}>
+          {messageList.map((it, idx) => (
+            <div className={styles.itemWrap} key={idx} draggable={false}>
+              {it.type === 'text' && (
+                <div
+                  className={styles.textItem}
+                  onClick={handleCopyText(it.content)}
+                >
+                  {it.content}
+                  <Icon
+                    className={styles.copyIcon}
+                    type={ICON.copy}
+                    title='复制'
+                  />
+                </div>
+              )}
+              {it.type === 'img' && (
+                <ImgItem className={styles.imgItem} imgInfo={it} />
+              )}
+              {it.type === 'file' && (
+                <FileItem className={styles.fileItem} fileInfo={it} />
+              )}
+            </div>
+          ))}
+          <div className={styles.holder} ref={bottomHolderRef} />
+        </div>
+        <Button
+          className={clsx(styles.rocketBottom, showBack && styles.visible)}
+          onClick={scrollToBottom}
+        >
+          <Icon type={ICON.rocket} />
         </Button>
-      </Form>
-    </Page>
+        <Form className={styles.footer} form={form} onSubmit={handleSubmit}>
+          <FileList className={styles.fileList} onDelete={handleDeleteFile} />
+          <Form.Item noMargin field='text' className={styles.inputWrap}>
+            <Textarea className={styles.input} placeholder='请输入...' />
+          </Form.Item>
+          <Form.Item noMargin field='file' className={styles.inputFile}>
+            <Input.File onValueChange={handleFileChange}>
+              <Button className={styles.inputFileBtn}>
+                <Icon type={ICON.file} />
+              </Button>
+            </Input.File>
+          </Form.Item>
+          <Button className={styles.submit} type='submit'>
+            发送
+          </Button>
+        </Form>
+      </Page>
+    </PageContext.Provider>
   );
 };
