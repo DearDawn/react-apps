@@ -17,8 +17,13 @@ export const FileItem = (props: IProps) => {
   const { fileID, fileName, type } = fileInfo || {};
   const [url, setUrl] = useState('');
   const [file, setFile] = useState<File>();
-  const loading = !url || !file;
+  const [imgReady, setImgReady] = useState(type !== 'img');
+  const loading = !url || !file || !imgReady;
   const progress = progressMap.get(fileID);
+
+  const handleLoad = useCallback(() => {
+    setImgReady(true);
+  }, []);
 
   const handleCopyImage = async () => {
     if (loading) {
@@ -55,7 +60,7 @@ export const FileItem = (props: IProps) => {
     if (!loading) return;
 
     socket.emit('fileContent', fileID, 0);
-  }, [fileID, socketID]);
+  }, [fileID, loading, socketID]);
 
   useEffect(() => {
     if (fileMap.has(fileID)) {
@@ -73,7 +78,12 @@ export const FileItem = (props: IProps) => {
         {loading ? (
           <div className={styles.loadingHolder}>加载中...({progress}%)</div>
         ) : (
-          <img src={url} alt={fileName} onClick={handleCopyImage} />
+          <img
+            onLoad={handleLoad}
+            src={url}
+            alt={fileName}
+            onClick={handleCopyImage}
+          />
         )}
         <Icon
           className={styles.copyIcon}
