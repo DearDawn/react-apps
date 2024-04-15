@@ -19,7 +19,7 @@ export const FileItem = (props: IProps) => {
   const [file, setFile] = useState<File>();
   const [imgReady, setImgReady] = useState(type !== 'img');
   const loading = !url || !file || !imgReady;
-  const progress = progressMap.get(fileID);
+  const progress = progressMap.get(fileID) || 0;
 
   const handleCopyImage = async () => {
     if (loading) {
