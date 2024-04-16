@@ -16,7 +16,7 @@ const incrementedVersion = parseInt(previousVersion) + 1;
 const newVersion = incrementedVersion.toString();
 
 // 构建要写入的内容
-const newEnvContent = `BUILD_TIME=${buildTime}\APP_VERSION=${newVersion}`;
+const newEnvContent = `BUILD_TIME=${buildTime}\nAPP_VERSION=${newVersion}`;
 
 // 将新的内容写入到 .env 文件
 fs.writeFileSync('.env', newEnvContent);
