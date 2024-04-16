@@ -22,8 +22,17 @@ export const App = () => {
     model.once('load', () => {
       // now it's safe
       app.stage.addChild(model);
-      model.scale.set(0.25);
-      model.x = 10;
+
+      model.anchor.set(0.5, 0.5);
+      model.scale.set(0.3, 0.3);
+      model.position.set(
+        (window.innerWidth - model.width * 0.3) / 2,
+        (window.innerHeight - model.height * 0.3) / 2
+      );
+
+      model.on('hit', () => {
+        model.motion('Tap@Body');
+      });
     });
   }, []);
 
