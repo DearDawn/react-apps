@@ -7,7 +7,7 @@ const buildTime = new Date().toISOString();
 const envContent = fs.readFileSync('.env', 'utf8');
 
 // 解析 .env 文件内容，获取上一次的版本号
-const previousVersion = envContent.match(/APP_VERSION=(\d*)/)[1];
+const previousVersion = envContent.match(/APP_VERSION=(\d*)/)?.[1] || 0;
 
 // 将上一次的版本号转换为数字并自增
 const incrementedVersion = parseInt(previousVersion) + 1;
