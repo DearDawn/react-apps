@@ -1,6 +1,6 @@
 {
   "name": "react-apps",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "React 多页应用模板",
   "scripts": {
     "prestart": "node prebuild.js",
