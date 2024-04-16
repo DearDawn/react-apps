@@ -13,8 +13,7 @@
     "build:analyze": "parcel build src/pages/*.html --public-url ./ --no-source-maps && parcel build src/pages/*/*.html --public-url ../ --no-source-maps --reporter @parcel/reporter-bundle-analyzer",
     "clean": "run-script-os",
     "clean:win32": "(rmdir /s /q .parcel-cache || (echo Failed to delete .parcel-cache)) && (rmdir /s /q dist  || (echo Failed to delete dist))",
-    "clean:default": "rm -rf .parcel-cache;rm -rf dist",
-    "prepare": "husky"
+    "clean:default": "rm -rf .parcel-cache;rm -rf dist"
   },
   "alias": {
     "pixi.js": "./node_modules/pixi.js/dist/pixi.min.mjs",
@@ -35,7 +34,6 @@
     "@types/react-dom": "^18.2.17",
     "buffer": "^6.0.3",
     "http-proxy-middleware": "^2.0.6",
-    "husky": "^9.0.11",
     "parcel": "^2.12.0",
     "postcss": "^8.4.32",
     "postcss-modules": "^4.3.1",
