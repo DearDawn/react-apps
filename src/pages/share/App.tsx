@@ -223,7 +223,7 @@ export const App = () => {
         })}
       >
         <Header
-          title='共享'
+          title={`共享 (房间号：${ROOM_ID})`}
           isSticky
           rightPart={<Icon type={ICON.sugar} onClick={handleRooms} />}
         />
