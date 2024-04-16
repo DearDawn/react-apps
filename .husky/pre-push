@@ -11,3 +11,4 @@ increment_version
 
 # 执行实际的 `git push` 命令
 echo "执行 git push..."
+exec git push "$@"
