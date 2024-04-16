@@ -5,6 +5,7 @@ import { downloadFile, getBlob } from '../../utils';
 import { ICON, Icon, toast } from 'sweet-me';
 import { socket } from '../../socket';
 import clsx from 'clsx';
+import { Image } from '../image';
 
 interface IProps {
   fileInfo: FileT | ImgT;
@@ -17,8 +18,9 @@ export const FileItem = (props: IProps) => {
   const { fileID, fileName, type } = fileInfo || {};
   const [url, setUrl] = useState('');
   const [file, setFile] = useState<File>();
-  const loading = !url || !file;
-  const progress = progressMap.get(fileID);
+  const [imgReady, setImgReady] = useState(type !== 'img');
+  const loading = !url || !file || !imgReady;
+  const progress = progressMap.get(fileID) || 0;
 
   const handleCopyImage = async () => {
     if (loading) {
@@ -55,7 +57,7 @@ export const FileItem = (props: IProps) => {
     if (!loading) return;
 
     socket.emit('fileContent', fileID, 0);
-  }, [fileID, socketID]);
+  }, [fileID, loading, socketID]);
 
   useEffect(() => {
     if (fileMap.has(fileID)) {
@@ -64,8 +66,16 @@ export const FileItem = (props: IProps) => {
       const fileUrl = URL.createObjectURL(file);
       setFile(file);
       setUrl(fileUrl);
+
+      if (type === 'img') {
+        const image = new window.Image();
+        image.onload = () => {
+          setImgReady(true);
+        };
+        image.src = fileUrl;
+      }
     }
-  }, [fileMap, fileName, fileID]);
+  }, [fileMap, fileName, fileID, type]);
 
   if (type === 'img') {
     return (
@@ -73,7 +83,7 @@ export const FileItem = (props: IProps) => {
         {loading ? (
           <div className={styles.loadingHolder}>加载中...({progress}%)</div>
         ) : (
-          <img src={url} alt={fileName} onClick={handleCopyImage} />
+          <Image src={url} alt={fileName} />
         )}
         <Icon
           className={styles.copyIcon}

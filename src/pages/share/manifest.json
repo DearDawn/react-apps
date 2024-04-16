@@ -1,0 +1,14 @@
+{
+  "name": "dodoShare",
+  "short_name": "dodoShare",
+  "description": "dodoShare",
+  "display": "standalone",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/src/assets/phone.png",
+      "sizes": "192x192",
+      "type": "image&#x2F;png"
+    }
+  ]
+}
