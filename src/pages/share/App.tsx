@@ -80,6 +80,7 @@ export const App = () => {
 
     if (text.trim()) {
       socket.emit('text', text);
+      loadingRef.current = loading('发送中...');
     }
 
     if (file) {
@@ -180,6 +181,11 @@ export const App = () => {
       }
 
       fileStore.receive(fileInfo, setFileMap, setProgressMap);
+    });
+
+    socket.on('text_done', (fileID: string, clientId) => {
+      console.log('[dodo] ', 'fileID done', fileID);
+      loadingRef.current();
     });
 
     socket.on('file_done', (fileID: string, clientId) => {
