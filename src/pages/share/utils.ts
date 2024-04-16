@@ -108,7 +108,9 @@ export const convertFileSize = (bytes: number) => {
     return (bytes / megabyte).toFixed(2) + ' MB';
   } else if (bytes >= kilobyte) {
     return (bytes / kilobyte) + ' KB';
-  } else {
+  } else if (bytes > 0) {
     return bytes + ' bytes';
+  } else {
+    return '--';
   }
 }
