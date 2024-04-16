@@ -1,14 +1,14 @@
-import { ServerFileContentRes } from "./constants";
+import { FILE_CHUNK_SIZE, ServerFileContentRes } from "./constants";
 
 export class FileStore {
   fileStoreMap: Map<string, Blob> = new Map();
-  progressMap: Map<string, number> = new Map();
+  progressMap: Map<string, { progress: number; total: number }> = new Map();
   receivedChunks = new Map<string, Buffer[]>();
-  constructor() {
+  constructor () {
 
   }
 
-  receive(
+  receive (
     info: ServerFileContentRes,
     setStore: React.Dispatch<React.SetStateAction<FileStore['fileStoreMap']>>,
     setProgress: React.Dispatch<React.SetStateAction<FileStore['progressMap']>>) {
@@ -21,7 +21,11 @@ export class FileStore {
     const chunks = this.receivedChunks.get(fileID);
     chunks[index] = chunk;
 
-    this.progressMap.set(fileID, Math.floor((index + 1) / totalChunks * 100));
+    this.progressMap.set(fileID, {
+      progress: Math.floor((index + 1) / totalChunks * 100),
+      total: totalChunks * FILE_CHUNK_SIZE
+    });
+
     setProgress(new Map(this.progressMap));
 
     if (chunks.length === totalChunks) {
@@ -33,7 +37,7 @@ export class FileStore {
     }
   }
 
-  getFile(id: string) {
+  getFile (id: string) {
     const chunks = this.fileStoreMap.get(id);
 
     return chunks;

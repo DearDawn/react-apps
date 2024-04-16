@@ -99,3 +99,16 @@ export const downloadFile = (url: string, fileName: string) => {
   link.download = fileName;
   link.click();
 };
+
+export const convertFileSize = (bytes: number) => {
+  const kilobyte = 1024;
+  const megabyte = kilobyte * 1024;
+
+  if (bytes >= megabyte) {
+    return (bytes / megabyte).toFixed(2) + ' MB';
+  } else if (bytes >= kilobyte) {
+    return (bytes / kilobyte).toFixed(2) + ' KB';
+  } else {
+    return bytes + ' bytes';
+  }
+}

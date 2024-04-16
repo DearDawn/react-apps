@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import * as styles from './index.module.less';
 import { FileT, ImgT, PageContext } from '../../constants';
-import { downloadFile, getBlob } from '../../utils';
+import { convertFileSize, downloadFile, getBlob } from '../../utils';
 import { ICON, Icon, toast } from 'sweet-me';
 import { socket } from '../../socket';
 import clsx from 'clsx';
@@ -20,7 +20,8 @@ export const FileItem = (props: IProps) => {
   const [file, setFile] = useState<File>();
   const [imgReady, setImgReady] = useState(type !== 'img');
   const loading = !url || !file || !imgReady;
-  const progress = progressMap.get(fileID) || 0;
+  const { progress = 0, total = 0 } = progressMap.get(fileID) || {};
+  const fileSize = convertFileSize(total);
 
   const handleCopyImage = async () => {
     if (loading) {
@@ -80,8 +81,10 @@ export const FileItem = (props: IProps) => {
   if (type === 'img') {
     return (
       <div className={clsx(styles.imgItem, className)}>
-        {loading ? (
-          <div className={styles.loadingHolder}>加载中...({progress}%)</div>
+        {!loading ? (
+          <div className={styles.loadingHolder}>
+            {`加载中...(${progress}%)\n约${fileSize}`}
+          </div>
         ) : (
           <Image src={url} alt={fileName} />
         )}

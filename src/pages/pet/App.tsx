@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import * as styles from './App.module.less';
-import * as PIXI from 'pixi.js';
+import * as PIXI from 'pixi6.js';
 import { Live2DModel } from 'pixi-live2d-display';
 
 export const App = () => {
@@ -29,7 +29,7 @@ export const App = () => {
 
   return (
     <div className={styles.app}>
-      {/* <canvas id='dodo-game-root' className={styles.dodoGameRoot}></canvas> */}
+      <canvas id='dodo-game-root' className={styles.dodoGameRoot}></canvas>
     </div>
   );
 };

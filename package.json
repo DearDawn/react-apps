@@ -17,6 +17,7 @@
   },
   "alias": {
     "pixi.js": "./node_modules/pixi.js/dist/pixi.min.mjs",
+    "pixi6.js": "./node_modules/pixi6.js/dist/esm/pixi.min.mjs",
     "pixi-live2d-display": "./node_modules/pixi-live2d-display/dist/cubism2.es.js"
   },
   "browserslist": "> 0.5%, last 2 versions, not dead",
@@ -49,6 +50,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "pixi-live2d-display": "^0.4.0",
     "pixi.js": "^7.3.2",
+    "pixi6.js": "npm:pixi.js@^6.5.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "run-script-os": "^1.1.6",
