@@ -59,6 +59,10 @@ export const App = () => {
   const { isPageFocused } = usePageFocus();
   const loadingRef = React.useRef(() => {});
 
+  const handleRooms = React.useCallback(() => {
+    socket.emit('rooms')
+  }, []);
+
   const handleFileChange = React.useCallback(
     async (_file: any) => {
       const file = _file as File;
@@ -148,6 +152,12 @@ export const App = () => {
       setIsOnline(false);
     });
 
+    socket.on('rooms', (rooms) => {
+      console.log('[dodo] ', 'rooms');
+      console.table(rooms);
+      toast(JSON.stringify(rooms, undefined, 2));
+    });
+
     socket.on('text', (val: ServerTextRes, clientId) => {
       console.log('[dodo] ', 'get text', val, clientId);
       setMessageList((list) => list.concat(formatText(val)));
@@ -212,7 +222,11 @@ export const App = () => {
           [styles.isOffline]: !isOnline,
         })}
       >
-        <Header title='共享' isSticky />
+        <Header
+          title='共享'
+          isSticky
+          rightPart={<Icon type={ICON.sugar} onClick={handleRooms} />}
+        />
         <div className={styles.contentWrap} ref={listRef}>
           {messageList.map((it, idx) => (
             <div className={styles.itemWrap} key={idx} draggable={false}>
