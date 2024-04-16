@@ -46,7 +46,6 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "pixi-live2d-display": "^0.4.0",
     "pixi.js": "^7.3.2",
-    "pixi6.js": "npm:pixi.js@^6.5.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "run-script-os": "^1.1.6",
