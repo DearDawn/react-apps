@@ -1,7 +1,8 @@
 const fs = require('fs');
+const dayjs = require('dayjs');
 
 // 获取当前日期和时间
-const buildTime = new Date().toISOString();
+const buildTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
 
 // 读取 .env 文件内容
 const envContent = fs.readFileSync('.env', 'utf8');
