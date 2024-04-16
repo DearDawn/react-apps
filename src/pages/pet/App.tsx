@@ -29,7 +29,7 @@ export const App = () => {
 
   return (
     <div className={styles.app}>
-      <canvas id='dodo-game-root' className={styles.dodoGameRoot}></canvas>
+      {/* <canvas id='dodo-game-root' className={styles.dodoGameRoot}></canvas> */}
     </div>
   );
 };

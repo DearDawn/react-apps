@@ -1,5 +1,6 @@
 import './styles.less';
 import { createRoot } from 'react-dom/client';
+import '@/utils/init';
 import { App } from './App';
 import { handleTalk, handleType } from './pixi';
 

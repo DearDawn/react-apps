@@ -7,3 +7,13 @@ declare module '*.ttf';
 declare module '*.woff';
 declare module '*.woff2';
 declare module '*.less';
+declare namespace NodeJS {
+  interface ProcessEnv {
+    /** 构建时间 */
+    BUILD_TIME: string;
+    /** 环境 */
+    NODE_ENV: 'development' | 'production';
+    /** 版本号 */
+    APP_VERSION: string
+  }
+}
