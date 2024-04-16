@@ -83,7 +83,7 @@ export const FileItem = (props: IProps) => {
       <div className={clsx(styles.imgItem, className)}>
         {loading ? (
           <div className={styles.loadingHolder}>
-            {`加载中...(${progress}%)\n约${fileSize}`}
+            {`加载中...(${progress}%)\n约 ${fileSize}`}
           </div>
         ) : (
           <Image src={url} alt={fileName} />
