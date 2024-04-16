@@ -3,7 +3,7 @@
   "short_name": "dodoDemo",
   "description": "dodoDemo",
   "display": "standalone",
-  "theme_color": "#ffffff",
+  "theme_color": "#b2f2bb",
   "icons": [
     {
       "src": "/src/assets/sugar.png",

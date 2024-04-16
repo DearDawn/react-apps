@@ -3,7 +3,7 @@
   "short_name": "dodoShare",
   "description": "dodoShare",
   "display": "standalone",
-  "theme_color": "#ffffff",
+  "theme_color": "#b2f2bb",
   "icons": [
     {
       "src": "/src/assets/phone.png",
