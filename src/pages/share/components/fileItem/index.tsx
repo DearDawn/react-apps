@@ -81,7 +81,7 @@ export const FileItem = (props: IProps) => {
   if (type === 'img') {
     return (
       <div className={clsx(styles.imgItem, className)}>
-        {!loading ? (
+        {loading ? (
           <div className={styles.loadingHolder}>
             {`加载中...(${progress}%)\n约${fileSize}`}
           </div>
