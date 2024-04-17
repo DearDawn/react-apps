@@ -2,7 +2,7 @@ import React from "react";
 import { FileStore } from "./fileStore";
 
 const query = new URL(window.location.href).searchParams;
-export const ROOM_ID = query.get('room')?.slice(0, 20) || 'dodo';
+export const ROOM_ID = query.get('room')?.slice(0, 10) || 'dodo';
 export const FILE_CHUNK_SIZE = 50 * 1024;
 
 export const PageContext = React.createContext<{

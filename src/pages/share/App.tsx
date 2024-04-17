@@ -12,6 +12,9 @@ import {
   toast,
   Input,
   loading,
+  Modal,
+  Space,
+  useBoolean,
 } from 'sweet-me';
 import { socket } from './socket';
 import {
@@ -40,11 +43,13 @@ import { FileItem } from './components/fileItem';
 
 export const App = () => {
   const { form } = useFormState();
+  const { form: roomInputForm } = useFormState();
   const [messageList, setMessageList] = React.useState<Array<IFileType>>([]);
   const listRef = React.useRef<HTMLDivElement>(null);
   const bottomHolderRef = React.useRef<HTMLDivElement>(null);
   const [isMe, setIsMe] = React.useState(false);
   const [isOnline, setIsOnline] = React.useState(false);
+  const [roomInputVisible, showRoomInput, closeRoomInput] = useBoolean(false);
   const [fileMap, setFileMap] = React.useState<FileStore['fileStoreMap']>(
     new Map()
   );
@@ -60,7 +65,30 @@ export const App = () => {
   const loadingRef = React.useRef(() => {});
 
   const handleRooms = React.useCallback(() => {
-    socket.emit('rooms')
+    socket.emit('rooms');
+  }, []);
+
+  const handleCloseRoomInput = React.useCallback(() => {
+    roomInputForm.resetField();
+    closeRoomInput();
+  }, []);
+
+  const handleChangeRoom = React.useCallback((values) => {
+    if (!roomInputForm.validate()) {
+      return toast('未填写完整');
+    }
+
+    const room = values.room?.trim();
+
+    if (room === ROOM_ID) {
+      return closeRoomInput();
+    }
+
+    const currentUrl = new URL(window.location.href);
+    const searchParams = new URLSearchParams(currentUrl.search);
+    searchParams.set('room', room);
+    currentUrl.search = searchParams.toString();
+    window.location.href = currentUrl.href;
   }, []);
 
   const handleFileChange = React.useCallback(
@@ -223,7 +251,11 @@ export const App = () => {
         })}
       >
         <Header
-          title={`共享 (房间号：${ROOM_ID})`}
+          title={
+            <div className={styles.title} onClick={showRoomInput}>
+              共享 (房间号：{ROOM_ID})
+            </div>
+          }
           isSticky
           rightPart={<Icon type={ICON.sugar} onClick={handleRooms} />}
         />
@@ -275,6 +307,36 @@ export const App = () => {
             发送
           </Button>
         </Form>
+        <Modal
+          className={styles.modal}
+          visible={roomInputVisible}
+          onClose={handleCloseRoomInput}
+          maskClosable
+        >
+          <Form form={roomInputForm} onSubmit={handleChangeRoom}>
+            <Form.Item
+              field='room'
+              labelClassName={styles.label}
+              required
+              defaultValue={ROOM_ID}
+              label='房间号'
+            >
+              <Input className={styles.input} placeholder='房间号' />
+            </Form.Item>
+            <Space className={styles.btnWrap} stretch padding='5px 0 0'>
+              <Button
+                className={styles.addBtn}
+                status='error'
+                onClick={handleCloseRoomInput}
+              >
+                取消
+              </Button>
+              <Button className={styles.addBtn} status='success' type='submit'>
+                确认
+              </Button>
+            </Space>
+          </Form>
+        </Modal>
       </Page>
     </PageContext.Provider>
   );
