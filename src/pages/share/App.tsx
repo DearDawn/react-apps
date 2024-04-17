@@ -88,7 +88,7 @@ export const App = () => {
     const searchParams = new URLSearchParams(currentUrl.search);
     searchParams.set('room', room);
     currentUrl.search = searchParams.toString();
-    window.location.href = currentUrl.href;
+    window.location.replace(currentUrl.href);
   }, []);
 
   const handleFileChange = React.useCallback(
