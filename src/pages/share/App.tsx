@@ -308,7 +308,6 @@ export const App = () => {
           </Button>
         </Form>
         <Modal
-          className={styles.modal}
           visible={roomInputVisible}
           onClose={handleCloseRoomInput}
           maskClosable
@@ -316,22 +315,17 @@ export const App = () => {
           <Form form={roomInputForm} onSubmit={handleChangeRoom}>
             <Form.Item
               field='room'
-              labelClassName={styles.label}
               required
               defaultValue={ROOM_ID}
               label='房间号'
             >
-              <Input className={styles.input} placeholder='房间号' />
+              <Input placeholder='房间号' />
             </Form.Item>
-            <Space className={styles.btnWrap} stretch padding='5px 0 0'>
-              <Button
-                className={styles.addBtn}
-                status='error'
-                onClick={handleCloseRoomInput}
-              >
+            <Space stretch padding='5px 0 0'>
+              <Button status='error' onClick={handleCloseRoomInput}>
                 取消
               </Button>
-              <Button className={styles.addBtn} status='success' type='submit'>
+              <Button status='success' type='submit'>
                 确认
               </Button>
             </Space>
