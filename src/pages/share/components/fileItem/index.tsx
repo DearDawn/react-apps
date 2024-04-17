@@ -107,7 +107,7 @@ export const FileItem = (props: IProps) => {
   return (
     <div className={clsx(styles.fileItem, className)}>
       <Icon className={styles.fileIcon} type={ICON.file} size={40} />
-      {loading ? `加载中...(${progress}%)` : fileName}
+      {loading ? `加载中...(${progress}% 约 ${fileSize})` : fileName}
       <Icon
         className={styles.saveIcon}
         type={ICON.download}
