@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import * as styles from './App.module.less';
 import * as PIXI from 'pixi6.js';
 import { Live2DModel } from 'pixi-live2d-display';
+// @ts-ignore
+import { HitAreaFrames } from 'pixi-live2d-display/extra';
 
 // expose PIXI to window so that this plugin is able to
 // reference window.PIXI.Ticker to automatically update Live2D models
@@ -12,9 +14,13 @@ window.PIXI = PIXI;
 export const App = () => {
   useEffect(() => {
     const app = new PIXI.Application({
+      backgroundColor: 0xffffff,
       autoStart: true,
       resizeTo: window,
       view: document.getElementById('dodo-game-root') as HTMLCanvasElement,
+      width: window.innerWidth,
+      height: window.innerHeight,
+      resolution: 2, // default: 1 分辨率
     });
 
     // no `await` here as it's not a Promise
@@ -27,38 +33,74 @@ export const App = () => {
       // now it's safe
       app.stage.addChild(model);
 
+      console.log(
+        '[dodo] ',
+        'model',
+        model,
+        window.innerWidth,
+        window.innerHeight
+      );
       model.anchor.set(0.5, 0.5);
       model.scale.set(0.3, 0.3);
-      model.position.set(window.innerWidth / 2, window.innerHeight / 2);
-
-      model.on('pointerdown', () => {
-        console.log('[dodo] ', 'hit');
+      model.position.set(
+        (window.innerWidth - model.width) / 2,
+        (window.innerHeight + model.height) / 2
+      );
+  
+      model.on('pointerdown', (hitAreaNames) => {
+        console.log('[dodo] ', 'hit', hitAreaNames);
         // model.motion('idle');
         model.motion('shake');
         // model.motion('tap_body');
       });
 
-      function draggable(model) {
-        model.buttonMode = true;
-        model.on('pointerdown', (e) => {
-          model.dragging = true;
-          model._pointerX = e.data.global.x - model.x;
-          model._pointerY = e.data.global.y - model.y;
-        });
-        model.on('pointermove', (e) => {
-          if (model.dragging) {
-            model.position.x = e.data.global.x - model._pointerX;
-            model.position.y = e.data.global.y - model._pointerY;
-          }
-        });
-        model.on('pointerupoutside', () => (model.dragging = false));
-        model.on('pointerup', () => (model.dragging = false));
-      }
+      model.on('hit', (hitAreaNames) => {
+        console.log('[dodo] ', 'hit111  ');
+        if (hitAreaNames.includes('body')) {
+          // body is hit
+        }
+      });
+
+      model.cursor = 'pointer';
 
       // 绑定模型拖拽方法
       draggable(model);
+      addFrame(model);
+      addHitAreaFrames(model);
     });
   }, []);
+
+  function draggable(model) {
+    model.buttonMode = true;
+    model.on('pointerdown', (e) => {
+      model.dragging = true;
+      model._pointerX = e.data.global.x - model.x;
+      model._pointerY = e.data.global.y - model.y;
+    });
+    model.on('pointermove', (e) => {
+      if (model.dragging) {
+        model.position.x = e.data.global.x - model._pointerX;
+        model.position.y = e.data.global.y - model._pointerY;
+      }
+    });
+    model.on('pointerupoutside', () => (model.dragging = false));
+    model.on('pointerup', () => (model.dragging = false));
+  }
+
+  function addFrame(model) {
+    const foreground = PIXI.Sprite.from(PIXI.Texture.WHITE);
+    foreground.width = model.internalModel.width;
+    foreground.height = model.internalModel.height;
+    foreground.alpha = 0.2;
+
+    model.addChild(foreground);
+  }
+
+  function addHitAreaFrames(model) {
+    const hitAreaFrames = new HitAreaFrames();
+
+    model.addChild(hitAreaFrames);
+  }
 
   return (
     <div className={styles.app}>
