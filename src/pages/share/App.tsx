@@ -124,6 +124,7 @@ export const App = () => {
     if (file) {
       if (file.size >= 1e7) {
         toast(`文件过大，最大 ${convertFileSize(1e7)}`);
+        form.resetField();
         return;
       }
 
