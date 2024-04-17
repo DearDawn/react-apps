@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import * as styles from './App.module.less';
 import * as PIXI from 'pixi6.js';
-import { Live2DModel } from 'pixi-live2d-display';
+import { InternalModel, Live2DModel } from 'pixi-live2d-display';
 // @ts-ignore
 import { HitAreaFrames } from 'pixi-live2d-display/extra';
 
@@ -14,7 +14,7 @@ window.PIXI = PIXI;
 export const App = () => {
   useEffect(() => {
     const app = new PIXI.Application({
-      backgroundColor: 0xffffff,
+      backgroundColor: 0x777777,
       autoStart: true,
       resizeTo: window,
       view: document.getElementById('dodo-game-root') as HTMLCanvasElement,
@@ -33,20 +33,19 @@ export const App = () => {
       // now it's safe
       app.stage.addChild(model);
 
+      model.scale.set(0.2, 0.3);
+      model.anchor.set(0.5, 0.5);
+      model.position.set(window.innerWidth / 2, window.innerHeight / 2);
+
       console.log(
         '[dodo] ',
         'model',
-        model,
+        model.width,
+        model.height,
         window.innerWidth,
         window.innerHeight
       );
-      model.anchor.set(0.5, 0.5);
-      model.scale.set(0.3, 0.3);
-      model.position.set(
-        (window.innerWidth - model.width) / 2,
-        (window.innerHeight + model.height) / 2
-      );
-  
+
       model.on('pointerdown', (hitAreaNames) => {
         console.log('[dodo] ', 'hit', hitAreaNames);
         // model.motion('idle');
@@ -70,24 +69,24 @@ export const App = () => {
     });
   }, []);
 
-  function draggable(model) {
+  function draggable(model: Live2DModel<InternalModel>) {
     model.buttonMode = true;
     model.on('pointerdown', (e) => {
-      model.dragging = true;
-      model._pointerX = e.data.global.x - model.x;
-      model._pointerY = e.data.global.y - model.y;
+      model['dragging'] = true;
+      model['_pointerX'] = e.data.global.x - model.x;
+      model['_pointerY'] = e.data.global.y - model.y;
     });
     model.on('pointermove', (e) => {
-      if (model.dragging) {
-        model.position.x = e.data.global.x - model._pointerX;
-        model.position.y = e.data.global.y - model._pointerY;
+      if (model['dragging']) {
+        model.position.x = e.data.global.x - model['_pointerX'];
+        model.position.y = e.data.global.y - model['_pointerY'];
       }
     });
-    model.on('pointerupoutside', () => (model.dragging = false));
-    model.on('pointerup', () => (model.dragging = false));
+    model.on('pointerupoutside', () => (model['dragging'] = false));
+    model.on('pointerup', () => (model['dragging'] = false));
   }
 
-  function addFrame(model) {
+  function addFrame(model: Live2DModel<InternalModel>) {
     const foreground = PIXI.Sprite.from(PIXI.Texture.WHITE);
     foreground.width = model.internalModel.width;
     foreground.height = model.internalModel.height;
@@ -96,7 +95,7 @@ export const App = () => {
     model.addChild(foreground);
   }
 
-  function addHitAreaFrames(model) {
+  function addHitAreaFrames(model: Live2DModel<InternalModel>) {
     const hitAreaFrames = new HitAreaFrames();
 
     model.addChild(hitAreaFrames);
