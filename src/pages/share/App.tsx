@@ -27,7 +27,7 @@ import {
 } from './hooks';
 import clsx from 'clsx';
 import { waitTime } from '@/utils';
-import { formatFile, formatText, mergeArrays, splitFiles } from './utils';
+import { convertFileSize, formatFile, formatText, mergeArrays, splitFiles } from './utils';
 import { FileList } from './components/fileList';
 import {
   IFileType,
@@ -116,6 +116,11 @@ export const App = () => {
     }
 
     if (file) {
+      if (file.size >= 1e7) {
+        toast(`文件过大，最大 ${convertFileSize(1e7)}`);
+        return;
+      }
+
       const chunks = splitFiles({ file });
       chunks.forEach((chunk, index) => {
         socket.emit('file', {
