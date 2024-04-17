@@ -139,7 +139,7 @@ export const App = () => {
           totalChunks: chunks.length,
         });
       });
-      loadingRef.current = loading('发送中...', undefined, false);
+      loadingRef.current = loading('发送中...');
     }
 
     form.resetField();
