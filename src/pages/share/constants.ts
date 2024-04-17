@@ -4,6 +4,7 @@ import { FileStore } from "./fileStore";
 const query = new URL(window.location.href).searchParams;
 export const ROOM_ID = query.get('room')?.slice(0, 10) || 'dodo';
 export const FILE_CHUNK_SIZE = 50 * 1024;
+export const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 export const PageContext = React.createContext<{
   fileMap: FileStore['fileStoreMap'];

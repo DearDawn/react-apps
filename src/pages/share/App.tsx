@@ -43,6 +43,7 @@ import {
   ServerFileRes,
   ServerHistory,
   ServerTextRes,
+  MAX_FILE_SIZE,
 } from './constants';
 import { FileStore, fileStore } from './fileStore';
 import { FileItem } from './components/fileItem';
@@ -122,8 +123,8 @@ export const App = () => {
     }
 
     if (file) {
-      if (file.size >= 1e7) {
-        toast(`文件过大，最大 ${convertFileSize(1e7)}`);
+      if (file.size >= MAX_FILE_SIZE) {
+        toast(`文件过大，最大 ${convertFileSize(MAX_FILE_SIZE)}`);
         form.resetField();
         return;
       }
