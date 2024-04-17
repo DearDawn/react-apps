@@ -27,7 +27,13 @@ import {
 } from './hooks';
 import clsx from 'clsx';
 import { waitTime } from '@/utils';
-import { convertFileSize, formatFile, formatText, mergeArrays, splitFiles } from './utils';
+import {
+  convertFileSize,
+  formatFile,
+  formatText,
+  mergeArrays,
+  splitFiles,
+} from './utils';
 import { FileList } from './components/fileList';
 import {
   IFileType,
@@ -234,6 +240,10 @@ export const App = () => {
     socket.on('file_done', (fileID: string, clientId) => {
       console.log('[dodo] ', 'fileID done', fileID);
       loadingRef.current();
+    });
+
+    socket.on('error', (message: string) => {
+      toast(message);
     });
 
     return () => {
