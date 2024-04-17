@@ -119,7 +119,7 @@ export const App = () => {
 
     if (text.trim()) {
       socket.emit('text', text);
-      loadingRef.current = loading('发送中...');
+      loadingRef.current = loading('发送中...', undefined, false);
     }
 
     if (file) {
@@ -139,7 +139,7 @@ export const App = () => {
           totalChunks: chunks.length,
         });
       });
-      loadingRef.current = loading('发送中...');
+      loadingRef.current = loading('发送中...', undefined, false);
     }
 
     form.resetField();
