@@ -18,7 +18,7 @@
   "alias": {
     "pixi.js": "./node_modules/pixi.js/dist/pixi.min.mjs",
     "pixi6.js": "./node_modules/pixi6.js/dist/esm/pixi.min.mjs",
-    "pixi-live2d-display": "./node_modules/pixi-live2d-display/dist/cubism2.es.js",
+    "pixi-live2d-display": "./node_modules/pixi-live2d-display/dist/cubism4.es.js",
     "pixi-live2d-display/extra": "./node_modules/pixi-live2d-display/dist/extra.es.js"
   },
   "browserslist": "> 0.5%, last 2 versions, not dead",

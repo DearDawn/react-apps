@@ -25,15 +25,17 @@ export const App = () => {
 
     // no `await` here as it's not a Promise
     const model = Live2DModel.fromSync(
-      'https://dododawn-1300422826.cos.ap-shanghai.myqcloud.com/public/models/wanko/wanko.model.json',
-      { autoInteract: true }
+      'http://127.0.0.1:5500/wanko/runtime/wanko_touch.model3.json',
+      {
+        autoInteract: true,
+      }
     );
 
     model.once('load', () => {
       // now it's safe
       app.stage.addChild(model);
 
-      model.scale.set(0.2, 0.3);
+      model.scale.set(0.5, 0.5);
       model.anchor.set(0.5, 0.5);
       model.position.set(window.innerWidth / 2, window.innerHeight / 2);
 
@@ -49,12 +51,12 @@ export const App = () => {
       model.on('pointerdown', (hitAreaNames) => {
         console.log('[dodo] ', 'hit', hitAreaNames);
         // model.motion('idle');
-        model.motion('shake');
+        model.motion('Shake');
         // model.motion('tap_body');
       });
 
       model.on('hit', (hitAreaNames) => {
-        console.log('[dodo] ', 'hit111  ');
+        console.log('[dodo] ', 'hit111  ', hitAreaNames);
         if (hitAreaNames.includes('body')) {
           // body is hit
         }
@@ -90,13 +92,14 @@ export const App = () => {
     const foreground = PIXI.Sprite.from(PIXI.Texture.WHITE);
     foreground.width = model.internalModel.width;
     foreground.height = model.internalModel.height;
-    foreground.alpha = 0.2;
+    foreground.alpha = 0.1;
 
     model.addChild(foreground);
   }
 
   function addHitAreaFrames(model: Live2DModel<InternalModel>) {
     const hitAreaFrames = new HitAreaFrames();
+    hitAreaFrames.visible = true;
 
     model.addChild(hitAreaFrames);
   }
