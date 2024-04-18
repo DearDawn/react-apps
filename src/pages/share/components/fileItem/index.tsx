@@ -2,10 +2,9 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 import * as styles from './index.module.less';
 import { FileT, ImgT, PageContext } from '../../constants';
 import { convertFileSize, downloadFile, getBlob } from '../../utils';
-import { ICON, Icon, toast } from 'sweet-me';
+import { ICON, Icon, Image, toast } from 'sweet-me';
 import { socket } from '../../socket';
 import clsx from 'clsx';
-import { Image } from '../image';
 
 interface IProps {
   fileInfo: FileT | ImgT;
