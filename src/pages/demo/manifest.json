@@ -1,7 +1,7 @@
 {
-  "name": "dodoDemo",
-  "short_name": "dodoDemo",
-  "description": "dodoDemo",
+  "name": "小工具",
+  "short_name": "小工具",
+  "description": "小工具合集",
   "display": "standalone",
   "display_override": [
     "window-control-overlay",
