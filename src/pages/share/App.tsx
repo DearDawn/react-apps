@@ -164,7 +164,8 @@ export const App = () => {
     };
 
   const handlePasteOrDrop = async (data: DataTransfer) => {
-    console.log('[dodo] ', 'data', data);
+    console.log('[dodo] ', 'data', data, data.types, data.files[0]);
+
     if (data.types.includes('text/plain')) {
       const pastedText = data.getData('text/plain');
       const currentText = form.getFieldValue('text') || '';
