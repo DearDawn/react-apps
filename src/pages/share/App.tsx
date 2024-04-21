@@ -170,7 +170,8 @@ export const App = () => {
       data,
       data.types,
       data.files[0],
-      data.getData(data.types[0])
+      data.items[0],
+      data.getData('text/plain')
     );
 
     if (data.types.includes('text/plain')) {
