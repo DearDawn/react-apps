@@ -21,7 +21,7 @@ export const App = () => {
       height: window.innerHeight,
       resolution: 2, // default: 1 分辨率
     });
-    const button = new Button({});
+
     const modelObj = new Model({
       src: 'https://dododawn-1300422826.cos.ap-shanghai.myqcloud.com/public/models/wanko/runtime/wanko_touch.model3.json',
     });
@@ -30,8 +30,10 @@ export const App = () => {
       // now it's safe
       app.stage.addChild(modelObj.model);
       // 创建按钮实例
-      app.stage.addChild(button);
     });
+
+    const button = new Button({});
+    app.stage.addChild(button);
   }, []);
 
   return (
