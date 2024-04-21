@@ -171,7 +171,7 @@ export const App = () => {
       data.types,
       data.files[0],
       data.items[0],
-      data.getData('text/plain')
+      data.getData('text/html')
     );
 
     if (data.types.includes('text/plain')) {
