@@ -10,11 +10,14 @@ export const Notice: Comp = () => {
   const handleBadge = useCallback(() => {
     const newVal = (badge + 1) % 10;
 
-    if (newVal === 0) {
-      navigator?.clearAppBadge();
-    } else {
-      navigator?.setAppBadge(newVal);
-    }
+    Notification.requestPermission().then(() => {
+      if (newVal === 0) {
+        navigator?.clearAppBadge();
+      } else {
+        navigator?.setAppBadge(newVal);
+      }
+    });
+
     setBadge(newVal);
   }, [badge]);
 
