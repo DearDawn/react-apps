@@ -23,7 +23,7 @@ export const App = () => {
     });
     const button = new Button({});
     const modelObj = new Model({
-      src: 'http://127.0.0.1:5500/wanko/runtime/wanko_touch.model3.json',
+      src: 'https://dododawn-1300422826.cos.ap-shanghai.myqcloud.com/public/models/wanko/runtime/wanko_touch.model3.json',
     });
 
     modelObj.model.once('load', () => {
