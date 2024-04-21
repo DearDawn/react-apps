@@ -37,7 +37,7 @@ export class Model {
     this.model.on('hit', this.onPointerDown);
   }
 
-  onPointerDown = async (hitAreaNames: any) => {
+  onPointerDown = async (hitAreaNames?: any) => {
     console.log('[dodo] ', 'hit', hitAreaNames);
     this.model.motion('Shake');
   }

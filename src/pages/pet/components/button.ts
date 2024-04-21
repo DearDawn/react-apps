@@ -37,9 +37,14 @@ export class Button extends PIXI.Container {
     this.scale.set(0.9);
   }
 
+  onClick = (cb = () => { }) => {
+    cb?.();
+  }
+
   onButtonUp = () => {
     this.scale.set(1);
     // 在这里执行按钮释放后的逻辑
+    this.onClick();
   }
 
   destroy () {

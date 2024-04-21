@@ -24,6 +24,10 @@ export const App = () => {
       resolution: 2, // default: 1 分辨率
     });
 
+    // 创建按钮实例
+    const button = new Button({ text: '晃身子' });
+    app.stage.addChild(button);
+
     const modelObj = new Model({
       src: 'https://dododawn-1300422826.cos.ap-shanghai.myqcloud.com/public/models/wanko/runtime/wanko_touch.model3.json',
     });
@@ -31,11 +35,11 @@ export const App = () => {
     modelObj.model.once('load', () => {
       // now it's safe
       app.stage.addChild(modelObj.model);
-      // 创建按钮实例
+      button.onClick(() => {
+        console.log('[dodo] ', '2222', 2222);
+        modelObj.onPointerDown();
+      });
     });
-
-    const button = new Button({});
-    app.stage.addChild(button);
   }, []);
 
   return (
