@@ -3,6 +3,8 @@ import * as styles from './App.module.less';
 import * as PIXI from 'pixi6.js';
 import { Button } from './components/button';
 import { Model } from './components/model';
+import clsx from 'clsx';
+import { Page } from 'sweet-me';
 
 // expose PIXI to window so that this plugin is able to
 // reference window.PIXI.Ticker to automatically update Live2D models
@@ -37,8 +39,8 @@ export const App = () => {
   }, []);
 
   return (
-    <div className={styles.app}>
+    <Page minWidth='300px' className={clsx(styles.app, {})}>
       <canvas id='dodo-game-root' className={styles.dodoGameRoot}></canvas>
-    </div>
+    </Page>
   );
 };

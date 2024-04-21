@@ -4,7 +4,7 @@ import Image from 'src/assets/bunny.png';
 import { Comp } from '../type';
 import { useCallback, useState } from 'react';
 
-export const Notice: Comp = () => {
+export const Notice: Comp = ({ style }) => {
   const [badge, setBadge] = useState(0);
 
   const handleBadge = useCallback(() => {
@@ -89,7 +89,7 @@ export const Notice: Comp = () => {
   };
 
   return (
-    <div className={styles.card}>
+    <div className={styles.card} style={style}>
       <Button onClick={handleClick}>授权</Button>
       <Button onClick={handleNotice}>通知</Button>
       <Button onClick={handleNoticeSW}>SW 通知</Button>
@@ -97,3 +97,5 @@ export const Notice: Comp = () => {
     </div>
   );
 };
+
+Notice.scale = 0.8;

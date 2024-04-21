@@ -30,7 +30,7 @@ export const TodoList: Comp = ({ style, visible }) => {
       if (storedTodos) {
         updateTodoStore(storedTodos);
       }
-    });
+    }).catch(console.error);
   }, [visible, pageVisible]);
 
   const updateTodoStore = (todoInfo) => {

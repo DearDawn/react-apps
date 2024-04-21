@@ -3,7 +3,7 @@ import * as PIXI from 'pixi6.js';
 // @ts-ignore
 import { HitAreaFrames } from 'pixi-live2d-display/extra';
 
-export const draggable = (model: Live2DModel<InternalModel>) => {
+export const addDraggable = (model: Live2DModel<InternalModel>) => {
   model.buttonMode = true;
   model.on('pointerdown', (e) => {
     model['dragging'] = true;
