@@ -25,6 +25,7 @@ export const addFrame = (model: Live2DModel<InternalModel>) => {
   foreground.width = model.internalModel.width;
   foreground.height = model.internalModel.height;
   foreground.alpha = 0.1;
+  foreground.tint = 0xff0000; // 设置为红色
 
   model.addChild(foreground);
 }

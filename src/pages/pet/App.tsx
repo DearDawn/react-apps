@@ -15,14 +15,17 @@ window.PIXI = PIXI;
 export const App = () => {
   useEffect(() => {
     const app = new PIXI.Application({
-      backgroundColor: 0x777777,
+      backgroundColor: 0xffffff,
       autoStart: true,
       resizeTo: window,
       view: document.getElementById('dodo-game-root') as HTMLCanvasElement,
+      // width: Math.max(Math.min(window.innerWidth, 750), 300),
       width: window.innerWidth,
       height: window.innerHeight,
-      resolution: 2, // default: 1 分辨率
+      resolution: window.devicePixelRatio, // default: 1 分辨率
     });
+
+    console.log('[dodo] ', 'app', app.screen.width, app.screen.height);
 
     // 创建按钮实例
     const button = new Button({ text: '晃身子' });
@@ -36,7 +39,6 @@ export const App = () => {
       // now it's safe
       app.stage.addChild(modelObj.model);
       button.onClick(() => {
-        console.log('[dodo] ', '2222', 2222);
         modelObj.onPointerDown();
       });
     });

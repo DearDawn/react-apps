@@ -1,13 +1,14 @@
 import * as PIXI from 'pixi6.js';
 
 export class Button extends PIXI.Container {
+  clickCallback = new Set<VoidFunction>();
   constructor ({
     width = 120,
     height = 40,
     radius = 12,
     text = 'Click Me',
     textStyle = { fontFamily: 'Arial', fontSize: 16, fill: 0xffffff },
-    fillColor = 0xFFC0CB
+    fillColor = 0xffc0cb,
   }) {
     super();
 
@@ -33,25 +34,26 @@ export class Button extends PIXI.Container {
     this.on('pointerupoutside', this.onButtonUp);
   }
 
+  onClick = (cb) => {
+    this.clickCallback.add(cb);
+  };
+
   onButtonDown = () => {
     this.scale.set(0.9);
-  }
-
-  onClick = (cb = () => { }) => {
-    cb?.();
-  }
+  };
 
   onButtonUp = () => {
     this.scale.set(1);
     // 在这里执行按钮释放后的逻辑
-    this.onClick();
-  }
+    this.clickCallback.forEach((cb) => cb?.());
+  };
 
   destroy () {
     // 卸载事件监听器
     this.off('pointerdown', this.onButtonDown);
     this.off('pointerup', this.onButtonUp);
     this.off('pointerupoutside', this.onButtonUp);
+    this.clickCallback.clear();
 
     // 调用父类的 destroy 方法
     super.destroy();
