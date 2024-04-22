@@ -3,9 +3,9 @@ import * as styles from './App.module.less';
 import * as PIXI from 'pixi6.js';
 import clsx from 'clsx';
 import { Page } from 'sweet-me';
-import { Pet } from './components/pet';
+import { Pet } from './pet/pet';
 import { PET_HEIGHT, PET_WIDTH } from './constant';
-import { Game } from './components/game';
+import { Game } from './game/game';
 
 // expose PIXI to window so that this plugin is able to
 // reference window.PIXI.Ticker to automatically update Live2D models

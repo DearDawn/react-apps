@@ -41,7 +41,6 @@ export class Button extends PIXI.Container {
     this.on('pointerdown', this.onButtonDown);
     this.on('pointerup', this.onButtonUp);
     this.on('pointerupoutside', this.onButtonUp);
-    console.log('[dodo] ', 'this', this);
   }
 
   onClick = (cb) => {
