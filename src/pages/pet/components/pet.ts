@@ -3,19 +3,19 @@ import { Model } from './model';
 import { Button } from './button';
 
 export class Pet {
-  constructor({ view }) {
+  constructor({ view, width, height }) {
     const app = new PIXI.Application({
       transparent: true,
       autoStart: true,
       resizeTo: view,
       view,
-      width: 150,
-      height: 170,
+      width,
+      height,
       resolution: window.devicePixelRatio,
     });
 
     // 创建按钮实例
-    const button = new Button({ text: '玩小游戏', app });
+    const button = new Button({ text: '逗狗狗', app });
     app.stage.addChild(button);
 
     const modelObj = new Model({
@@ -26,7 +26,7 @@ export class Pet {
     modelObj.model.once('load', () => {
       app.stage.addChild(modelObj.model);
       button.onClick(() => {
-        // modelObj.onPointerDown();
+        modelObj.onPointerDown();
       });
       app.stage.setChildIndex(button, 1);
     });

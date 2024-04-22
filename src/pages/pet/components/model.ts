@@ -44,7 +44,6 @@ export class Model {
   };
 
   onPointerDown = async (hitAreaNames?: any) => {
-    console.log('[dodo] ', 'hit', hitAreaNames);
     const motionMap: Array<[string, number]> = [
       // ['Idle', 0],
       // ['Idle', 1],

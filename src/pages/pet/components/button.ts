@@ -31,15 +31,17 @@ export class Button extends PIXI.Container {
     // 设置按钮交互功能
     this.interactive = true;
     this.buttonMode = true;
-    // this.eventMode = 
     // 设置 graphics 对象的 anchor
-    this.pivot.set(this.width / 2, 0);
-    this.position.set(this.app.view.width / 2 / devicePixelRatio, 0);
+    this.pivot.set(this.width / 2, this.height / 2);
+    this.position.set(
+      this.app.view.width / 2 / devicePixelRatio,
+      this.height / 2
+    );
 
     this.on('pointerdown', this.onButtonDown);
     this.on('pointerup', this.onButtonUp);
     this.on('pointerupoutside', this.onButtonUp);
-    console.log('[dodo] ', 'this', this)
+    console.log('[dodo] ', 'this', this);
   }
 
   onClick = (cb) => {
