@@ -2,15 +2,18 @@ import * as PIXI from 'pixi6.js';
 
 export class Button extends PIXI.Container {
   clickCallback = new Set<VoidFunction>();
-  constructor ({
-    width = 120,
-    height = 40,
+  app: PIXI.Application = null;
+  constructor({
+    width = 90,
+    height = 30,
     radius = 12,
     text = 'Click Me',
     textStyle = { fontFamily: 'Arial', fontSize: 16, fill: 0xffffff },
     fillColor = 0xffc0cb,
+    app,
   }) {
     super();
+    this.app = app;
 
     // 创建按钮背景
     const buttonBackground = new PIXI.Graphics();
@@ -28,10 +31,15 @@ export class Button extends PIXI.Container {
     // 设置按钮交互功能
     this.interactive = true;
     this.buttonMode = true;
+    // this.eventMode = 
+    // 设置 graphics 对象的 anchor
+    this.pivot.set(this.width / 2, 0);
+    this.position.set(this.app.view.width / 2 / devicePixelRatio, 0);
 
     this.on('pointerdown', this.onButtonDown);
     this.on('pointerup', this.onButtonUp);
     this.on('pointerupoutside', this.onButtonUp);
+    console.log('[dodo] ', 'this', this)
   }
 
   onClick = (cb) => {
@@ -48,7 +56,7 @@ export class Button extends PIXI.Container {
     this.clickCallback.forEach((cb) => cb?.());
   };
 
-  destroy () {
+  destroy() {
     // 卸载事件监听器
     this.off('pointerdown', this.onButtonDown);
     this.off('pointerup', this.onButtonUp);

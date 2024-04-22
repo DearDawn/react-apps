@@ -6,12 +6,15 @@ import { query, waitTime } from '@/utils';
 export class Model {
   model: Live2DModel<InternalModel>;
   motionIndex = 0;
+  app: PIXI.Application = null;
 
   constructor({
     src = 'https://dododawn-1300422826.cos.ap-shanghai.myqcloud.com/public/models/wanko/runtime/wanko_touch.model3.json',
     draggable = false,
     testMode = query.get('test') === '1',
+    app,
   }) {
+    this.app = app;
     this.model = Live2DModel.fromSync(src, { autoInteract: true });
 
     this.model.once('load', () => {
@@ -29,18 +32,15 @@ export class Model {
   }
 
   initModel = () => {
-    const ratio = this.model.height / this.model.width;
-    this.model.scale.x = 0.3;
-    this.model.scale.set(0.3, 0.3);
+    this.model.scale.set(0.25);
     this.model.anchor.set(0.5, 0.5);
-    this.model.position.set(window.innerWidth / 2, window.innerHeight / 2);
+    this.model.position.set(
+      this.app.view.width / 2 / devicePixelRatio,
+      (this.app.view.height - 100) / 2 / devicePixelRatio
+    );
     this.model.cursor = 'pointer';
-    this.model.internalModel.viewport = [0, 0, 750, window.innerHeight];
-
     this.model.on('pointerdown', this.onPointerDown);
     this.model.on('hit', this.onPointerDown);
-    // this.model.
-    console.log('[dodo] ', 'model.internalModel.motionManager', this.model);
   };
 
   onPointerDown = async (hitAreaNames?: any) => {
