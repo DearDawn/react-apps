@@ -47,10 +47,10 @@ export class Game {
       const spacePressed = controller.keys.space.pressed;
 
       if (spacePressed || this.playerObj.isJumping) {
-        this.playerObj.jump();
+        this.playerObj.jump(delta);
       }
 
-      ground.update();
+      ground.update(delta);
       this.blocksLoop(delta);
     });
   }

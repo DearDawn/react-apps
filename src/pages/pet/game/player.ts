@@ -65,11 +65,11 @@ export class Player {
     return this.state === 'fall';
   }
 
-  jump() {
+  jump(delta) {
     if (this.isJumping) {
       // 应用重力效果
-      this.velocityY += this.gravity;
-      this.player.y += this.velocityY;
+      this.velocityY += this.gravity * delta;
+      this.player.y += this.velocityY * delta;
 
       // 玩家触底时停止跳跃
       if (this.player.y >= this.initPos.y) {

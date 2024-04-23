@@ -25,11 +25,11 @@ export class Ground {
     }
   }
 
-  update() {
+  update(delta) {
     // 更新地面精灵的位置
     for (let i = 0; i < this.blocks.length; i++) {
       const block = this.blocks[i];
-      block.x -= this.scrollSpeed;
+      block.x -= this.scrollSpeed * delta;
 
       // 如果地面精灵完全滚动到屏幕外，则将其重新定位到地面序列的末尾
       if (block.x + this.width <= 0) {
