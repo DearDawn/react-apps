@@ -10,7 +10,8 @@ import { Score } from './score';
 export class Game {
   app: PIXI.Application;
   playerObj: Player;
-  score: Score;
+  scoreBoard: Score;
+  level = 1;
   blockTimeout = 1000;
   blockTimeoutTemp = Date.now();
 
@@ -30,12 +31,12 @@ export class Game {
       app,
       text: '跳跃：点击屏幕或敲击空格',
     });
-    this.score = new Score({ app });
+    this.scoreBoard = new Score({ app });
     const ground = new Ground({ app });
     app.stage.addChild(button);
     app.stage.addChild(this.playerObj.player);
     app.stage.addChild(rules);
-    app.stage.addChild(this.score);
+    app.stage.addChild(this.scoreBoard);
     this.playerObj.run();
     const controller = new Controller({ app: this.app });
     this.init();
@@ -61,7 +62,7 @@ export class Game {
   initBlocks() {
     if (Date.now() - this.blockTimeoutTemp < this.blockTimeout) return;
 
-    const obstacle = new Obstacle({ app: this.app });
+    const obstacle = new Obstacle({ app: this.app, level: this.level });
     Obstacle.obstacles.push(obstacle);
 
     this.blockTimeout = Math.random() * 1000 + 800;
@@ -82,11 +83,19 @@ export class Game {
 
       if (obstacle.isOutOfScreen()) {
         obstacle.remove();
-        this.score.add();
+        this.scoreBoard.add();
+        this.levelUp();
         obstacles.splice(i, 1);
       }
     }
   }
 
   async initAssets() {}
+
+  levelUp() {
+    console.log('[dodo] ', '升级');
+    if (this.level < 2.7) {
+      this.level += 0.02;
+    }
+  }
 }

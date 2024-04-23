@@ -4,11 +4,13 @@ import * as PIXI from 'pixi6.js';
 export class Obstacle {
   app: PIXI.Application;
   sprite: PIXI.Graphics;
-  speed = 5;
+  level: number;
+  initSpeed = 5;
   static obstacles: Obstacle[] = [];
 
-  constructor({ app }) {
+  constructor({ app, level }) {
     this.app = app;
+    this.level = level;
     this.sprite = new PIXI.Graphics();
     this.sprite.beginFill(0x000000);
     this.sprite.drawRect(0, 0, getRandom(40, 55), getRandom(20, 100));
@@ -16,6 +18,11 @@ export class Obstacle {
     this.sprite.x = this.app.screen.width;
     this.sprite.y = this.app.screen.height - 330 - this.sprite.height;
     app.stage.addChild(this.sprite);
+    console.log('[dodo] ', 'this.levle', this.level);
+  }
+
+  get speed() {
+    return this.level * this.initSpeed;
   }
 
   update(delta) {
