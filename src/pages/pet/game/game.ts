@@ -130,7 +130,7 @@ export class Game {
   levelUp() {
     if (this.level < 7) {
       console.log('[dodo] ', '升级');
-      this.level += 0.06;
+      this.level += 0.08;
     }
   }
 }
