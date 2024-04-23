@@ -9,7 +9,7 @@ const VELOCITY_Y = -11;
 export class Player {
   app: PIXI.Application = null;
   player: PIXI.AnimatedSprite;
-  body: PIXI.Graphics;
+  body: PIXI.Sprite;
   state: PlayState;
   preState: PlayState;
   initPos: { x: number; y: number };
@@ -51,6 +51,10 @@ export class Player {
     player.anchor.set(0.5);
 
     this.initBody();
+
+    if (isTest) {
+      this.initTest();
+    }
   }
 
   get isJumping() {
@@ -94,16 +98,21 @@ export class Player {
 
   initBody() {
     // 创建边框矩形
-    const body = new PIXI.Graphics();
-    this.body = body;
+    const sprite = new PIXI.Sprite(PIXI.Texture.EMPTY);
+    sprite.width = this.player.width * 0.3;
+    sprite.height = this.player.height * 0.75;
+    sprite.scale.set(1, 1);
+    sprite.anchor.set(0.5, 0.5);
+    this.body = sprite;
 
-    if (isTest) {
-      this.body.lineStyle(2, 0xff0000);
-    }
+    this.player.addChild(this.body);
+  }
 
-    body.drawRect(0, 0, this.player.width * 0.3, this.player.height * 0.75);
-    body.pivot.set(body.width / 2, body.height / 2);
-
-    this.player.addChild(body);
+  initTest() {
+    const border = new PIXI.Graphics();
+    border.lineStyle(2, 0xff0000);
+    border.drawRect(0, 0, this.player.width * 0.3, this.player.height * 0.75);
+    border.pivot.set(border.width / 2, border.height / 2);
+    this.body.addChild(border);
   }
 }
