@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi6.js';
 import PlayerFrame from './player-frames.png';
+import { isTest } from '@/utils';
 
 type PlayState = 'run' | 'jump' | 'static' | 'fall';
 
@@ -8,6 +9,7 @@ const VELOCITY_Y = -11;
 export class Player {
   app: PIXI.Application = null;
   player: PIXI.AnimatedSprite;
+  body: PIXI.Graphics;
   state: PlayState;
   preState: PlayState;
   initPos: { x: number; y: number };
@@ -18,7 +20,6 @@ export class Player {
   constructor({ app }) {
     this.app = app;
     this.state = 'static';
-    console.log('[dodo] ', ' this.app', this.app);
     this.initPos = {
       x: this.app.screen.width / 7,
       y: this.app.screen.height - 400,
@@ -48,6 +49,8 @@ export class Player {
 
     // 设置动画精灵的锚点为中心点
     player.anchor.set(0.5);
+
+    this.initBody();
   }
 
   get isJumping() {
@@ -75,6 +78,7 @@ export class Player {
       this.player.animationSpeed = 0.1;
     }
   }
+
   run() {
     this.state = 'run';
     this.player.animationSpeed = 0.2;
@@ -82,5 +86,24 @@ export class Player {
     if (!this.player.playing) {
       this.player.play();
     }
+  }
+
+  isCollideWith(obj: PIXI.Sprite | PIXI.Graphics) {
+    return this.body.getBounds().intersects(obj.getBounds());
+  }
+
+  initBody() {
+    // 创建边框矩形
+    const body = new PIXI.Graphics();
+    this.body = body;
+
+    if (isTest) {
+      this.body.lineStyle(2, 0xff0000);
+    }
+
+    body.drawRect(0, 0, this.player.width * 0.3, this.player.height * 0.75);
+    body.pivot.set(body.width / 2, body.height / 2);
+
+    this.player.addChild(body);
   }
 }

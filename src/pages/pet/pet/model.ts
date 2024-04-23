@@ -1,7 +1,7 @@
 import { InternalModel, Live2DModel } from 'pixi-live2d-display';
 import * as PIXI from 'pixi6.js';
 import { addFrame, addHitAreaFrames, addDraggable } from '../utils';
-import { query, waitTime } from '@/utils';
+import { isTest } from '@/utils';
 
 export class Model {
   model: Live2DModel<InternalModel>;
@@ -11,7 +11,7 @@ export class Model {
   constructor({
     src = 'https://dododawn-1300422826.cos.ap-shanghai.myqcloud.com/public/models/wanko/runtime/wanko_touch.model3.json',
     draggable = false,
-    testMode = query.get('test') === '1',
+    testMode = isTest,
     app,
   }) {
     this.app = app;
