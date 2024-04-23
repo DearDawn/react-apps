@@ -11,9 +11,8 @@ export class Ground {
   constructor({ app, color = '#000000' }) {
     this.app = app;
     this.blocks = [];
-    this.count = Math.ceil(
-      this.app.renderer.width / devicePixelRatio / this.width
-    );
+    this.count =
+      Math.ceil(this.app.renderer.width / devicePixelRatio / this.width) + 1;
 
     // 创建多个地面精灵，将它们放置在地面序列上
     for (let i = 0; i < this.count; i++) {

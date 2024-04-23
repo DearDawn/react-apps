@@ -19,7 +19,7 @@ export class Player {
     this.app = app;
     this.state = 'static';
     this.initPos = {
-      x: this.app.renderer.width / 2 / devicePixelRatio - 100,
+      x: this.app.renderer.width / 7 / devicePixelRatio,
       y: this.app.renderer.height / 2 / devicePixelRatio + 120,
     };
     this.load();
