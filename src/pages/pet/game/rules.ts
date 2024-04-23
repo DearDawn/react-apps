@@ -7,10 +7,10 @@ export class Rules extends PIXI.Container {
     super();
 
     this.app = app;
-    const rendererWidth = this.app.renderer.width / devicePixelRatio;
-    const rendererHeight = this.app.renderer.height / devicePixelRatio;
+    const appWidth = this.app.screen.width;
+    const appHeight = this.app.screen.height;
 
-    const width = rendererWidth - 150;
+    const width = appWidth - 150;
     const height = 160;
 
     this.background = new PIXI.Graphics();
@@ -34,6 +34,6 @@ export class Rules extends PIXI.Container {
     rulesText.y = 10;
     this.addChild(rulesText);
 
-    this.position.set(10, rendererHeight - height - 10);
+    this.position.set(10, appHeight - height - 10);
   }
 }

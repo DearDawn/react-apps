@@ -35,8 +35,8 @@ export class Model {
     this.model.scale.set(0.25);
     this.model.anchor.set(0.5, 0.5);
     this.model.position.set(
-      this.app.view.width / 2 / devicePixelRatio,
-      (this.app.view.height - 100) / 2 / devicePixelRatio
+      this.app.screen.width / 2,
+      this.app.screen.height / 2 - 25
     );
     this.model.cursor = 'pointer';
     this.model.on('pointerdown', this.onPointerDown);

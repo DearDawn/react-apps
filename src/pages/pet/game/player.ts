@@ -18,9 +18,10 @@ export class Player {
   constructor({ app }) {
     this.app = app;
     this.state = 'static';
+    console.log('[dodo] ', ' this.app', this.app);
     this.initPos = {
-      x: this.app.renderer.width / 7 / devicePixelRatio,
-      y: (this.app.renderer.height - 550) / devicePixelRatio,
+      x: this.app.screen.width / 7,
+      y: this.app.screen.height - 400,
     };
     this.load();
   }

@@ -11,15 +11,14 @@ export class Ground {
   constructor({ app, color = 0x000000 }) {
     this.app = app;
     this.blocks = [];
-    this.count =
-      Math.ceil(this.app.renderer.width / devicePixelRatio / this.width) + 1;
+    this.count = Math.ceil(this.app.screen.width / this.width) + 1;
     // 创建多个地面精灵，将它们放置在地面序列上
     for (let i = 0; i < this.count; i++) {
       const block = new PIXI.Graphics();
       block.beginFill(color);
       block.drawRect(0, 0, this.width, this.height);
       block.endFill();
-      block.y = (this.app.renderer.height - 444) / devicePixelRatio;
+      block.y = this.app.screen.height - 330;
       block.x = i * (this.width + this.gap);
       app.stage.addChild(block);
       this.blocks.push(block);

@@ -33,10 +33,7 @@ export class Button extends PIXI.Container {
     this.buttonMode = true;
     // 设置 graphics 对象的 anchor
     this.pivot.set(this.width / 2, this.height / 2);
-    this.position.set(
-      this.app.view.width / 2 / devicePixelRatio,
-      this.height / 2
-    );
+    this.position.set(this.app.screen.width / 2, this.height / 2);
 
     this.on('pointerdown', this.onButtonDown);
     this.on('pointerup', this.onButtonUp);
