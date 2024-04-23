@@ -4,7 +4,7 @@ import { isTest } from '@/utils';
 
 type PlayState = 'run' | 'jump' | 'static' | 'fall';
 
-const VELOCITY_Y = -11;
+const VELOCITY_Y = -18;
 
 export class Player {
   app: PIXI.Application = null;
@@ -14,7 +14,7 @@ export class Player {
   preState: PlayState;
   initPos: { x: number; y: number };
   /** 重力 */
-  gravity = 0.3;
+  gravity = 0.98;
   /** 竖直方向的速度 */
   velocityY = VELOCITY_Y;
   constructor({ app }) {
