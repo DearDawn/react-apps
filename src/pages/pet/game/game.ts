@@ -1,6 +1,9 @@
 import * as PIXI from 'pixi6.js';
 import { Button } from './button';
 import { Player } from './player';
+import { Controller } from './controller';
+import { Rules } from './rules';
+import { Ground } from './ground';
 
 export class Game {
   app: PIXI.Application;
@@ -17,13 +20,30 @@ export class Game {
 
     // 创建按钮实例
     const button = new Button({ text: '游戏开发中', app, width: 120 });
-    app.stage.addChild(button);
     const playerObj = new Player({ app });
+    const rules = new Rules({
+      app,
+      text: '空格跳跃',
+    });
+    const ground = new Ground({ app });
+    app.stage.addChild(button);
     app.stage.addChild(playerObj.player);
+    app.stage.addChild(rules);
+    playerObj.run();
+    const controller = new Controller();
+
+    this.app.ticker.add((time) => {
+      const spacePressed = controller.keys.space.pressed;
+
+      if (spacePressed || playerObj.isJumping) {
+        playerObj.jump();
+      }
+
+      ground.update();
+    });
   }
 
   init() {}
-
   async initAssets() {
     // await Assets.load([
     //   {

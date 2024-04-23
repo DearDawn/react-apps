@@ -1,12 +1,27 @@
 import * as PIXI from 'pixi6.js';
 import PlayerFrame from './player-frames.png';
 
-// Class for handling the character Spine and its animations.
+type PlayState = 'run' | 'jump' | 'static' | 'fall';
+
+const VELOCITY_Y = -11;
+
 export class Player {
   app: PIXI.Application = null;
-  player: PIXI.Sprite;
+  player: PIXI.AnimatedSprite;
+  state: PlayState;
+  preState: PlayState;
+  initPos: { x: number; y: number };
+  /** 重力 */
+  gravity = 0.3;
+  /** 竖直方向的速度 */
+  velocityY = VELOCITY_Y;
   constructor({ app }) {
     this.app = app;
+    this.state = 'static';
+    this.initPos = {
+      x: this.app.renderer.width / 2 / devicePixelRatio - 100,
+      y: this.app.renderer.height / 2 / devicePixelRatio + 120,
+    };
     this.load();
   }
 
@@ -24,20 +39,47 @@ export class Player {
         return frameTexture;
       })
     );
+
     this.player = player;
 
     // 设置动画精灵的位置
-    player.position.set(
-      this.app.renderer.width / 2 / devicePixelRatio,
-      this.app.renderer.height / 2 / devicePixelRatio
-    );
+    player.position.set(this.initPos.x, this.initPos.y);
 
     // 设置动画精灵的锚点为中心点
     player.anchor.set(0.5);
-    // 播放动画
-    player.animationSpeed = 0.2;
-    player.play();
   }
 
-  setup(cb) {}
+  get isJumping() {
+    return this.state === 'jump';
+  }
+
+  get isFalling() {
+    return this.state === 'fall';
+  }
+
+  jump() {
+    if (this.isJumping) {
+      // 应用重力效果
+      this.velocityY += this.gravity;
+      this.player.y += this.velocityY;
+
+      // 玩家触底时停止跳跃
+      if (this.player.y >= this.initPos.y) {
+        this.player.y = this.initPos.y;
+        this.velocityY = VELOCITY_Y;
+        this.run();
+      }
+    } else {
+      this.state = 'jump';
+      this.player.animationSpeed = 0.1;
+    }
+  }
+  run() {
+    this.state = 'run';
+    this.player.animationSpeed = 0.2;
+
+    if (!this.player.playing) {
+      this.player.play();
+    }
+  }
 }
