@@ -77,6 +77,7 @@ export class Game {
   restart() {
     const menu = new Menu({ app: this.app, text: '重新开始' });
     menu.onClick(() => {
+      this.scoreBoard.clear();
       this.app.stage.removeChild(menu);
       this.start();
     });
@@ -85,7 +86,6 @@ export class Game {
 
     // clear
     this.app.stop();
-    this.scoreBoard.clear();
     this.level = 1;
     Obstacle.obstacles.forEach((it) => {
       it.remove();
