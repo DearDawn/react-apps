@@ -43,7 +43,7 @@ export class Controller {
   keydownHandler(event) {
     const key = keyMap[event.code];
 
-    if (!key) return;
+    if (!key || !this.app.ticker.started) return;
 
     this.keys[key].pressed = true;
   }
@@ -51,12 +51,14 @@ export class Controller {
   keyupHandler(event) {
     const key = keyMap[event.code];
 
-    if (!key) return;
+    if (!key || !this.app.ticker.started) return;
 
     this.keys[key].pressed = false;
   }
 
   clickHandler() {
+    if (!this.app.ticker.started) return;
+
     this.keys.space.pressed = true;
 
     setTimeout(() => {

@@ -50,5 +50,6 @@ export class Score extends PIXI.Container {
 
   clear() {
     this.score = 0;
+    this.textWrap.text = this.scoreText;
   }
 }

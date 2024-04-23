@@ -27,7 +27,7 @@ export class Player {
     this.load();
   }
 
-  async load() {
+  load() {
     // 加载雪碧图纹理
     const spriteSheetTexture = PIXI.Texture.from(PlayerFrame);
 

@@ -6,11 +6,13 @@ import { Rules } from './rules';
 import { Ground } from './ground';
 import { Obstacle } from './block';
 import { Score } from './score';
+import { Menu } from './menu';
 
 export class Game {
   app: PIXI.Application;
   playerObj: Player;
   scoreBoard: Score;
+  controller: Controller;
   level = 1;
   blockTimeout = 1000;
   blockTimeoutTemp = Date.now();
@@ -18,7 +20,7 @@ export class Game {
   constructor({ view }) {
     const app = new PIXI.Application({
       backgroundColor: 0xeeeeee,
-      autoStart: true,
+      autoStart: false,
       resizeTo: view,
       view,
       resolution: window.devicePixelRatio,
@@ -33,18 +35,25 @@ export class Game {
     });
     this.scoreBoard = new Score({ app });
     const ground = new Ground({ app });
+    const menu = new Menu({ app });
+    menu.onClick(() => {
+      app.stage.removeChild(menu);
+      this.start();
+    });
     app.stage.addChild(button);
     app.stage.addChild(this.playerObj.player);
     app.stage.addChild(rules);
     app.stage.addChild(this.scoreBoard);
+    app.stage.addChild(menu);
+    this.controller = new Controller({ app: this.app });
     this.playerObj.run();
-    const controller = new Controller({ app: this.app });
+
     this.init();
 
     this.app.ticker.add((delta) => {
       this.initBlocks();
 
-      const spacePressed = controller.keys.space.pressed;
+      const spacePressed = this.controller.keys.space.pressed;
 
       if (spacePressed || this.playerObj.isJumping) {
         this.playerObj.jump(delta);
@@ -55,7 +64,34 @@ export class Game {
     });
   }
 
-  init() {}
+  init() {
+    this.app.render();
+  }
+
+  start() {
+    setTimeout(() => {
+      this.app.start();
+    }, 0);
+  }
+
+  restart() {
+    const menu = new Menu({ app: this.app, text: '重新开始' });
+    menu.onClick(() => {
+      this.app.stage.removeChild(menu);
+      this.start();
+    });
+
+    this.app.stage.addChild(menu);
+
+    // clear
+    this.app.stop();
+    this.scoreBoard.clear();
+    this.level = 1;
+    Obstacle.obstacles.forEach((it) => {
+      it.remove();
+    });
+    Obstacle.obstacles = [];
+  }
 
   initEvent() {}
 
@@ -77,8 +113,7 @@ export class Game {
       obstacle.update(delta);
 
       if (this.playerObj.isCollideWith(obstacle.sprite)) {
-        console.log('[dodo] ', 'hit', 111);
-        this.app.ticker.stop();
+        this.restart();
       }
 
       if (obstacle.isOutOfScreen()) {
@@ -95,7 +130,7 @@ export class Game {
   levelUp() {
     if (this.level < 5) {
       console.log('[dodo] ', '升级');
-      this.level += 0.05;
+      this.level += 0.06;
     }
   }
 }
