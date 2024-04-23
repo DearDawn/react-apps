@@ -57,6 +57,8 @@ export class Controller {
   }
 
   clickHandler() {
+    if (!this.app.ticker.started) return;
+
     this.keys.space.pressed = true;
 
     setTimeout(() => {

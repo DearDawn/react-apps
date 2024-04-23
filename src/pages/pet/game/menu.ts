@@ -34,10 +34,7 @@ export class Menu extends PIXI.Container {
   }
 
   onClick(cb) {
-    this.button.on('click', (e) => {
-      e.stopPropagation();
-      // e.preventDefault();
-      console.log('[dodo] ', 'e', e);
+    this.button.on('pointerdown', (e) => {
       cb();
     });
   }
