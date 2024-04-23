@@ -101,7 +101,7 @@ export class Player {
     const sprite = new PIXI.Sprite(PIXI.Texture.EMPTY);
     sprite.width = this.player.width * 0.3;
     sprite.height = this.player.height * 0.75;
-    sprite.scale.set(1, 1);
+    sprite.scale.set(sprite.width, sprite.height);
     sprite.anchor.set(0.5, 0.5);
     this.body = sprite;
 
@@ -113,6 +113,7 @@ export class Player {
     border.lineStyle(2, 0xff0000);
     border.drawRect(0, 0, this.player.width * 0.3, this.player.height * 0.75);
     border.pivot.set(border.width / 2, border.height / 2);
+    border.scale.set(1 / this.body.scale.x, 1 / this.body.scale.y);
     this.body.addChild(border);
   }
 }
