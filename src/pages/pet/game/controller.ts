@@ -1,3 +1,5 @@
+import * as PIXI from 'pixi6.js';
+
 enum Key {
   up = 'up',
   down = 'down',
@@ -19,8 +21,11 @@ const keyMap = {
 };
 
 export class Controller {
+  app: PIXI.Application;
   keys: Record<Key, { pressed: boolean; timestamp: number }>;
-  constructor() {
+  constructor({ app }) {
+    this.app = app;
+
     this.keys = {
       up: { pressed: false, timestamp: 0 },
       left: { pressed: false, timestamp: 0 },
@@ -31,14 +36,13 @@ export class Controller {
 
     window.addEventListener('keydown', (event) => this.keydownHandler(event));
     window.addEventListener('keyup', (event) => this.keyupHandler(event));
+    this.app.view.addEventListener('click', () => this.clickHandler());
   }
 
   keydownHandler(event) {
     const key = keyMap[event.code];
 
     if (!key) return;
-
-    const now = Date.now();
 
     this.keys[key].pressed = true;
   }
@@ -49,5 +53,13 @@ export class Controller {
     if (!key) return;
 
     this.keys[key].pressed = false;
+  }
+
+  clickHandler() {
+    this.keys.space.pressed = true;
+
+    setTimeout(() => {
+      this.keys.space.pressed = false;
+    }, 100);
   }
 }

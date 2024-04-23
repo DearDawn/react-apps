@@ -13,8 +13,6 @@ export class Rules extends PIXI.Container {
     const width = rendererWidth - 150;
     const height = 160;
 
-    console.log('[dodo] ', 'this.width', width);
-
     this.background = new PIXI.Graphics();
     this.background.beginFill(0x000000, 0.8);
     this.background.drawRect(0, 0, width, height);

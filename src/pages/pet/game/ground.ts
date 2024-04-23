@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js';
+import * as PIXI from 'pixi6.js';
 
 export class Ground {
   app: PIXI.Application;
@@ -8,7 +8,7 @@ export class Ground {
   height = 5;
   gap = 5;
   blocks: PIXI.Graphics[];
-  constructor({ app, color = '#000000' }) {
+  constructor({ app, color = 0x000000 }) {
     this.app = app;
     this.blocks = [];
     this.count =

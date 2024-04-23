@@ -23,14 +23,14 @@ export class Game {
     const playerObj = new Player({ app });
     const rules = new Rules({
       app,
-      text: '空格跳跃',
+      text: '跳跃：点击屏幕或敲击空格',
     });
     const ground = new Ground({ app });
     app.stage.addChild(button);
     app.stage.addChild(playerObj.player);
     app.stage.addChild(rules);
     playerObj.run();
-    const controller = new Controller();
+    const controller = new Controller({ app });
 
     this.app.ticker.add((time) => {
       const spacePressed = controller.keys.space.pressed;
