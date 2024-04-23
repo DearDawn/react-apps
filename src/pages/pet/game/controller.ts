@@ -37,6 +37,7 @@ export class Controller {
     window.addEventListener('keydown', (event) => this.keydownHandler(event));
     window.addEventListener('keyup', (event) => this.keyupHandler(event));
     this.app.view.addEventListener('click', () => this.clickHandler());
+    this.app.view.addEventListener('touchstart', () => this.clickHandler());
   }
 
   keydownHandler(event) {
