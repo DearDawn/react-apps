@@ -93,9 +93,9 @@ export class Game {
   async initAssets() {}
 
   levelUp() {
-    console.log('[dodo] ', '升级');
-    if (this.level < 2.7) {
-      this.level += 0.02;
+    if (this.level < 4) {
+      console.log('[dodo] ', '升级');
+      this.level += 0.05;
     }
   }
 }
