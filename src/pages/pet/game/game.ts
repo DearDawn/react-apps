@@ -13,6 +13,7 @@ export class Game {
   playerObj: Player;
   scoreBoard: Score;
   controller: Controller;
+  menu: Menu;
   level = 1;
   blockTimeout = 1000;
   blockTimeoutTemp = Date.now();
@@ -35,17 +36,22 @@ export class Game {
     });
     this.scoreBoard = new Score({ app });
     const ground = new Ground({ app });
-    const menu = new Menu({ app });
-    menu.onClick(() => {
-      app.stage.removeChild(menu);
-      this.start();
-    });
+    this.menu = new Menu({ app });
+    this.menu.onClick(() => this.start());
+
     app.stage.addChild(button);
     app.stage.addChild(this.playerObj.player);
     app.stage.addChild(rules);
     app.stage.addChild(this.scoreBoard);
-    app.stage.addChild(menu);
-    this.controller = new Controller({ app: this.app });
+    app.stage.addChild(this.menu);
+    this.controller = new Controller({
+      app: this.app,
+      onSpace: () => {
+        if (!this.app.ticker.started) {
+          this.start();
+        }
+      },
+    });
     this.playerObj.run();
 
     this.init();
@@ -69,20 +75,18 @@ export class Game {
   }
 
   start() {
+    this.scoreBoard.clear();
+    this.app.stage.removeChild(this.menu);
     setTimeout(() => {
       this.app.start();
-    }, 0);
+    }, 100);
   }
 
   restart() {
-    const menu = new Menu({ app: this.app, text: '重新开始' });
-    menu.onClick(() => {
-      this.scoreBoard.clear();
-      this.app.stage.removeChild(menu);
-      this.start();
-    });
+    this.menu = new Menu({ app: this.app, text: '重新开始' });
+    this.menu.onClick(() => this.start());
 
-    this.app.stage.addChild(menu);
+    this.app.stage.addChild(this.menu);
 
     // clear
     this.app.stop();

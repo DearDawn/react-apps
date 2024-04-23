@@ -23,8 +23,10 @@ const keyMap = {
 export class Controller {
   app: PIXI.Application;
   keys: Record<Key, { pressed: boolean; timestamp: number }>;
-  constructor({ app }) {
+  onSpace = () => {};
+  constructor({ app, onSpace = () => {} }) {
     this.app = app;
+    this.onSpace = onSpace;
 
     this.keys = {
       up: { pressed: false, timestamp: 0 },
@@ -36,8 +38,7 @@ export class Controller {
 
     window.addEventListener('keydown', (event) => this.keydownHandler(event));
     window.addEventListener('keyup', (event) => this.keyupHandler(event));
-    this.app.view.addEventListener('click', () => this.clickHandler());
-    this.app.view.addEventListener('touchstart', () => this.clickHandler());
+    this.app.view.addEventListener('pointerdown', () => this.clickHandler());
   }
 
   keydownHandler(event) {
@@ -50,6 +51,10 @@ export class Controller {
 
   keyupHandler(event) {
     const key = keyMap[event.code];
+
+    if (key === 'space') {
+      this.onSpace?.();
+    }
 
     if (!key || !this.app.ticker.started) return;
 
