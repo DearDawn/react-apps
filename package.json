@@ -57,7 +57,8 @@
     "react-dom": "^18.2.0",
     "run-script-os": "^1.1.6",
     "socket.io-client": "^4.7.2",
-    "sweet-me": "^0.0.153"
+    "sweet-me": "^0.0.153",
+    "vconsole": "^3.15.1"
   },
   "engines": {
     "node": ">=18.17.0",
