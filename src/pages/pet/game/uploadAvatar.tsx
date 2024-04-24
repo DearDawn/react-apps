@@ -1,6 +1,6 @@
 import { HOST, myPost } from '@/utils/fetch';
 import { useCallback, useRef, useState } from 'react';
-import { Button, InputFile } from 'sweet-me';
+import { Button, InputFile, loading } from 'sweet-me';
 
 interface IProps {
   onClose: (src?: string) => void;
@@ -29,6 +29,7 @@ export const UploadAvatar = (props: IProps) => {
     formData.append('upload_key', 'dododawn');
     formData.append('file_name', fileRef.current.name);
 
+    const close = loading('上传中', undefined, false, 300);
     fetch(`${HOST}/upload/cdn?dodokey=123`, {
       method: 'POST',
       body: formData,
@@ -36,6 +37,7 @@ export const UploadAvatar = (props: IProps) => {
       .then((res) => res.json())
       .then((res) => {
         onClose(res.imageUrl || '');
+        close();
       });
   }, []);
 
