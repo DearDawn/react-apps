@@ -10,6 +10,7 @@ export class Button extends PIXI.Container {
     text = 'Click Me',
     textStyle = { fontFamily: 'Arial', fontSize: 16, fill: 0xffffff },
     fillColor = 0xffc0cb,
+    bgAlpha = 1,
     app,
   }) {
     super();
@@ -17,7 +18,7 @@ export class Button extends PIXI.Container {
 
     // 创建按钮背景
     const buttonBackground = new PIXI.Graphics();
-    buttonBackground.beginFill(fillColor);
+    buttonBackground.beginFill(fillColor, bgAlpha);
     buttonBackground.drawRoundedRect(0, 0, width, height, radius);
     buttonBackground.endFill();
     this.addChild(buttonBackground);

@@ -52,7 +52,9 @@ export class Menu extends PIXI.Container {
       height: 40,
       app: this.app,
       text: '更换头像',
-      textStyle: { fontFamily: 'Arial', fontSize: 20, fill: 0x000000 },
+      bgAlpha: 0.1,
+      fillColor: 0xffffff,
+      textStyle: { fontFamily: 'Arial', fontSize: 20, fill: 0xeeeeee },
     });
 
     this.avatarButton.x = this.app.screen.width / 2;
