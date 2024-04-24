@@ -10,12 +10,14 @@ export class Menu extends PIXI.Container {
   resultMode: boolean;
   buttonText: PIXI.Text;
   scoreId: string;
+  duration: number;
   rankList: Record<string, any>[];
   constructor({
     app,
     text = '开始游戏',
     resultMode = false,
     scoreId = '',
+    duration = 0,
     rankList = [],
   }) {
     super();
@@ -24,9 +26,10 @@ export class Menu extends PIXI.Container {
     this.resultMode = resultMode;
     this.scoreId = scoreId;
     this.rankList = rankList;
+    this.duration = duration;
     // 创建蒙层
     this.background = new PIXI.Graphics();
-    this.background.beginFill(0x000000, 0.5);
+    this.background.beginFill(0x000000, 0.6);
     this.background.drawRect(0, 0, app.screen.width, app.screen.height);
     this.background.endFill();
 
@@ -41,7 +44,12 @@ export class Menu extends PIXI.Container {
     });
 
     this.button.x = app.screen.width / 2;
-    this.button.y = app.screen.height - 500;
+
+    if (this.resultMode) {
+      this.button.y = this.app.screen.height / 2 + 200;
+    } else {
+      this.button.y = this.app.screen.height / 2;
+    }
 
     this.background.addChild(this.button);
     this.addChild(this.background);
@@ -70,16 +78,25 @@ export class Menu extends PIXI.Container {
     const width = 300;
     const height = 300;
     const background = new PIXI.Graphics();
-    background.beginFill(0xffffff, 0.5);
-    background.drawRect(0, 0, width, height);
+    background.beginFill(0xffffff, 0.6);
+    background.drawRoundedRect(0, 0, width, height, 12);
     background.endFill();
     background.position.set(0, 0);
     scrollContainer.addChild(background);
     scrollContainer.pivot.set(width / 2, 0);
     scrollContainer.position.set(
       this.app.screen.width / 2,
-      this.app.screen.height - 880
+      this.app.screen.height / 2 - 200
     );
+
+    const congrats = new PIXI.Text(`本局你摸了 ${this.duration} 秒`, {
+      fontFamily: 'Arial',
+      fontSize: 24,
+      fill: 'white',
+    });
+    congrats.anchor.set(0.5, 0);
+    congrats.position.set(width / 2, -50);
+    scrollContainer.addChild(congrats);
 
     // 创建一个包含所有滚动内容的容器
     const contentContainer = new PIXI.Container();

@@ -118,6 +118,7 @@ export class Game {
       resultMode: true,
       scoreId: _id,
       rankList: list.slice(0, 10),
+      duration: this.duration
     });
     this.menu.onClick(() => this.start());
     this.app.stage.addChild(this.menu);
