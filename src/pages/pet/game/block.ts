@@ -36,4 +36,9 @@ export class Obstacle {
   remove() {
     this.app.stage.removeChild(this.sprite);
   }
+
+  static clear() {
+    Obstacle.obstacles.forEach((it) => it.remove());
+    Obstacle.obstacles = [];
+  }
 }

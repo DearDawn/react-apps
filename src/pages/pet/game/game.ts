@@ -10,6 +10,7 @@ import { Menu } from './menu';
 
 export class Game {
   app: PIXI.Application;
+  started = false;
   playerObj: Player;
   scoreBoard: Score;
   controller: Controller;
@@ -21,7 +22,7 @@ export class Game {
   constructor({ view }) {
     const app = new PIXI.Application({
       backgroundColor: 0xeeeeee,
-      autoStart: false,
+      autoStart: true,
       resizeTo: view,
       view,
       resolution: window.devicePixelRatio,
@@ -47,7 +48,7 @@ export class Game {
     this.controller = new Controller({
       app: this.app,
       onSpace: () => {
-        if (!this.app.ticker.started) {
+        if (!this.app.ticker.started || !this.started) {
           this.start();
         }
       },
@@ -57,15 +58,18 @@ export class Game {
     this.init();
 
     this.app.ticker.add((delta) => {
-      this.initBlocks();
+      ground.update(delta);
 
+      if (!this.started) return;
+
+      // 开始游戏之后才执行
       const spacePressed = this.controller.keys.space.pressed;
 
       if (spacePressed || this.playerObj.isJumping) {
         this.playerObj.jump(delta);
       }
 
-      ground.update(delta);
+      this.initBlocks();
       this.blocksLoop(delta);
     });
   }
@@ -75,26 +79,26 @@ export class Game {
   }
 
   start() {
+    Obstacle.clear();
     this.scoreBoard.clear();
     this.app.stage.removeChild(this.menu);
-    setTimeout(() => {
-      this.app.start();
-    }, 100);
+    this.blockTimeoutTemp = Date.now();
+    this.started = true;
+    this.app.start();
   }
 
-  restart() {
+  resetData() {
+    this.started = false;
+    this.level = 1;
+    this.blockTimeout = 1000;
+  }
+
+  gameOver() {
     this.menu = new Menu({ app: this.app, text: '重新开始' });
     this.menu.onClick(() => this.start());
-
     this.app.stage.addChild(this.menu);
-
-    // clear
     this.app.stop();
-    this.level = 1;
-    Obstacle.obstacles.forEach((it) => {
-      it.remove();
-    });
-    Obstacle.obstacles = [];
+    this.resetData();
   }
 
   initEvent() {}
@@ -117,7 +121,7 @@ export class Game {
       obstacle.update(delta);
 
       if (this.playerObj.isCollideWith(obstacle.sprite)) {
-        this.restart();
+        this.gameOver();
       }
 
       if (obstacle.isOutOfScreen()) {
