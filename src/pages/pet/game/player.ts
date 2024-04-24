@@ -133,6 +133,11 @@ export class Player {
   initAvatar() {
     if (!this.avatarSrc) return;
 
+    if (this.avatar) {
+      this.avatar.texture = PIXI.Texture.from(this.avatarSrc);
+      return;
+    }
+
     const currentFrame = this.player.currentFrame;
     this.avatar = new PIXI.Sprite(PIXI.Texture.from(this.avatarSrc));
     this.avatar['posYList'] = [3, 12, 3, 0, 3, 12, 3, 0];
