@@ -1,4 +1,5 @@
 import { HOST, myPost } from '@/utils/fetch';
+import { compressImage } from '@/utils/image';
 import { useCallback, useRef, useState } from 'react';
 import { Button, InputFile, loading } from 'sweet-me';
 
@@ -17,8 +18,16 @@ export const UploadAvatar = (props: IProps) => {
     if (!file) {
       setUrl('');
     } else {
-      const fileURL = URL.createObjectURL(file);
-      setUrl(fileURL);
+      compressImage({
+        file: fileRef.current,
+        outputFileName: fileRef.current.name,
+        quality: 0.1,
+        callback: function (compressedFile) {
+          fileRef.current = compressedFile;
+          const fileURL = URL.createObjectURL(file);
+          setUrl(fileURL);
+        },
+      });
     }
   }, []);
 
