@@ -261,8 +261,7 @@ export class Game {
       // 生成新的 URL
       const newUrl = url.toString();
 
-      // 将新的 URL 添加到浏览器的历史记录中
-      window.history.pushState(null, '', newUrl);
+      window.location.replace(newUrl);
     });
 
     this.playerObj.setAvatar(avatarSrc);
