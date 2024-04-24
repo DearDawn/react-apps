@@ -5,6 +5,7 @@ export class Menu extends PIXI.Container {
   app: PIXI.Application = null;
   background: PIXI.Graphics;
   button: Button;
+  avatarButton: Button;
   resultMode: boolean;
   buttonText: PIXI.Text;
   scoreId: string;
@@ -36,8 +37,8 @@ export class Menu extends PIXI.Container {
 
     // 创建按钮背景
     this.button = new Button({
-      width: 300,
-      height: 100,
+      width: 250,
+      height: 70,
       app: this.app,
       text,
       textStyle: { fontFamily: 'Arial', fontSize: 36, fill: 0x000000 },
@@ -46,13 +47,26 @@ export class Menu extends PIXI.Container {
 
     this.button.x = app.screen.width / 2;
 
+    this.avatarButton = new Button({
+      width: 100,
+      height: 40,
+      app: this.app,
+      text: '更换头像',
+      textStyle: { fontFamily: 'Arial', fontSize: 20, fill: 0x000000 },
+    });
+
+    this.avatarButton.x = this.app.screen.width / 2;
+
     if (this.resultMode) {
-      this.button.y = this.app.screen.height / 2 + 200;
+      this.button.y = this.app.screen.height / 2 + 150;
     } else {
-      this.button.y = this.app.screen.height / 2;
+      this.button.y = this.app.screen.height / 2 - 50;
     }
 
+    this.avatarButton.y = this.button.y + 70;
+
     this.background.addChild(this.button);
+    this.background.addChild(this.avatarButton);
     this.addChild(this.background);
 
     if (this.resultMode) {
@@ -62,6 +76,12 @@ export class Menu extends PIXI.Container {
 
   onClick(cb) {
     this.button.onClick(() => {
+      cb();
+    });
+  }
+
+  onChangeAvatar(cb) {
+    this.avatarButton.onClick(() => {
       cb();
     });
   }
@@ -87,7 +107,7 @@ export class Menu extends PIXI.Container {
     scrollContainer.pivot.set(width / 2, 0);
     scrollContainer.position.set(
       this.app.screen.width / 2,
-      this.app.screen.height / 2 - 200
+      this.app.screen.height / 2 - 250
     );
 
     const congrats = new PIXI.Text(

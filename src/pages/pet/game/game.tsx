@@ -7,7 +7,7 @@ import { Ground } from './ground';
 import { Obstacle } from './block';
 import { Score } from './score';
 import { Menu } from './menu';
-import { Input, showModal, Button as MyButton, Space, loading } from 'sweet-me';
+import { Input, showModal, Button as MyButton, Space, loading, toast } from 'sweet-me';
 import { myPost } from '@/utils/fetch';
 
 const STORAGE_DURATION_KEY = 'pet_game_duration';
@@ -46,6 +46,7 @@ export class Game {
     const ground = new Ground({ app });
     this.menu = new Menu({ app });
     this.menu.onClick(() => this.start());
+    this.menu.onChangeAvatar(this.changeAvatar);
 
     app.stage.addChild(button);
     app.stage.addChild(this.playerObj.player);
@@ -65,6 +66,10 @@ export class Game {
 
     this.app.ticker.add((delta) => {
       ground.update(delta);
+
+      if (this.playerObj.player.playing) {
+        this.playerObj.update();
+      }
 
       if (!this.started) return;
 
@@ -128,6 +133,7 @@ export class Game {
       totalDuration: this.totalDuration,
     });
     this.menu.onClick(() => this.start());
+    this.menu.onChangeAvatar(this.changeAvatar);
     this.app.stage.addChild(this.menu);
     this.app.render();
   }
@@ -214,4 +220,8 @@ export class Game {
     close();
     return res;
   }
+
+  changeAvatar = () => {
+    toast('开发中')
+  };
 }

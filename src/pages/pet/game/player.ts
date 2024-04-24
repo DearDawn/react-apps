@@ -10,14 +10,16 @@ export class Player {
   app: PIXI.Application = null;
   player: PIXI.AnimatedSprite;
   body: PIXI.Sprite;
+  avatar: PIXI.Sprite;
   state: PlayState;
   preState: PlayState;
+  avatarSrc: string;
   initPos: { x: number; y: number };
   /** 重力 */
   gravity = 0.98;
   /** 竖直方向的速度 */
   velocityY = VELOCITY_Y;
-  constructor({ app }) {
+  constructor({ app, avatarSrc = '' }) {
     this.app = app;
     this.state = 'static';
     this.initPos = {
@@ -25,6 +27,7 @@ export class Player {
       y: this.app.screen.height - 400,
     };
     this.load();
+    this.avatarSrc = avatarSrc;
   }
 
   load() {
@@ -51,6 +54,7 @@ export class Player {
     player.anchor.set(0.5);
 
     this.initBody();
+    this.initAvatar();
 
     if (isTest) {
       this.initTest();
@@ -100,6 +104,11 @@ export class Player {
     return this.body.getBounds().intersects(obj.getBounds());
   }
 
+  setAvatar(src = '') {
+    this.avatarSrc = src;
+    this.initAvatar();
+  }
+
   initBody() {
     // 创建边框矩形
     const sprite = new PIXI.Sprite(PIXI.Texture.EMPTY);
@@ -119,5 +128,30 @@ export class Player {
     border.pivot.set(border.width / 2, border.height / 2);
     border.scale.set(1 / this.body.scale.x, 1 / this.body.scale.y);
     this.body.addChild(border);
+  }
+
+  initAvatar(src = '') {
+    if (!this.avatarSrc) return;
+
+    const currentFrame = this.player.currentFrame;
+    this.avatar = new PIXI.Sprite(PIXI.Texture.from(src));
+    this.avatar['posYList'] = [10, 20, 10, 5, 10, 20, 10, 5];
+    this.avatar.width = 35;
+    this.avatar.height = 35;
+    this.avatar.anchor.set(0.5, 0);
+    this.avatar.position.set(
+      0,
+      -this.player.height / 2 + this.avatar['posYList'][currentFrame]
+    );
+    this.player.addChild(this.avatar);
+  }
+
+  update() {
+    if (!this.avatarSrc) return;
+
+    const currentFrame = this.player.currentFrame;
+    const posYs = this.avatar['posYList'];
+    const posY = -this.player.height / 2 + (posYs[currentFrame] || posYs[0]);
+    this.avatar.position.set(0, posY);
   }
 }
