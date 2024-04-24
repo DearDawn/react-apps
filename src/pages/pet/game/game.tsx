@@ -203,25 +203,28 @@ export class Game {
       String(this.totalDuration + this.duration)
     );
 
-    await showModal(({ onClose }) => (
-      <div>
-        <Space stretch style={{ fontSize: 24, padding: '0 0 15px' }}>
-          留名
-        </Space>
-        <Input
-          style={{ borderRadius: '4px 0 0 4px' }}
-          placeholder='最大 6 个字'
-          maxLength={6}
-          defaultValue='无名小卒'
-          onValueChange={(val) => {
-            data.name = val || '无名小卒';
-          }}
-        />
-        <MyButton style={{ borderRadius: '0 4px 4px 0' }} onClick={onClose}>
-          提交
-        </MyButton>
-      </div>
-    ));
+    await showModal(
+      ({ onClose }) => (
+        <div>
+          <Space stretch style={{ fontSize: 24, padding: '0 0 15px' }}>
+            留名
+          </Space>
+          <Input
+            style={{ borderRadius: '4px 0 0 4px' }}
+            placeholder='最大 6 个字'
+            maxLength={6}
+            defaultValue='无名小卒'
+            onValueChange={(val) => {
+              data.name = val || '无名小卒';
+            }}
+          />
+          <MyButton style={{ borderRadius: '0 4px 4px 0' }} onClick={onClose}>
+            提交
+          </MyButton>
+        </div>
+      ),
+      { maskClosable: false }
+    );
 
     const close = loading('提交中...', undefined, false, 300);
 
