@@ -1,7 +1,5 @@
 import * as PIXI from 'pixi6.js';
 import { Button } from './button';
-import { myFetch } from '@/utils/fetch';
-import { loading } from 'sweet-me';
 
 export class Menu extends PIXI.Container {
   app: PIXI.Application = null;
