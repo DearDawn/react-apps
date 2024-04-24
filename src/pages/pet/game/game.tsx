@@ -193,7 +193,7 @@ export class Game {
 
   async recordScore() {
     const data = {
-      name: '无名大侠',
+      name: '无名小卒',
       score: this.scoreBoard.score,
       duration: this.duration,
     };
@@ -212,9 +212,9 @@ export class Game {
           style={{ borderRadius: '4px 0 0 4px' }}
           placeholder='最大 6 个字'
           maxLength={6}
-          defaultValue='无名大侠'
+          defaultValue='无名小卒'
           onValueChange={(val) => {
-            data.name = val || '无名大侠';
+            data.name = val || '无名小卒';
           }}
         />
         <MyButton style={{ borderRadius: '0 4px 4px 0' }} onClick={onClose}>

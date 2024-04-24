@@ -135,6 +135,12 @@ export class Player {
 
     if (this.avatar) {
       this.avatar.texture = PIXI.Texture.from(this.avatarSrc);
+
+      const img = new Image();
+      img.onload = () => {
+        this.app.render();
+      };
+      img.src = this.avatarSrc;
       return;
     }
 
@@ -149,6 +155,12 @@ export class Player {
       -this.player.height / 2 + this.avatar['posYList'][currentFrame]
     );
     this.player.addChild(this.avatar);
+
+    const img = new Image();
+    img.onload = () => {
+      this.app.render();
+    };
+    img.src = this.avatarSrc;
   }
 
   update() {
