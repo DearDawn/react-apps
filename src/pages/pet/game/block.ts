@@ -13,7 +13,7 @@ export class Obstacle {
     this.level = level;
     this.sprite = new PIXI.Graphics();
     this.sprite.beginFill(0x000000);
-    this.sprite.drawRect(0, 0, getRandom(40, 55), getRandom(20, 100));
+    this.sprite.drawRect(0, 0, getRandom(40, 55), getRandom(25, 100));
     this.sprite.endFill();
     this.sprite.x = this.app.screen.width;
     this.sprite.y = this.app.screen.height - 330 - this.sprite.height;

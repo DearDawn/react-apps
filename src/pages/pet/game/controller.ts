@@ -20,6 +20,14 @@ const keyMap = {
   ArrowRight: Key.right,
 };
 
+const initMap = () => ({
+  up: { pressed: false, timestamp: 0 },
+  left: { pressed: false, timestamp: 0 },
+  down: { pressed: false, timestamp: 0 },
+  right: { pressed: false, timestamp: 0 },
+  space: { pressed: false, timestamp: 0 },
+});
+
 export class Controller {
   app: PIXI.Application;
   enabled: boolean;
@@ -28,14 +36,7 @@ export class Controller {
   constructor({ app, onSpace = () => {} }) {
     this.app = app;
     this.onSpace = onSpace;
-
-    this.keys = {
-      up: { pressed: false, timestamp: 0 },
-      left: { pressed: false, timestamp: 0 },
-      down: { pressed: false, timestamp: 0 },
-      right: { pressed: false, timestamp: 0 },
-      space: { pressed: false, timestamp: 0 },
-    };
+    this.keys = initMap();
   }
 
   keydownHandler = (event) => {
@@ -77,10 +78,11 @@ export class Controller {
   }
 
   destroy() {
-    this.enabled = false;
-
     window.removeEventListener('keydown', this.keydownHandler);
     window.removeEventListener('keyup', this.keyupHandler);
     this.app.view.removeEventListener('pointerdown', this.clickHandler);
+
+    this.enabled = false;
+    this.keys = initMap();
   }
 }
