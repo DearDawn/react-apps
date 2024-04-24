@@ -7,7 +7,8 @@ import { Ground } from './ground';
 import { Obstacle } from './block';
 import { Score } from './score';
 import { Menu } from './menu';
-import { Input, apiPost, showModal, Button as MyButton, Space } from 'sweet-me';
+import { Input, showModal, Button as MyButton, Space } from 'sweet-me';
+import { myPost } from '@/utils/fetch';
 
 export class Game {
   app: PIXI.Application;
@@ -187,7 +188,7 @@ export class Game {
       </div>
     ));
 
-    const res = (await apiPost('/api/pet/rank_add', {}, data)) as {
+    const res = (await myPost('/pet/rank_add', {}, data)) as {
       _id: string;
     };
 

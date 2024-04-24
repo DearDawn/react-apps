@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi6.js';
 import { Button } from './button';
-import { apiGet } from 'sweet-me';
+import { myFetch } from '@/utils/fetch';
 
 export class Menu extends PIXI.Container {
   app: PIXI.Application = null;
@@ -54,7 +54,7 @@ export class Menu extends PIXI.Container {
   }
 
   async loadRank() {
-    const res = (await apiGet('/api/pet/rank_list')) as any;
+    const res = (await myFetch('/pet/rank_list')) as any;
     const list = res.data?.slice(0, 10) || [];
 
     // 创建可滚动容器
