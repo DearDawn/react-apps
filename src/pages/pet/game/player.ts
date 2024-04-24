@@ -90,6 +90,8 @@ export class Player {
   run() {
     this.state = 'run';
     this.player.animationSpeed = 0.2;
+    this.velocityY = VELOCITY_Y;
+    this.player.y = this.initPos.y;
 
     if (!this.player.playing) {
       this.player.play();
