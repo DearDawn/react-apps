@@ -7,8 +7,10 @@ import { Ground } from './ground';
 import { Obstacle } from './block';
 import { Score } from './score';
 import { Menu } from './menu';
-import { Input, showModal, Button as MyButton, Space, loading, toast } from 'sweet-me';
-import { myPost } from '@/utils/fetch';
+import { Input, showModal, Button as MyButton, Space, loading } from 'sweet-me';
+import { myFetch, myPost } from '@/utils/fetch';
+import { UploadAvatar } from './uploadAvatar';
+import { query } from '@/utils';
 
 const STORAGE_DURATION_KEY = 'pet_game_duration';
 
@@ -63,6 +65,7 @@ export class Game {
     });
 
     this.playerObj.run();
+    this.init();
 
     this.app.ticker.add((delta) => {
       ground.update(delta);
@@ -92,7 +95,16 @@ export class Game {
     return Number(historyDuration);
   }
 
-  init() {}
+  init() {
+    if (query.has('id')) {
+      const id = query.get('id');
+
+      myFetch(`/pet/config/${id}`).then((res: any) => {
+        const avatarSrc = res?.data?.avatar;
+        this.playerObj.setAvatar(avatarSrc);
+      });
+    }
+  }
 
   start() {
     Obstacle.clear();
@@ -221,7 +233,38 @@ export class Game {
     return res;
   }
 
-  changeAvatar = () => {
-    toast('开发中')
+  changeAvatar = async () => {
+    let avatarSrc = '';
+
+    await showModal(({ onClose }) => (
+      <UploadAvatar
+        onClose={(src) => {
+          avatarSrc = src;
+          onClose();
+        }}
+      />
+    ));
+
+    if (!avatarSrc) return;
+
+    myPost('/pet/config_add', {}, { avatar: avatarSrc }).then((res: any) => {
+      // 获取当前页面的 URL
+      const currentUrl = window.location.href;
+
+      // 解析 URL，获取参数部分
+      const url = new URL(currentUrl);
+      const searchParams = url.searchParams;
+
+      // 设置或替换参数值
+      searchParams.set('id', res?.id || 0); // 设置或替换 param1 参数的值
+
+      // 生成新的 URL
+      const newUrl = url.toString();
+
+      // 将新的 URL 添加到浏览器的历史记录中
+      window.history.pushState(null, '', newUrl);
+    });
+
+    this.playerObj.setAvatar(avatarSrc);
   };
 }

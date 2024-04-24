@@ -38,7 +38,6 @@ export class Button extends PIXI.Container {
 
     this.on('pointerdown', this.onButtonDown);
     this.on('pointerup', this.onButtonUp);
-    this.on('pointerupoutside', this.onButtonUp);
   }
 
   onClick = (cb) => {
@@ -49,7 +48,7 @@ export class Button extends PIXI.Container {
     this.scale.set(0.9);
   };
 
-  onButtonUp = () => {
+  onButtonUp = (e) => {
     this.scale.set(1);
     // 在这里执行按钮释放后的逻辑
     this.clickCallback.forEach((cb) => cb?.());
@@ -59,7 +58,6 @@ export class Button extends PIXI.Container {
     // 卸载事件监听器
     this.off('pointerdown', this.onButtonDown);
     this.off('pointerup', this.onButtonUp);
-    this.off('pointerupoutside', this.onButtonUp);
     this.clickCallback.clear();
 
     // 调用父类的 destroy 方法

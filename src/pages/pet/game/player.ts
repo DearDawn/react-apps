@@ -130,14 +130,14 @@ export class Player {
     this.body.addChild(border);
   }
 
-  initAvatar(src = '') {
+  initAvatar() {
     if (!this.avatarSrc) return;
 
     const currentFrame = this.player.currentFrame;
-    this.avatar = new PIXI.Sprite(PIXI.Texture.from(src));
-    this.avatar['posYList'] = [10, 20, 10, 5, 10, 20, 10, 5];
-    this.avatar.width = 35;
-    this.avatar.height = 35;
+    this.avatar = new PIXI.Sprite(PIXI.Texture.from(this.avatarSrc));
+    this.avatar['posYList'] = [3, 12, 3, 0, 3, 12, 3, 0];
+    this.avatar.width = 45;
+    this.avatar.height = 45;
     this.avatar.anchor.set(0.5, 0);
     this.avatar.position.set(
       0,
