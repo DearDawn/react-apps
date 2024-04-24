@@ -7,7 +7,7 @@ import { Ground } from './ground';
 import { Obstacle } from './block';
 import { Score } from './score';
 import { Menu } from './menu';
-import { Input, showModal, Button as MyButton, Space } from 'sweet-me';
+import { Input, showModal, Button as MyButton, Space, loading } from 'sweet-me';
 import { myPost } from '@/utils/fetch';
 
 export class Game {
@@ -108,12 +108,16 @@ export class Game {
     this.app.stop();
     this.playerObj.stop();
     this.controller.destroy();
-    const { _id } = await this.recordScore();
+    const { data } = await this.recordScore();
+    const { item, list } = data || {};
+    const { _id } = item || {};
+
     this.menu = new Menu({
       app: this.app,
       text: '重新开始',
       resultMode: true,
       scoreId: _id,
+      rankList: list.slice(0, 10),
     });
     this.menu.onClick(() => this.start());
     this.app.stage.addChild(this.menu);
@@ -188,10 +192,13 @@ export class Game {
       </div>
     ));
 
+    const close = loading('提交中...', undefined, false, 300);
+
     const res = (await myPost('/pet/rank_add', {}, data)) as {
-      _id: string;
+      data: { item: { _id: string }; list: any[] };
     };
 
+    close();
     return res;
   }
 }

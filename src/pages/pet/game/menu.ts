@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi6.js';
 import { Button } from './button';
 import { myFetch } from '@/utils/fetch';
+import { loading } from 'sweet-me';
 
 export class Menu extends PIXI.Container {
   app: PIXI.Application = null;
@@ -9,12 +10,20 @@ export class Menu extends PIXI.Container {
   resultMode: boolean;
   buttonText: PIXI.Text;
   scoreId: string;
-  constructor({ app, text = '开始游戏', resultMode = false, scoreId = '' }) {
+  rankList: Record<string, any>[];
+  constructor({
+    app,
+    text = '开始游戏',
+    resultMode = false,
+    scoreId = '',
+    rankList = [],
+  }) {
     super();
 
     this.app = app;
     this.resultMode = resultMode;
     this.scoreId = scoreId;
+    this.rankList = rankList;
     // 创建蒙层
     this.background = new PIXI.Graphics();
     this.background.beginFill(0x000000, 0.5);
@@ -48,14 +57,13 @@ export class Menu extends PIXI.Container {
     });
   }
 
-  async loadResult() {
-    await this.loadRank();
+  loadResult() {
+    this.loadRank();
     this.app.render();
   }
 
-  async loadRank() {
-    const res = (await myFetch('/pet/rank_list')) as any;
-    const list = res.data?.slice(0, 10) || [];
+  loadRank() {
+    const list = this.rankList;
 
     // 创建可滚动容器
     const scrollContainer = new PIXI.Container();
