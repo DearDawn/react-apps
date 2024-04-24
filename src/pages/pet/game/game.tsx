@@ -10,6 +10,8 @@ import { Menu } from './menu';
 import { Input, showModal, Button as MyButton, Space, loading } from 'sweet-me';
 import { myPost } from '@/utils/fetch';
 
+const STORAGE_DURATION_KEY = 'pet_game_duration';
+
 export class Game {
   app: PIXI.Application;
   started = false;
@@ -21,6 +23,8 @@ export class Game {
   blockTimeout = 1000;
   blockTimeoutTemp = Date.now();
   timeStart = Date.now();
+
+  duration = 0;
 
   constructor({ view }) {
     const app = new PIXI.Application({
@@ -78,9 +82,9 @@ export class Game {
     });
   }
 
-  get duration() {
-    const duration = Math.round((Date.now() - this.timeStart) / 1000);
-    return duration;
+  get totalDuration() {
+    const historyDuration = localStorage.getItem(STORAGE_DURATION_KEY) || 0;
+    return Number(historyDuration);
   }
 
   init() {}
@@ -108,6 +112,8 @@ export class Game {
     this.app.stop();
     this.playerObj.stop();
     this.controller.destroy();
+    this.duration = Math.round((Date.now() - this.timeStart) / 1000);
+
     const { data } = await this.recordScore();
     const { item, list } = data || {};
     const { _id } = item || {};
@@ -118,7 +124,8 @@ export class Game {
       resultMode: true,
       scoreId: _id,
       rankList: list.slice(0, 10),
-      duration: this.duration
+      duration: this.duration,
+      totalDuration: this.totalDuration,
     });
     this.menu.onClick(() => this.start());
     this.app.stage.addChild(this.menu);
@@ -172,6 +179,11 @@ export class Game {
       score: this.scoreBoard.score,
       duration: this.duration,
     };
+
+    localStorage.setItem(
+      STORAGE_DURATION_KEY,
+      String(this.totalDuration + this.duration)
+    );
 
     await showModal(({ onClose }) => (
       <div>

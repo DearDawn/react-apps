@@ -9,6 +9,7 @@ export class Menu extends PIXI.Container {
   buttonText: PIXI.Text;
   scoreId: string;
   duration: number;
+  totalDuration: number;
   rankList: Record<string, any>[];
   constructor({
     app,
@@ -16,6 +17,7 @@ export class Menu extends PIXI.Container {
     resultMode = false,
     scoreId = '',
     duration = 0,
+    totalDuration = 0,
     rankList = [],
   }) {
     super();
@@ -25,6 +27,7 @@ export class Menu extends PIXI.Container {
     this.scoreId = scoreId;
     this.rankList = rankList;
     this.duration = duration;
+    this.totalDuration = totalDuration;
     // 创建蒙层
     this.background = new PIXI.Graphics();
     this.background.beginFill(0x000000, 0.6);
@@ -87,11 +90,14 @@ export class Menu extends PIXI.Container {
       this.app.screen.height / 2 - 200
     );
 
-    const congrats = new PIXI.Text(`本局你摸了 ${this.duration} 秒`, {
-      fontFamily: 'Arial',
-      fontSize: 24,
-      fill: 'white',
-    });
+    const congrats = new PIXI.Text(
+      `本局你摸了 ${this.duration} 秒，累计 ${this.totalDuration} 秒`,
+      {
+        fontFamily: 'Arial',
+        fontSize: 24,
+        fill: 'white',
+      }
+    );
     congrats.anchor.set(0.5, 0);
     congrats.position.set(width / 2, -50);
     scrollContainer.addChild(congrats);
