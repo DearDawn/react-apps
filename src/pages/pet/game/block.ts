@@ -18,7 +18,6 @@ export class Obstacle {
     this.sprite.x = this.app.screen.width;
     this.sprite.y = this.app.screen.height - 330 - this.sprite.height;
     app.stage.addChild(this.sprite);
-    console.log('[dodo] ', 'this.levle', this.level);
   }
 
   get speed() {

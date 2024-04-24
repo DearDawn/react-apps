@@ -92,6 +92,10 @@ export class Player {
     }
   }
 
+  stop() {
+    this.player.stop();
+  }
+
   isCollideWith(obj: PIXI.Sprite | PIXI.Graphics) {
     return this.body.getBounds().intersects(obj.getBounds());
   }

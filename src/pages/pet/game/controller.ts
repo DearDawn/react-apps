@@ -22,6 +22,7 @@ const keyMap = {
 
 export class Controller {
   app: PIXI.Application;
+  enabled: boolean;
   keys: Record<Key, { pressed: boolean; timestamp: number }>;
   onSpace = () => {};
   constructor({ app, onSpace = () => {} }) {
@@ -35,21 +36,17 @@ export class Controller {
       right: { pressed: false, timestamp: 0 },
       space: { pressed: false, timestamp: 0 },
     };
-
-    window.addEventListener('keydown', (event) => this.keydownHandler(event));
-    window.addEventListener('keyup', (event) => this.keyupHandler(event));
-    this.app.view.addEventListener('pointerdown', () => this.clickHandler());
   }
 
-  keydownHandler(event) {
+  keydownHandler = (event) => {
     const key = keyMap[event.code];
 
     if (!key || !this.app.ticker.started) return;
 
     this.keys[key].pressed = true;
-  }
+  };
 
-  keyupHandler(event) {
+  keyupHandler = (event) => {
     const key = keyMap[event.code];
 
     if (key === 'space') {
@@ -59,9 +56,9 @@ export class Controller {
     if (!key || !this.app.ticker.started) return;
 
     this.keys[key].pressed = false;
-  }
+  };
 
-  clickHandler() {
+  clickHandler = () => {
     if (!this.app.ticker.started) return;
 
     this.keys.space.pressed = true;
@@ -69,5 +66,21 @@ export class Controller {
     setTimeout(() => {
       this.keys.space.pressed = false;
     }, 100);
+  };
+
+  mount() {
+    this.enabled = true;
+
+    window.addEventListener('keydown', this.keydownHandler);
+    window.addEventListener('keyup', this.keyupHandler);
+    this.app.view.addEventListener('pointerdown', this.clickHandler);
+  }
+
+  destroy() {
+    this.enabled = false;
+
+    window.removeEventListener('keydown', this.keydownHandler);
+    window.removeEventListener('keyup', this.keyupHandler);
+    this.app.view.removeEventListener('pointerdown', this.clickHandler);
   }
 }

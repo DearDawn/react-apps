@@ -7,6 +7,7 @@ import { Ground } from './ground';
 import { Obstacle } from './block';
 import { Score } from './score';
 import { Menu } from './menu';
+import { Input, apiPost, showModal, Button as MyButton, Space } from 'sweet-me';
 
 export class Game {
   app: PIXI.Application;
@@ -18,6 +19,7 @@ export class Game {
   level = 1;
   blockTimeout = 1000;
   blockTimeoutTemp = Date.now();
+  timeStart = Date.now();
 
   constructor({ view }) {
     const app = new PIXI.Application({
@@ -53,20 +55,21 @@ export class Game {
         }
       },
     });
-    this.playerObj.run();
 
-    this.init();
+    this.playerObj.run();
 
     this.app.ticker.add((delta) => {
       ground.update(delta);
 
       if (!this.started) return;
 
-      // 开始游戏之后才执行
-      const spacePressed = this.controller.keys.space.pressed;
+      if (this.controller.enabled) {
+        // 开始游戏之后才执行
+        const spacePressed = this.controller.keys.space.pressed;
 
-      if (spacePressed || this.playerObj.isJumping) {
-        this.playerObj.jump(delta);
+        if (spacePressed || this.playerObj.isJumping) {
+          this.playerObj.jump(delta);
+        }
       }
 
       this.initBlocks();
@@ -74,17 +77,23 @@ export class Game {
     });
   }
 
-  init() {
-    this.app.render();
+  get duration() {
+    const duration = Math.round((Date.now() - this.timeStart) / 1000);
+    return duration;
   }
+
+  init() {}
 
   start() {
     Obstacle.clear();
     this.scoreBoard.clear();
     this.app.stage.removeChild(this.menu);
     this.blockTimeoutTemp = Date.now();
+    this.timeStart = Date.now();
     this.started = true;
     this.app.start();
+    this.controller.mount();
+    this.playerObj.run();
   }
 
   resetData() {
@@ -93,12 +102,21 @@ export class Game {
     this.blockTimeout = 1000;
   }
 
-  gameOver() {
-    this.menu = new Menu({ app: this.app, text: '重新开始' });
+  async gameOver() {
+    this.resetData();
+    this.app.stop();
+    this.playerObj.stop();
+    this.controller.destroy();
+    const { _id } = await this.recordScore();
+    this.menu = new Menu({
+      app: this.app,
+      text: '重新开始',
+      resultMode: true,
+      scoreId: _id,
+    });
     this.menu.onClick(() => this.start());
     this.app.stage.addChild(this.menu);
-    this.app.stop();
-    this.resetData();
+    this.app.render();
   }
 
   initEvent() {}
@@ -122,6 +140,7 @@ export class Game {
 
       if (this.playerObj.isCollideWith(obstacle.sprite)) {
         this.gameOver();
+        return;
       }
 
       if (obstacle.isOutOfScreen()) {
@@ -137,8 +156,41 @@ export class Game {
 
   levelUp() {
     if (this.level < 6) {
-      console.log('[dodo] ', '升级');
       this.level += 0.06;
     }
+  }
+
+  async recordScore() {
+    const data = {
+      name: '无名大侠',
+      score: this.scoreBoard.score,
+      duration: this.duration,
+    };
+
+    await showModal(({ onClose }) => (
+      <div>
+        <Space stretch style={{ fontSize: 24, padding: '0 0 15px' }}>
+          留名
+        </Space>
+        <Input
+          style={{ borderRadius: '4px 0 0 4px' }}
+          placeholder='最大 6 个字'
+          maxLength={6}
+          defaultValue='无名大侠'
+          onValueChange={(val) => {
+            data.name = val || '无名大侠';
+          }}
+        />
+        <MyButton style={{ borderRadius: '0 4px 4px 0' }} onClick={onClose}>
+          提交
+        </MyButton>
+      </div>
+    ));
+
+    const res = (await apiPost('/api/pet/rank_add', {}, data)) as {
+      _id: string;
+    };
+
+    return res;
   }
 }
