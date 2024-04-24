@@ -196,6 +196,7 @@ export class Game {
       name: '无名小卒',
       score: this.scoreBoard.score,
       duration: this.duration,
+      avatar: this.playerObj.avatarSrc || '',
     };
 
     localStorage.setItem(
