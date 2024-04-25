@@ -76,6 +76,7 @@ export const UploadAvatar = (props: IProps) => {
               height: 120,
               display: 'block',
               marginTop: 10,
+              objectFit: 'cover',
               boxSizing: 'border-box',
               border: '2px solid #eee',
             }}
