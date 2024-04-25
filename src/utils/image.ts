@@ -1,3 +1,10 @@
+export function changeExtToPNG(imageUrl = '') {
+  // 使用正则表达式替换文件名后缀
+  const newUrl = imageUrl.replace(/(\.[^.\/]+$)/, '.png');
+
+  return newUrl;
+}
+
 export const compressImage = ({
   file,
   outputFileName,
@@ -49,7 +56,7 @@ export const compressImage = ({
     const blob = new Blob([ab], { type: 'image/png' });
 
     // 构造一个新的File对象
-    const compressedFile = new File([blob], outputFileName, {
+    const compressedFile = new File([blob], changeExtToPNG(outputFileName), {
       type: 'image/png',
     });
 
