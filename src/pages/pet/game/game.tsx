@@ -331,12 +331,13 @@ export class Game {
     if (navigator.share) {
       // 调用分享功能
       navigator
-        .share()
+        .share({})
         .then(function () {
           toast('分享成功');
         })
         .catch(function (error) {
           toast('分享失败' + error.message || '');
+          console.log('[dodo] ', 'error', error);
         });
     } else {
       navigator.clipboard
