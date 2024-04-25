@@ -32,7 +32,7 @@ export class Menu extends PIXI.Container {
     this.totalDuration = totalDuration;
     // 创建蒙层
     this.background = new PIXI.Graphics();
-    this.background.beginFill(0x000000, 0.6);
+    this.background.beginFill(0x000000, 0.7);
     this.background.drawRect(0, 0, app.screen.width, app.screen.height);
     this.background.endFill();
 
@@ -174,7 +174,7 @@ export class Menu extends PIXI.Container {
       // 创建一个具有圆角的遮罩
       const mask = new PIXI.Graphics();
       mask.beginFill(0xffffff);
-      mask.drawRoundedRect(0, 0, 20, 20, 10);
+      mask.drawCircle(10, 10, 10);
       mask.endFill();
       mask.pivot.set(mask.width / 2, mask.height / 2);
       text4.mask = mask;

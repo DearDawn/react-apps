@@ -151,7 +151,7 @@ export class Player {
     // 创建一个具有圆角的遮罩
     this.avatarMask = new PIXI.Graphics();
     this.avatarMask.beginFill(0xffffff);
-    this.avatarMask.drawRoundedRect(0, 0, 45, 45, 22.5);
+    this.avatarMask.drawCircle(22.5, 22.5, 22.5);
     this.avatarMask.endFill();
     this.avatarMask.pivot.set(
       this.avatarMask.width / 2,
