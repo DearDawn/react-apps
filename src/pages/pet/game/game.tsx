@@ -307,8 +307,13 @@ export class Game {
       url: location.href,
     };
     const shareText = `${shareData.title} ${shareData.text}\n\n${shareData.url}`;
+    const avatar = this.playerObj.avatarSrc || '';
 
-    changeShareInfo({ title: shareData.title, description: shareData.text });
+    changeShareInfo({
+      title: shareData.title,
+      description: shareData.text,
+      image: avatar.startsWith('http') ? avatar : undefined,
+    });
 
     if (navigator.share) {
       // 调用分享功能

@@ -35,7 +35,8 @@ export const changeShareInfo = ({
   url = location.href,
   image = getFaviconUrl(),
 }) => {
-  changeMetaTag('og:description', title);
+  changeMetaTag('og:title', title);
+  changeMetaTag('og:description', description);
   changeMetaTag('og:image', image);
   changeMetaTag('og:url', url);
   changeMetaTag('description', description, 'name');
