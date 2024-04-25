@@ -345,8 +345,9 @@ export class Game {
         .then(function () {
           toast('链接已复制到剪贴板');
         })
-        .catch(function () {
+        .catch(function (err) {
           toast('不支持分享功能');
+          console.log('[dodo] ', 'err', err);
         });
     }
 
