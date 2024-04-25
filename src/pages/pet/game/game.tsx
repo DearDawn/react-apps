@@ -291,6 +291,7 @@ export class Game {
       text: `来自收获 ${score} 分的 [${name}]`,
       url: location.href,
     };
+    const shareText = `${shareData.title} ${shareData.text}\n\n${shareData.url}`;
 
     if (navigator.share) {
       // 调用分享功能
@@ -303,10 +304,8 @@ export class Game {
           toast('分享失败' + error.message || '');
         });
     } else {
-      const text = `${shareData.title} ${shareData.text}\n\n${shareData.url}`;
-
       navigator.clipboard
-        .writeText(text)
+        .writeText(shareText)
         .then(function () {
           toast('链接已复制到剪贴板');
         })
@@ -314,5 +313,13 @@ export class Game {
           toast('不支持分享功能');
         });
     }
+
+    myPost(
+      '/pet/share_add',
+      {},
+      { id: Number(query.get('id')) || 0, name, score, text: shareText }
+    ).then((res) => {
+      console.log('[dodo] ', 'res', res);
+    });
   };
 }
