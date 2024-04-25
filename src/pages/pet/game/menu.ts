@@ -167,16 +167,16 @@ export class Menu extends PIXI.Container {
       const text1 = new PIXI.Text(id, fontStyle);
       const text2 = new PIXI.Text(score, fontStyle);
       const text3 = new PIXI.Text(name, fontStyle);
-      const text4 = new PIXI.Sprite(PIXI.Texture.from(avatar));
-      text4.width = 20;
-      text4.height = 20;
-      text4.anchor.set(0, 0.5);
+      const texture = PIXI.Texture.from(avatar);
+      const text4 = new PIXI.Sprite(texture);
+      text4.anchor.set(0.5, 0.5);
+
       // 创建一个具有圆角的遮罩
       const mask = new PIXI.Graphics();
       mask.beginFill(0xffffff);
       mask.drawRoundedRect(0, 0, 20, 20, 10);
       mask.endFill();
-      mask.pivot.set(0, mask.height / 2);
+      mask.pivot.set(mask.width / 2, mask.height / 2);
       text4.mask = mask;
 
       text2.anchor.set(0.5, 0);
@@ -196,11 +196,6 @@ export class Menu extends PIXI.Container {
       });
 
       text2.x = width / 2 - 30;
-      text4.position.set(width - text4.width - 10, textContainer.height / 2);
-      // 设置遮罩和精灵的位置
-      mask.position.set(text4.x, text4.y);
-      textContainer.addChild(mask);
-      textContainer.addChild(text4);
 
       if (entry._id === this.scoreId) {
         // 创建背景对象
@@ -214,6 +209,39 @@ export class Menu extends PIXI.Container {
       }
 
       textContainer.position.set(0, index * 25 + 45);
+
+      const initAvatar = () => {
+        const imageAspectRatio = text4.width / text4.height;
+
+        let newWidth, newHeight;
+        if (imageAspectRatio > 1) {
+          newHeight = mask.width;
+          newWidth = newHeight * imageAspectRatio;
+        } else {
+          newWidth = mask.width;
+          newHeight = newWidth / imageAspectRatio;
+        }
+
+        text4.width = newWidth;
+        text4.height = newHeight;
+        text4.position.set(
+          width - mask.width / 2 - 10,
+          textContainer.height / 2
+        );
+        // 设置遮罩和精灵的位置
+        mask.position.set(text4.x, text4.y);
+        textContainer.addChild(mask);
+        textContainer.addChild(text4);
+
+        console.log('[dodo] ', 'text4', text4.width, text4.height, index);
+      };
+
+      if (PIXI.utils.TextureCache[texture.baseTexture.textureCacheIds[0]]) {
+        initAvatar();
+      } else {
+        texture.baseTexture.on('loaded', initAvatar);
+      }
+
       contentContainer.addChild(textContainer);
     });
 

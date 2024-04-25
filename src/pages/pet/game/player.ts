@@ -11,6 +11,7 @@ export class Player {
   player: PIXI.AnimatedSprite;
   body: PIXI.Sprite;
   avatar: PIXI.Sprite;
+  avatarMask: PIXI.Graphics;
   state: PlayState;
   preState: PlayState;
   avatarSrc: string;
@@ -147,17 +148,48 @@ export class Player {
       return;
     }
 
-    const currentFrame = this.player.currentFrame;
-    this.avatar = new PIXI.Sprite(PIXI.Texture.from(this.avatarSrc));
-    this.avatar['posYList'] = [3, 12, 3, 0, 3, 12, 3, 0];
-    this.avatar.width = 45;
-    this.avatar.height = 45;
-    this.avatar.anchor.set(0.5, 0);
-    this.avatar.position.set(
-      0,
-      -this.player.height / 2 + this.avatar['posYList'][currentFrame]
+    // 创建一个具有圆角的遮罩
+    this.avatarMask = new PIXI.Graphics();
+    this.avatarMask.beginFill(0xffffff);
+    this.avatarMask.drawRoundedRect(0, 0, 45, 45, 22.5);
+    this.avatarMask.endFill();
+    this.avatarMask.pivot.set(
+      this.avatarMask.width / 2,
+      this.avatarMask.height / 2
     );
-    this.player.addChild(this.avatar);
+
+    const texture = PIXI.Texture.from(this.avatarSrc);
+    this.avatar = new PIXI.Sprite(texture);
+    this.avatar['posYList'] = [-2, 7, -2, -5, -2, 7, -2, -5];
+    this.avatar.anchor.set(0.5, 0.5);
+    this.avatar.mask = this.avatarMask;
+    this.update();
+
+    const initAvatar = () => {
+      const imageAspectRatio = this.avatar.width / this.avatar.height;
+
+      let newWidth, newHeight;
+      if (imageAspectRatio > 1) {
+        newHeight = this.avatarMask.width;
+        newWidth = newHeight * imageAspectRatio;
+      } else {
+        newWidth = this.avatarMask.width;
+        newHeight = newWidth / imageAspectRatio;
+      }
+
+      this.avatar.width = newWidth;
+      this.avatar.height = newHeight;
+      this.avatarMask.position.copyFrom(this.avatar.position);
+
+      this.player.addChild(this.avatarMask);
+      this.player.addChild(this.avatar);
+    };
+
+    if (PIXI.utils.TextureCache[texture.baseTexture.textureCacheIds[0]]) {
+      initAvatar();
+    } else {
+      texture.baseTexture.on('loaded', initAvatar);
+    }
 
     const img = new Image();
     img.onload = () => {
@@ -171,7 +203,8 @@ export class Player {
 
     const currentFrame = this.player.currentFrame;
     const posYs = this.avatar['posYList'];
-    const posY = -this.player.height / 2 + (posYs[currentFrame] || posYs[0]);
+    const posY = -this.avatarMask.height + (posYs[currentFrame] || posYs[0]);
     this.avatar.position.set(0, posY);
+    this.avatarMask.position.copyFrom(this.avatar.position);
   }
 }
