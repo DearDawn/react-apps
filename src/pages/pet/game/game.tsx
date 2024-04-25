@@ -18,6 +18,7 @@ import {
 import { myFetch, myPost } from '@/utils/fetch';
 import { UploadAvatar } from './uploadAvatar';
 import { query } from '@/utils';
+import { changeShareInfo } from '@/utils/web';
 
 const STORAGE_DURATION_KEY = 'pet_game_duration';
 
@@ -306,6 +307,8 @@ export class Game {
       url: location.href,
     };
     const shareText = `${shareData.title} ${shareData.text}\n\n${shareData.url}`;
+
+    changeShareInfo({ title: shareData.title, description: shareData.text });
 
     if (navigator.share) {
       // 调用分享功能

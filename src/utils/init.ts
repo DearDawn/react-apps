@@ -1,5 +1,7 @@
 import VConsole from 'vconsole';
+import { changeShareInfo } from './web';
 
+changeShareInfo({});
 const urlParams = new URLSearchParams(window.location.search);
 const testParam = urlParams.get('test');
 
