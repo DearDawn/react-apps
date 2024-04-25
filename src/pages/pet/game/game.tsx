@@ -19,6 +19,7 @@ import { myFetch, myPost } from '@/utils/fetch';
 import { UploadAvatar } from './uploadAvatar';
 import { query } from '@/utils';
 import { changeShareInfo } from '@/utils/web';
+import { copyTextToClipboard } from '@/utils/text';
 
 const STORAGE_DURATION_KEY = 'pet_game_duration';
 
@@ -331,7 +332,7 @@ export class Game {
     if (navigator.share) {
       // 调用分享功能
       navigator
-        .share({})
+        .share({ title: description, text: title, url })
         .then(function () {
           toast('分享成功');
         })
@@ -340,8 +341,7 @@ export class Game {
           console.log('[dodo] ', 'error', error);
         });
     } else {
-      navigator.clipboard
-        .writeText(shareText)
+      copyTextToClipboard(shareText)
         .then(function () {
           toast('链接已复制到剪贴板');
         })

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import * as styles from './App.module.less';
 import { HOST } from '@/utils/fetch';
+import { copyTextToClipboard } from '@/utils/text';
 
 export const App = () => {
   const [longUrl, setLongUrl] = useState('');
@@ -70,7 +71,7 @@ export const App = () => {
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(shortUrl);
+    copyTextToClipboard(shortUrl);
     setCopySuccess(true);
   };
 

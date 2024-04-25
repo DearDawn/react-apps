@@ -47,6 +47,7 @@ import {
 } from './constants';
 import { FileStore, fileStore } from './fileStore';
 import { FileItem } from './components/fileItem';
+import { copyTextToClipboard } from '@/utils/text';
 
 export const App = () => {
   const { form } = useFormState();
@@ -152,8 +153,7 @@ export const App = () => {
   const handleCopyText =
     (text = '') =>
     () => {
-      navigator.clipboard
-        .writeText(text)
+      copyTextToClipboard(text)
         .then(function () {
           toast('文案已复制到剪贴板');
         })
