@@ -331,7 +331,7 @@ export class Game {
     if (navigator.share) {
       // 调用分享功能
       navigator
-        .share({ title, text: description, url })
+        .share()
         .then(function () {
           toast('分享成功');
         })
