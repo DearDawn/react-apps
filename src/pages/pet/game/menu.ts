@@ -168,9 +168,16 @@ export class Menu extends PIXI.Container {
       const text2 = new PIXI.Text(score, fontStyle);
       const text3 = new PIXI.Text(name, fontStyle);
       const text4 = new PIXI.Sprite(PIXI.Texture.from(avatar));
-      text4.width = 25;
-      text4.height = 25;
+      text4.width = 20;
+      text4.height = 20;
       text4.anchor.set(0, 0.5);
+      // 创建一个具有圆角的遮罩
+      const mask = new PIXI.Graphics();
+      mask.beginFill(0xffffff);
+      mask.drawRoundedRect(0, 0, 20, 20, 10);
+      mask.endFill();
+      mask.pivot.set(0, mask.height / 2);
+      text4.mask = mask;
 
       text2.anchor.set(0.5, 0);
 
@@ -190,6 +197,9 @@ export class Menu extends PIXI.Container {
 
       text2.x = width / 2 - 30;
       text4.position.set(width - text4.width - 10, textContainer.height / 2);
+      // 设置遮罩和精灵的位置
+      mask.position.set(text4.x, text4.y);
+      textContainer.addChild(mask);
       textContainer.addChild(text4);
 
       if (entry._id === this.scoreId) {
