@@ -265,8 +265,6 @@ export class Menu extends PIXI.Container {
         mask.position.set(text4.x, text4.y);
         textContainer.addChild(mask);
         textContainer.addChild(text4);
-
-        console.log('[dodo] ', 'text4', text4.width, text4.height, index);
       };
 
       if (PIXI.utils.TextureCache[texture.baseTexture.textureCacheIds[0]]) {
