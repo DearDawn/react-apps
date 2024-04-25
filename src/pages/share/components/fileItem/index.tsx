@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import * as styles from './index.module.less';
 import { FileT, ImgT, PageContext } from '../../constants';
-import { convertFileSize, downloadFile, getBlob } from '../../utils';
+import { convertFileSize, downloadFile } from '../../utils';
 import { ICON, Icon, Image, toast } from 'sweet-me';
 import { socket } from '../../socket';
 import clsx from 'clsx';
@@ -28,11 +28,6 @@ export const FileItem = (props: IProps) => {
       toast('加载中，请稍后...');
       return;
     }
-
-    // safari 需要通过传入 promise 实现，不可先获取结果
-    const getImgBold = async (): Promise<Blob> => {
-      return file.type === 'image/png' ? file : await getBlob(url);
-    };
 
     copyImgToClipboard(file, imgRef.current)
       .then(function () {

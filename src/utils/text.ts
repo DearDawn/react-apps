@@ -1,4 +1,4 @@
-import { getBlob } from '@/pages/share/utils';
+import { getBlob } from "./image";
 
 export function copyTextToClipboard(text) {
   return new Promise((resolve, reject) => {
