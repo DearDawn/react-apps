@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi6.js';
 import { Button } from './button';
+import DefaultAvatar from './player-head.png';
 
 export class Menu extends PIXI.Container {
   app: PIXI.Application = null;
@@ -137,11 +138,23 @@ export class Menu extends PIXI.Container {
     title.position.set(width / 2, 10);
     contentContainer.addChild(title);
 
+    const avatarLoader = new PIXI.Loader();
+
+    // 监听加载完成事件
+    avatarLoader.onComplete.once(() => {
+      this.app.render();
+    });
+
     // 遍历滚动内容数据并创建显示元素
     list.forEach((entry, index) => {
       const id = `No.${index + 1}`;
       const name = entry.name.slice(0, 6);
       const score = entry.score;
+      const avatar = entry.avatar || DefaultAvatar;
+
+      if (!PIXI.utils.TextureCache[avatar]) {
+        avatarLoader.add(avatar, avatar);
+      }
 
       const textContainer = new PIXI.Container();
       // 创建文本对象
@@ -154,6 +167,10 @@ export class Menu extends PIXI.Container {
       const text1 = new PIXI.Text(id, fontStyle);
       const text2 = new PIXI.Text(score, fontStyle);
       const text3 = new PIXI.Text(name, fontStyle);
+      const text4 = new PIXI.Sprite(PIXI.Texture.from(avatar));
+      text4.width = 25;
+      text4.height = 25;
+      text4.anchor.set(0, 0.5);
 
       text2.anchor.set(0.5, 0);
 
@@ -162,7 +179,7 @@ export class Menu extends PIXI.Container {
 
       const totalWidth = text1.width + text2.width + text3.width;
       const space =
-        (width - 20 - totalWidth) / (textContainer.children.length - 1);
+        (width - 50 - totalWidth) / (textContainer.children.length - 1);
 
       let offsetX = 10;
 
@@ -171,7 +188,9 @@ export class Menu extends PIXI.Container {
         offsetX += text.width + space;
       });
 
-      text2.position.x = width / 2;
+      text2.x = width / 2 - 30;
+      text4.position.set(width - text4.width - 10, textContainer.height / 2);
+      textContainer.addChild(text4);
 
       if (entry._id === this.scoreId) {
         // 创建背景对象
@@ -188,6 +207,8 @@ export class Menu extends PIXI.Container {
       contentContainer.addChild(textContainer);
     });
 
+    // 开始加载
+    avatarLoader.load();
     // 将滚动容器添加到舞台或其他适当的容器中
     this.background.addChild(scrollContainer);
   }

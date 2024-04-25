@@ -6,8 +6,8 @@ export class Bubble {
   bubbleContainer: PIXI.Container;
   bubbleBg: PIXI.Sprite;
   text: PIXI.Text;
-  timer = 0;
-  loadingTimer = 0;
+  timer: any = 0;
+  loadingTimer: any = 0;
   loadingCounter = 0;
   loading = false;
   destroyCb = () => {};
