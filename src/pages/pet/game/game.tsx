@@ -29,7 +29,14 @@ export class Game {
   scoreBoard: Score;
   controller: Controller;
   menu: Menu;
-  shareInfo: Record<string, any>;
+  shareInfo: {
+    title: string;
+    url: string;
+    description: string;
+    name: string;
+    score: number;
+    avatar: string;
+  };
   level = 1;
   blockTimeout = 1000;
   blockTimeoutTemp = Date.now();
@@ -214,7 +221,24 @@ export class Game {
       avatar: this.playerObj.avatarSrc || '',
     };
 
-    this.shareInfo = { ...data };
+    const { name = '无名小卒', score = 0 } = data || {};
+    const avatar = this.playerObj.avatarSrc || '';
+
+    // 创建分享内容
+    this.shareInfo = {
+      title: '玩个小游戏~',
+      description: `来自收获 ${score} 分的 [${name}]`,
+      url: location.href,
+      score,
+      name,
+      avatar: avatar.startsWith('http') ? avatar : undefined,
+    };
+
+    changeShareInfo({
+      title: this.shareInfo.title,
+      description: this.shareInfo.description,
+      image: this.shareInfo.avatar,
+    });
 
     localStorage.setItem(
       STORAGE_DURATION_KEY,
@@ -299,26 +323,13 @@ export class Game {
   };
 
   share = () => {
-    const { name = '无名小卒', score = 0 } = this.shareInfo || {};
-    // 创建分享内容
-    const shareData = {
-      title: '玩个小游戏~',
-      text: `来自收获 ${score} 分的 [${name}]`,
-      url: location.href,
-    };
-    const shareText = `${shareData.title} ${shareData.text}\n\n${shareData.url}`;
-    const avatar = this.playerObj.avatarSrc || '';
-
-    changeShareInfo({
-      title: shareData.title,
-      description: shareData.text,
-      image: avatar.startsWith('http') ? avatar : undefined,
-    });
+    const { title, description, url, name, score } = this.shareInfo || {};
+    const shareText = `${title} ${description}\n\n${url}`;
 
     if (navigator.share) {
       // 调用分享功能
       navigator
-        .share(shareData)
+        .share({ title, text: description, url })
         .then(function () {
           toast('分享成功');
         })
