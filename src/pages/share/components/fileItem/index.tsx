@@ -1,10 +1,11 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import * as styles from './index.module.less';
 import { FileT, ImgT, PageContext } from '../../constants';
 import { convertFileSize, downloadFile, getBlob } from '../../utils';
 import { ICON, Icon, Image, toast } from 'sweet-me';
 import { socket } from '../../socket';
 import clsx from 'clsx';
+import { copyImgToClipboard } from '@/utils/text';
 
 interface IProps {
   fileInfo: FileT | ImgT;
@@ -21,7 +22,7 @@ export const FileItem = (props: IProps) => {
   const loading = !url || !file || !imgReady;
   const { progress = 0, total = 0 } = progressMap.get(fileID) || {};
   const fileSize = convertFileSize(total);
-
+  const imgRef = useRef(null);
   const handleCopyImage = async () => {
     if (loading) {
       toast('加载中，请稍后...');
@@ -33,8 +34,7 @@ export const FileItem = (props: IProps) => {
       return file.type === 'image/png' ? file : await getBlob(url);
     };
 
-    navigator.clipboard
-      .write([new ClipboardItem({ 'image/png': getImgBold() })])
+    copyImgToClipboard(file, imgRef.current)
       .then(function () {
         toast('图片已复制到剪贴板');
       })
@@ -85,7 +85,7 @@ export const FileItem = (props: IProps) => {
             {`加载中...(${progress}%)\n约 ${fileSize}`}
           </div>
         ) : (
-          <Image src={url} alt={fileName} />
+          <Image imgRef={imgRef} src={url} alt={fileName} />
         )}
         <Icon
           className={styles.copyIcon}
