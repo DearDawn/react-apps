@@ -222,27 +222,6 @@ export class Game {
       avatar: this.playerObj.avatarSrc || '',
     };
 
-    const { name = '无名小卒', score = 0 } = data || {};
-    const avatar = this.playerObj.avatarSrc || '';
-
-    // 创建分享内容
-    this.shareInfo = {
-      title: '玩个小游戏~',
-      description: `来自收获 ${score} 分的 [${name}]`,
-      url: location.href,
-      score,
-      name,
-      avatar: avatar.startsWith('http') ? avatar : undefined,
-    };
-
-    console.log('[dodo] ', 'this.shareInfo', this.shareInfo);
-
-    changeShareInfo({
-      title: this.shareInfo.title,
-      description: this.shareInfo.description,
-      image: this.shareInfo.avatar,
-    });
-
     localStorage.setItem(
       STORAGE_DURATION_KEY,
       String(this.totalDuration + this.duration)
@@ -270,6 +249,27 @@ export class Game {
       ),
       { maskClosable: false }
     );
+
+    const { name = '无名小卒', score = 0 } = data || {};
+    const avatar = this.playerObj.avatarSrc || '';
+
+    // 创建分享内容
+    this.shareInfo = {
+      title: '玩个小游戏~',
+      description: `来自收获 ${score} 分的 [${name}]`,
+      url: location.href,
+      score,
+      name,
+      avatar: avatar.startsWith('http') ? avatar : undefined,
+    };
+
+    console.log('[dodo] ', 'this.shareInfo', this.shareInfo);
+
+    changeShareInfo({
+      title: this.shareInfo.title,
+      description: this.shareInfo.description,
+      image: this.shareInfo.avatar,
+    });
 
     const close = loading('提交中...', undefined, false, 300);
 
