@@ -210,7 +210,7 @@ export class Game {
 
   levelUp() {
     if (this.level < 6) {
-      this.level += 0.06;
+      this.level += 0.05;
     }
   }
 
