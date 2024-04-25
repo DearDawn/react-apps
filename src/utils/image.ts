@@ -2,7 +2,7 @@ export const compressImage = ({
   file,
   outputFileName,
   quality,
-  scaleSize = 50,
+  scaleSize = 100,
   callback,
 }) => {
   const fileURL = URL.createObjectURL(file);
