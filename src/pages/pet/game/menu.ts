@@ -2,26 +2,39 @@ import * as PIXI from 'pixi6.js';
 import { Button } from './button';
 import DefaultAvatar from './player-head.png';
 
+export type TMenuConfig = {
+  app: PIXI.Application;
+  text?: string;
+  resultMode?: boolean;
+  scoreId?: string;
+  duration?: number;
+  totalDuration?: number;
+  rankList?: any[];
+};
+
 export class Menu extends PIXI.Container {
   app: PIXI.Application = null;
   background: PIXI.Graphics;
   button: Button;
   avatarButton: Button;
+  shareButton: Button;
   resultMode: boolean;
   buttonText: PIXI.Text;
   scoreId: string;
   duration: number;
   totalDuration: number;
   rankList: Record<string, any>[];
-  constructor({
-    app,
-    text = '开始游戏',
-    resultMode = false,
-    scoreId = '',
-    duration = 0,
-    totalDuration = 0,
-    rankList = [],
-  }) {
+  constructor(config: TMenuConfig) {
+    const {
+      app,
+      text = '开始游戏',
+      resultMode = false,
+      scoreId = '',
+      duration = 0,
+      totalDuration = 0,
+      rankList = [],
+    } = config;
+
     super();
 
     this.app = app;
@@ -58,21 +71,35 @@ export class Menu extends PIXI.Container {
       textStyle: { fontFamily: 'Arial', fontSize: 20, fill: 0xeeeeee },
     });
 
-    this.avatarButton.x = this.app.screen.width / 2;
+    this.shareButton = new Button({
+      width: 100,
+      height: 40,
+      app: this.app,
+      text: '分享',
+      bgAlpha: 0.1,
+      fillColor: 0xffffff,
+      textStyle: { fontFamily: 'Arial', fontSize: 20, fill: 0xeeeeee },
+    });
 
     if (this.resultMode) {
       this.button.y = this.app.screen.height / 2 + 150;
+      this.avatarButton.x = this.app.screen.width / 2 - 60;
+      this.shareButton.x = this.app.screen.width / 2 + 60;
     } else {
       this.button.y = this.app.screen.height / 2 - 50;
+      this.avatarButton.x = this.app.screen.width / 2;
     }
 
     this.avatarButton.y = this.button.y + 70;
+    this.shareButton.y = this.avatarButton.y;
 
     this.background.addChild(this.button);
     this.background.addChild(this.avatarButton);
+
     this.addChild(this.background);
 
     if (this.resultMode) {
+      this.background.addChild(this.shareButton);
       this.loadResult();
     }
   }
@@ -85,6 +112,12 @@ export class Menu extends PIXI.Container {
 
   onChangeAvatar(cb) {
     this.avatarButton.onClick(() => {
+      cb();
+    });
+  }
+
+  onShare(cb) {
+    this.shareButton.onClick(() => {
       cb();
     });
   }

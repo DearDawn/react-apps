@@ -6,8 +6,15 @@ import { Rules } from './rules';
 import { Ground } from './ground';
 import { Obstacle } from './block';
 import { Score } from './score';
-import { Menu } from './menu';
-import { Input, showModal, Button as MyButton, Space, loading } from 'sweet-me';
+import { Menu, TMenuConfig } from './menu';
+import {
+  Input,
+  showModal,
+  Button as MyButton,
+  Space,
+  loading,
+  toast,
+} from 'sweet-me';
 import { myFetch, myPost } from '@/utils/fetch';
 import { UploadAvatar } from './uploadAvatar';
 import { query } from '@/utils';
@@ -21,6 +28,7 @@ export class Game {
   scoreBoard: Score;
   controller: Controller;
   menu: Menu;
+  shareInfo: Record<string, any>;
   level = 1;
   blockTimeout = 1000;
   blockTimeoutTemp = Date.now();
@@ -46,15 +54,11 @@ export class Game {
     });
     this.scoreBoard = new Score({ app });
     const ground = new Ground({ app });
-    this.menu = new Menu({ app });
-    this.menu.onClick(() => this.start());
-    this.menu.onChangeAvatar(this.changeAvatar);
 
     app.stage.addChild(button);
     app.stage.addChild(this.playerObj.player);
     app.stage.addChild(rules);
     app.stage.addChild(this.scoreBoard);
-    app.stage.addChild(this.menu);
     this.controller = new Controller({
       app: this.app,
       onSpace: () => {
@@ -104,6 +108,16 @@ export class Game {
         this.playerObj.setAvatar(avatarSrc);
       });
     }
+
+    this.initMenu();
+  }
+
+  initMenu(extra: Omit<TMenuConfig, 'app'> = {}) {
+    this.menu = new Menu({ ...extra, app: this.app });
+    this.menu.onClick(() => this.start());
+    this.menu.onChangeAvatar(this.changeAvatar);
+    this.menu.onShare(this.share);
+    this.app.stage.addChild(this.menu);
   }
 
   start() {
@@ -135,8 +149,7 @@ export class Game {
     const { item, list } = data || {};
     const { _id } = item || {};
 
-    this.menu = new Menu({
-      app: this.app,
+    this.initMenu({
       text: '重新开始',
       resultMode: true,
       scoreId: _id,
@@ -144,9 +157,6 @@ export class Game {
       duration: this.duration,
       totalDuration: this.totalDuration,
     });
-    this.menu.onClick(() => this.start());
-    this.menu.onChangeAvatar(this.changeAvatar);
-    this.app.stage.addChild(this.menu);
     this.app.render();
   }
 
@@ -198,6 +208,8 @@ export class Game {
       duration: this.duration,
       avatar: this.playerObj.avatarSrc || '',
     };
+
+    this.shareInfo = { ...data };
 
     localStorage.setItem(
       STORAGE_DURATION_KEY,
@@ -269,5 +281,38 @@ export class Game {
     });
 
     this.playerObj.setAvatar(avatarSrc);
+  };
+
+  share = () => {
+    const { name = '无名小卒', score = 0 } = this.shareInfo || {};
+    // 创建分享内容
+    const shareData = {
+      title: '玩个小游戏~',
+      text: `来自收获 ${score} 分的 [${name}]`,
+      url: location.href,
+    };
+
+    if (navigator.share) {
+      // 调用分享功能
+      navigator
+        .share(shareData)
+        .then(function () {
+          toast('分享成功');
+        })
+        .catch(function (error) {
+          toast('分享失败' + error.message || '');
+        });
+    } else {
+      const text = `${shareData.title} ${shareData.text}\n\n${shareData.url}`;
+
+      navigator.clipboard
+        .writeText(text)
+        .then(function () {
+          toast('链接已复制到剪贴板');
+        })
+        .catch(function () {
+          toast('不支持分享功能');
+        });
+    }
   };
 }
