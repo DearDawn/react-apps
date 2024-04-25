@@ -91,6 +91,8 @@ export class Player {
   run() {
     this.state = 'run';
     this.player.animationSpeed = 0.2;
+    this.velocityY = VELOCITY_Y;
+    this.player.y = this.initPos.y;
 
     if (!this.player.playing) {
       this.player.play();
@@ -100,8 +102,6 @@ export class Player {
   stop() {
     this.player.stop();
     this.state = 'static';
-    this.velocityY = VELOCITY_Y;
-    this.player.y = this.initPos.y;
   }
 
   isCollideWith(obj: PIXI.Sprite | PIXI.Graphics) {

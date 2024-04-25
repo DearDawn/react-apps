@@ -1,7 +1,7 @@
 import { HOST, myPost } from '@/utils/fetch';
 import { compressImage } from '@/utils/image';
 import { useCallback, useRef, useState } from 'react';
-import { Button, InputFile, loading } from 'sweet-me';
+import { Button, InputFile, loading, toast } from 'sweet-me';
 
 interface IProps {
   onClose: (src?: string) => void;
@@ -47,8 +47,12 @@ export const UploadAvatar = (props: IProps) => {
       .then((res) => {
         onClose(res.imageUrl || '');
         close();
+      })
+      .catch(() => {
+        close();
+        onClose(url || '');
       });
-  }, []);
+  }, [url]);
 
   return (
     <div

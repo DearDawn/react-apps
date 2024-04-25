@@ -103,10 +103,14 @@ export class Game {
     if (query.has('id')) {
       const id = query.get('id');
 
-      myFetch(`/pet/config/${id}`).then((res: any) => {
-        const avatarSrc = res?.data?.avatar;
-        this.playerObj.setAvatar(avatarSrc);
-      });
+      myFetch(`/pet/config/${id}`)
+        .then((res: any) => {
+          const avatarSrc = res?.data?.avatar;
+          this.playerObj.setAvatar(avatarSrc);
+        })
+        .catch(() => {
+          toast('网络错误');
+        });
     }
 
     this.initMenu();
@@ -145,8 +149,8 @@ export class Game {
     this.controller.destroy();
     this.duration = Math.round((Date.now() - this.timeStart) / 1000);
 
-    const { data } = await this.recordScore();
-    const { item, list } = data || {};
+    const { data } = (await this.recordScore()) || {};
+    const { item, list = [] } = data || {};
     const { _id } = item || {};
 
     this.initMenu({
@@ -241,12 +245,18 @@ export class Game {
 
     const close = loading('提交中...', undefined, false, 300);
 
-    const res = (await myPost('/pet/rank_add', {}, data)) as {
-      data: { item: { _id: string }; list: any[] };
-    };
+    try {
+      const res = (await myPost('/pet/rank_add', {}, data)) as {
+        data: { item: { _id: string }; list: any[] };
+      };
 
-    close();
-    return res;
+      close();
+      return res;
+    } catch (error) {
+      close();
+      toast('网络错误');
+      return null;
+    }
   }
 
   changeAvatar = async () => {
@@ -263,22 +273,26 @@ export class Game {
 
     if (!avatarSrc) return;
 
-    myPost('/pet/config_add', {}, { avatar: avatarSrc }).then((res: any) => {
-      // 获取当前页面的 URL
-      const currentUrl = window.location.href;
+    myPost('/pet/config_add', {}, { avatar: avatarSrc })
+      .then((res: any) => {
+        // 获取当前页面的 URL
+        const currentUrl = window.location.href;
 
-      // 解析 URL，获取参数部分
-      const url = new URL(currentUrl);
-      const searchParams = url.searchParams;
+        // 解析 URL，获取参数部分
+        const url = new URL(currentUrl);
+        const searchParams = url.searchParams;
 
-      // 设置或替换参数值
-      searchParams.set('id', res?.id || 0); // 设置或替换 param1 参数的值
+        // 设置或替换参数值
+        searchParams.set('id', res?.id || 0); // 设置或替换 param1 参数的值
 
-      // 生成新的 URL
-      const newUrl = url.toString();
+        // 生成新的 URL
+        const newUrl = url.toString();
 
-      window.location.replace(newUrl);
-    });
+        window.location.replace(newUrl);
+      })
+      .catch(() => {
+        toast('网络错误');
+      });
 
     this.playerObj.setAvatar(avatarSrc);
   };
