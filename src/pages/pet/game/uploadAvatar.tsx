@@ -1,7 +1,7 @@
-import { HOST, myPost } from '@/utils/fetch';
+import { HOST } from '@/utils/fetch';
 import { compressImage } from '@/utils/image';
 import { useCallback, useRef, useState } from 'react';
-import { Button, InputFile, loading, toast } from 'sweet-me';
+import { Button, InputImage, loading } from 'sweet-me';
 
 interface IProps {
   onClose: (src?: string) => void;
@@ -63,30 +63,11 @@ export const UploadAvatar = (props: IProps) => {
         alignItems: 'center',
       }}
     >
-      <InputFile
-        onValueChange={handleFileChange}
-        accept='image/*'
-        multiple={false}
-      />
+      <InputImage onValueChange={handleFileChange} />
       {url && (
-        <>
-          <img
-            style={{
-              width: 120,
-              height: 120,
-              display: 'block',
-              marginTop: 10,
-              objectFit: 'cover',
-              boxSizing: 'border-box',
-              border: '2px solid #eee',
-            }}
-            src={url}
-            alt='头像'
-          />
-          <Button style={{ marginTop: 10, width: 120 }} onClick={handleUpload}>
-            上传
-          </Button>
-        </>
+        <Button style={{ marginTop: 10, width: 120 }} onClick={handleUpload}>
+          上传
+        </Button>
       )}
     </div>
   );
