@@ -234,6 +234,8 @@ export class Game {
       avatar: avatar.startsWith('http') ? avatar : undefined,
     };
 
+    console.log('[dodo] ', 'this.shareInfo', this.shareInfo);
+
     changeShareInfo({
       title: this.shareInfo.title,
       description: this.shareInfo.description,
