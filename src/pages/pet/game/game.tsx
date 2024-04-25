@@ -289,7 +289,7 @@ export class Game {
         // 生成新的 URL
         const newUrl = url.toString();
 
-        window.location.replace(newUrl);
+        history.replaceState(null, '', newUrl);
       })
       .catch(() => {
         toast('网络错误');
