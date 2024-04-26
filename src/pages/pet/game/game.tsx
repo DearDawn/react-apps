@@ -59,7 +59,7 @@ export class Game {
     this.playerObj = new Player({ app });
     const rules = new Rules({
       app,
-      text: '跳跃：点击屏幕或敲击空格',
+      text: '跳跃：点击屏幕或敲击空格\n\n暂停：待开发...\n道具：待开发...',
     });
     this.scoreBoard = new Score({ app });
     const ground = new Ground({ app });
