@@ -20,6 +20,7 @@ import { UploadAvatar } from './uploadAvatar';
 import { query } from '@/utils';
 import { changeShareInfo } from '@/utils/web';
 import { copyTextToClipboard } from '@/utils/text';
+import { initWxSDK } from '@/utils/wx';
 
 const STORAGE_DURATION_KEY = 'pet_game_duration';
 
@@ -317,6 +318,8 @@ export class Game {
         const newUrl = url.toString();
 
         history.replaceState(null, '', newUrl);
+
+        setTimeout(() => initWxSDK(), 0);
       })
       .catch(() => {
         toast('网络错误');
