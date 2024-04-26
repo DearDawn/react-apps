@@ -68,23 +68,24 @@ export const changeShareInfo = ({
   wx.checkJsApi({
     jsApiList: ['updateAppMessageShareData'], // 需要检测的JS接口列表，所有JS接口列表见附录2,
     success: function (res) {
-      console.log('[dodo] ', 'res', res);
       // 以键值对的形式返回，可用的api值true，不可用为false
       // 如：{"checkResult":{"chooseImage":true},"errMsg":"checkJsApi:ok"}
 
-      wx.updateAppMessageShareData({
-        title, // 分享标题
-        desc: description, // 分享描述
-        link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-        imgUrl: image, // 分享图标
-        success: function () {
-          console.log('[dodo] ', '分享设置成功');
-          // 设置成功
-        },
-        cancel() {
-          console.log('[dodo] ', '分享设置失败');
-        },
-      });
+      if (res?.checkResult?.updateAppMessageShareData) {
+        wx.updateAppMessageShareData({
+          title, // 分享标题
+          desc: description, // 分享描述
+          link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+          imgUrl: image, // 分享图标
+          success: function () {
+            console.log('[dodo] ', '分享设置成功');
+            // 设置成功
+          },
+          cancel() {
+            console.log('[dodo] ', '分享设置失败');
+          },
+        });
+      }
     },
   });
 };
