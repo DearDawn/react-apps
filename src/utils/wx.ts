@@ -30,3 +30,10 @@ export const initWxSDK = () => {
     })
     .catch(console.error);
 };
+
+export const isWX = () => {
+  const ua = navigator.userAgent.toLowerCase();
+  const isWx = new RegExp(/MicroMessenger/i).test(ua);
+
+  return isWx;
+};

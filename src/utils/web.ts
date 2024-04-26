@@ -87,5 +87,8 @@ export const changeShareInfo = ({
         });
       }
     },
+    cancel(err) {
+      console.log('[dodo] ', 'checkJSAPI 失败', err);
+    }
   });
 };
