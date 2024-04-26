@@ -59,7 +59,7 @@
     "socket.io-client": "^4.7.2",
     "sweet-me": "^0.0.162",
     "vconsole": "^3.15.1",
-    "weixin-js-sdk": "^1.6.5"
+    "weixin-js-sdk-ts": "^1.6.1"
   },
   "engines": {
     "node": ">=18.17.0",
