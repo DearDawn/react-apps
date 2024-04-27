@@ -70,7 +70,12 @@ export const changeShareInfo = ({
     success: function (res) {
       // 以键值对的形式返回，可用的api值true，不可用为false
       // 如：{"checkResult":{"chooseImage":true},"errMsg":"checkJsApi:ok"}
-      console.log('[dodo] ', 'wx.checkJsApi', res);
+      console.log(
+        '[dodo] ',
+        'wx.checkJsApi',
+        res,
+        res?.checkResult?.updateAppMessageShareData
+      );
       if (res?.checkResult?.updateAppMessageShareData) {
         wx.updateAppMessageShareData({
           title, // 分享标题
@@ -81,7 +86,7 @@ export const changeShareInfo = ({
             console.log('[dodo] ', '分享设置成功');
             // 设置成功
           },
-          cancel() {
+          cancel: function () {
             console.log('[dodo] ', '分享设置失败');
           },
         });
