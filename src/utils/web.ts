@@ -83,7 +83,7 @@ export const changeShareInfo = ({
           link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
           imgUrl: image, // 分享图标
           fail: function (err) {
-            console.log('[dodo] ', '分享设置失败', err);
+            console.log('[dodo] ', '分享设置失败111', err);
           },
           success: function () {
             console.log('[dodo] ', '分享设置成功');
