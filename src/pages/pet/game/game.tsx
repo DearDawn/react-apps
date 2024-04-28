@@ -21,6 +21,7 @@ import { query } from '@/utils';
 import { changeShareInfo } from '@/utils/web';
 import { copyTextToClipboard } from '@/utils/text';
 import { initWxSDK } from '@/utils/wx';
+import { action } from '@/utils/action';
 
 const STORAGE_DURATION_KEY = 'pet_game_duration';
 
@@ -123,12 +124,15 @@ export class Game {
         });
     }
 
-    this.initMenu();
+    this.initMenu({ text: '开始游戏' });
   }
 
   initMenu(extra: Omit<TMenuConfig, 'app'> = {}) {
     this.menu = new Menu({ ...extra, app: this.app });
-    this.menu.onClick(() => this.start());
+    this.menu.onClick(() => {
+      action.click('start_btn', { text: extra.text });
+      this.start();
+    });
     this.menu.onChangeAvatar(this.changeAvatar);
     this.menu.onShare(this.share);
     this.app.stage.addChild(this.menu);
@@ -153,6 +157,12 @@ export class Game {
   }
 
   async gameOver() {
+    action.show('rank', {
+      score: this.scoreBoard.score,
+      duration: this.duration,
+      totalDuration: this.totalDuration,
+    });
+
     this.resetData();
     this.app.stop();
     this.playerObj.stop();
@@ -289,6 +299,8 @@ export class Game {
   }
 
   changeAvatar = async () => {
+    action.click('avatar_btn');
+
     let avatarSrc = '';
 
     await showModal(({ onClose }) => (
@@ -302,6 +314,7 @@ export class Game {
 
     if (!avatarSrc) return;
 
+    action.click('avatar_change', { avatar: avatarSrc });
     myPost('/pet/config_add', {}, { avatar: avatarSrc })
       .then((res: any) => {
         // 获取当前页面的 URL
@@ -329,6 +342,8 @@ export class Game {
   };
 
   share = () => {
+    action.click('share_btn');
+
     const { title, description, url, name, score } = this.shareInfo || {};
     const shareText = `${title} ${description}\n\n${url}`;
 

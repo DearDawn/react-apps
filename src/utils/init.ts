@@ -1,6 +1,8 @@
 import VConsole from 'vconsole';
 import { changeShareInfo } from './web';
 import { initWxSDK } from './wx';
+import { action } from './action';
+import { HOST } from './fetch';
 
 const urlParams = new URLSearchParams(window.location.search);
 const testParam = urlParams.get('test');
@@ -8,6 +10,9 @@ const testParam = urlParams.get('test');
 if (testParam === '1') {
   new VConsole();
 }
+
+action.config({ url: `${HOST}/action/add` });
+action.visit();
 
 initWxSDK();
 changeShareInfo({});

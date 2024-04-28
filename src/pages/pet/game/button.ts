@@ -3,6 +3,7 @@ import * as PIXI from 'pixi6.js';
 export class Button extends PIXI.Container {
   clickCallback = new Set<VoidFunction>();
   app: PIXI.Application = null;
+  text = '';
   constructor({
     width = 90,
     height = 30,
@@ -15,6 +16,7 @@ export class Button extends PIXI.Container {
   }) {
     super();
     this.app = app;
+    this.text = text;
 
     // 创建按钮背景
     const buttonBackground = new PIXI.Graphics();
@@ -24,7 +26,7 @@ export class Button extends PIXI.Container {
     this.addChild(buttonBackground);
 
     // 创建按钮文本
-    const buttonText = new PIXI.Text(text, textStyle);
+    const buttonText = new PIXI.Text(this.text, textStyle);
     buttonText.anchor.set(0.5);
     buttonText.position.set(width / 2, height / 2);
     this.addChild(buttonText);
