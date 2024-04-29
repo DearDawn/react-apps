@@ -7,7 +7,7 @@ export class Action {
   constructor() {}
 
   private get baseData() {
-    return { did: this.did };
+    return { did: this.did, url: location.href, page: location.pathname };
   }
 
   config({ url }) {
