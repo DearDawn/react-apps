@@ -16,13 +16,13 @@ import {
   toast,
 } from 'sweet-me';
 import { myFetch, myPost } from '@/utils/fetch';
-import { UploadAvatar } from './uploadAvatar';
 import { query } from '@/utils';
 import { changeShareInfo } from '@/utils/web';
 import { copyTextToClipboard } from '@/utils/text';
 import { initWxSDK } from '@/utils/wx';
 import { action } from '@/utils/action';
 import { Rank } from '../components/rank';
+import { UploadAvatar } from '../components/uploadAvatar';
 
 const STORAGE_DURATION_KEY = 'pet_game_duration';
 
@@ -313,15 +313,40 @@ export class Game {
     ));
   };
 
+  changePageId(id) {
+    // 获取当前页面的 URL
+    const currentUrl = window.location.href;
+
+    // 解析 URL，获取参数部分
+    const url = new URL(currentUrl);
+    const searchParams = url.searchParams;
+
+    // 设置或替换参数值
+    searchParams.set('id', id); // 设置或替换 param1 参数的值
+
+    // 生成新的 URL
+    const newUrl = url.toString();
+
+    history.replaceState(null, '', newUrl);
+
+    setTimeout(() => initWxSDK(), 0);
+  }
+
   changeAvatar = async () => {
     action.click('avatar_btn');
 
     let avatarSrc = '';
+    let configId = 0;
 
     await showModal(({ onClose }) => (
       <UploadAvatar
         onClose={(src) => {
           avatarSrc = src;
+          onClose();
+        }}
+        onSelect={({ id, avatar }) => {
+          avatarSrc = avatar;
+          configId = id;
           onClose();
         }}
       />
@@ -330,28 +355,18 @@ export class Game {
     if (!avatarSrc) return;
 
     action.click('avatar_change', { avatar: avatarSrc });
-    myPost('/pet/config_add', {}, { avatar: avatarSrc })
-      .then((res: any) => {
-        // 获取当前页面的 URL
-        const currentUrl = window.location.href;
 
-        // 解析 URL，获取参数部分
-        const url = new URL(currentUrl);
-        const searchParams = url.searchParams;
-
-        // 设置或替换参数值
-        searchParams.set('id', res?.id || 0); // 设置或替换 param1 参数的值
-
-        // 生成新的 URL
-        const newUrl = url.toString();
-
-        history.replaceState(null, '', newUrl);
-
-        setTimeout(() => initWxSDK(), 0);
-      })
-      .catch(() => {
-        toast('网络错误');
-      });
+    if (configId) {
+      this.changePageId(configId);
+    } else {
+      myPost('/pet/config_add', {}, { avatar: avatarSrc })
+        .then((res: any) => {
+          this.changePageId(res.id || 0);
+        })
+        .catch(() => {
+          toast('网络错误');
+        });
+    }
 
     this.playerObj.setAvatar(avatarSrc);
   };

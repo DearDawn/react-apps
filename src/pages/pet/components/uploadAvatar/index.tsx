@@ -1,16 +1,32 @@
-import { HOST } from '@/utils/fetch';
+import { HOST, myFetch } from '@/utils/fetch';
 import { compressImage } from '@/utils/image';
-import { useCallback, useRef, useState } from 'react';
-import { Button, InputImage, loading } from 'sweet-me';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Button, Image, InputImage, loading, toast } from 'sweet-me';
+import * as styles from './index.module.less';
 
 interface IProps {
   onClose: (src?: string) => void;
+  onSelect: (item: ConfigItem) => void;
 }
+
+type ConfigItem = {
+  id: number;
+  avatar: string;
+};
 
 export const UploadAvatar = (props: IProps) => {
   const [url, setUrl] = useState('');
+  const [historyList, setHistoryList] = useState<ConfigItem[]>([]);
   const fileRef = useRef<File>();
-  const { onClose } = props;
+  const { onClose, onSelect } = props;
+
+  useEffect(() => {
+    myFetch('/pet/config_list')
+      .then((res: { data: ConfigItem[] }) => {
+        setHistoryList(res.data);
+      })
+      .catch(() => [toast('网络错误')]);
+  }, []);
 
   const handleFileChange = useCallback((file) => {
     fileRef.current = file;
@@ -30,6 +46,13 @@ export const UploadAvatar = (props: IProps) => {
       });
     }
   }, []);
+
+  const handleChangeAvatar = useCallback(
+    (it: ConfigItem) => () => {
+      onSelect(it);
+    },
+    []
+  );
 
   const handleUpload = useCallback(() => {
     const formData = new FormData();
@@ -55,17 +78,23 @@ export const UploadAvatar = (props: IProps) => {
   }, [url]);
 
   return (
-    <div
-      style={{
-        width: 220,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-    >
+    <div className={styles.uploadWrap}>
+      <div className={styles.listTitle}>点击头像或新增</div>
+      <div className={styles.avatarList}>
+        {historyList.map((it) => (
+          <Image
+            className={styles.avatar}
+            src={it.avatar}
+            lazyLoad={false}
+            onClick={handleChangeAvatar(it)}
+            draggable={false}
+            withPreview={false}
+          />
+        ))}
+      </div>
       <InputImage onValueChange={handleFileChange} />
       {url && (
-        <Button style={{ marginTop: 10, width: 120 }} onClick={handleUpload}>
+        <Button className={styles.submit} onClick={handleUpload}>
           上传
         </Button>
       )}

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import * as styles from './index.module.less';
 import clsx from 'clsx';
-import { myFetch, useFetch } from '@/utils/fetch';
+import { useFetch } from '@/utils/fetch';
 import DefaultAvatar from '../../game/player-head.png';
 import { Button, Image, loading } from 'sweet-me';
 

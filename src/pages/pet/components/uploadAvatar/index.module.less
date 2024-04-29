@@ -1,0 +1,49 @@
+.uploadWrap {
+  width: 300;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.listTitle {
+  font-size: 18px;
+}
+
+.avatarList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4;
+  max-height: 200px;
+  overflow: auto;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  padding: 10px;
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+  transition: all 0.1s linear;
+  cursor: pointer;
+  user-select: none;
+  background-color: #fff;
+
+  @media (any-hover: hover) {
+    &:hover {
+      transform: scale(1.5);
+    }
+  }
+
+  &:active:not(:visited) {
+    transform: scale(0.9);
+  }
+}
+
+.submit {
+  margin-top: 10px;
+  width: 120px;
+}
