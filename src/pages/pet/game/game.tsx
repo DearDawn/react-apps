@@ -22,6 +22,7 @@ import { changeShareInfo } from '@/utils/web';
 import { copyTextToClipboard } from '@/utils/text';
 import { initWxSDK } from '@/utils/wx';
 import { action } from '@/utils/action';
+import { Rank } from '../components/rank';
 
 const STORAGE_DURATION_KEY = 'pet_game_duration';
 
@@ -32,6 +33,7 @@ export class Game {
   scoreBoard: Score;
   controller: Controller;
   menu: Menu;
+  scoreId: string;
   shareInfo: {
     title: string;
     url: string;
@@ -135,6 +137,7 @@ export class Game {
     });
     this.menu.onChangeAvatar(this.changeAvatar);
     this.menu.onShare(this.share);
+    this.menu.onRankShow(this.showRank);
     this.app.stage.addChild(this.menu);
   }
 
@@ -173,10 +176,12 @@ export class Game {
     const { item, list = [] } = data || {};
     const { _id } = item || {};
 
+    this.scoreId = _id;
+
     this.initMenu({
       text: '重新开始',
       resultMode: true,
-      scoreId: _id,
+      scoreId: this.scoreId,
       rankList: list.slice(0, 10),
       duration: this.duration,
       totalDuration: this.totalDuration,
@@ -238,28 +243,30 @@ export class Game {
       String(this.totalDuration + this.duration)
     );
 
-    await showModal(
-      ({ onClose }) => (
-        <div>
-          <Space stretch style={{ fontSize: 24, padding: '0 0 15px' }}>
-            留名
-          </Space>
-          <Input
-            style={{ borderRadius: '4px 0 0 4px' }}
-            placeholder='最大 6 个字'
-            maxLength={6}
-            defaultValue='无名小卒'
-            onValueChange={(val) => {
-              data.name = val || '无名小卒';
-            }}
-          />
-          <MyButton style={{ borderRadius: '0 4px 4px 0' }} onClick={onClose}>
-            提交
-          </MyButton>
-        </div>
-      ),
-      { maskClosable: false }
-    );
+    if (this.scoreBoard.score > 0) {
+      await showModal(
+        ({ onClose }) => (
+          <div>
+            <Space stretch style={{ fontSize: 24, padding: '0 0 15px' }}>
+              留名
+            </Space>
+            <Input
+              style={{ borderRadius: '4px 0 0 4px' }}
+              placeholder='最大 6 个字'
+              maxLength={6}
+              defaultValue='无名小卒'
+              onValueChange={(val) => {
+                data.name = val || '无名小卒';
+              }}
+            />
+            <MyButton style={{ borderRadius: '0 4px 4px 0' }} onClick={onClose}>
+              提交
+            </MyButton>
+          </div>
+        ),
+        { maskClosable: false }
+      );
+    }
 
     const { name = '无名小卒', score = 0 } = data || {};
     const avatar = this.playerObj.avatarSrc || '';
@@ -273,8 +280,6 @@ export class Game {
       name,
       avatar: avatar.startsWith('http') ? avatar : undefined,
     };
-
-    console.log('[dodo] ', 'this.shareInfo', this.shareInfo);
 
     changeShareInfo({
       title: this.shareInfo.title,
@@ -297,6 +302,12 @@ export class Game {
       return null;
     }
   }
+
+  showRank = () => {
+    showModal(({ onClose }) => (
+      <Rank onClose={onClose} scoreId={this.scoreId} />
+    ));
+  };
 
   changeAvatar = async () => {
     action.click('avatar_btn');

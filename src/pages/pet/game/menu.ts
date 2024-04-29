@@ -17,6 +17,7 @@ export class Menu extends PIXI.Container {
   background: PIXI.Graphics;
   button: Button;
   avatarButton: Button;
+  rankButton: Button;
   shareButton: Button;
   resultMode: boolean;
   buttonText: PIXI.Text;
@@ -71,6 +72,16 @@ export class Menu extends PIXI.Container {
       textStyle: { fontFamily: 'Arial', fontSize: 20, fill: 0xeeeeee },
     });
 
+    this.rankButton = new Button({
+      width: 100,
+      height: 40,
+      app: this.app,
+      text: '总排行榜',
+      bgAlpha: 0.1,
+      fillColor: 0xffffff,
+      textStyle: { fontFamily: 'Arial', fontSize: 20, fill: 0xeeeeee },
+    });
+
     this.shareButton = new Button({
       width: 100,
       height: 40,
@@ -88,13 +99,16 @@ export class Menu extends PIXI.Container {
     } else {
       this.button.y = this.app.screen.height / 2 - 50;
       this.avatarButton.x = this.app.screen.width / 2;
+      this.rankButton.x = this.app.screen.width / 2;
     }
 
     this.avatarButton.y = this.button.y + 70;
+    this.rankButton.y = this.avatarButton.y + 50;
     this.shareButton.y = this.avatarButton.y;
 
     this.background.addChild(this.button);
     this.background.addChild(this.avatarButton);
+    this.background.addChild(this.rankButton);
 
     this.addChild(this.background);
 
@@ -112,6 +126,12 @@ export class Menu extends PIXI.Container {
 
   onChangeAvatar(cb) {
     this.avatarButton.onClick(() => {
+      cb();
+    });
+  }
+
+  onRankShow(cb) {
+    this.rankButton.onClick(() => {
       cb();
     });
   }
@@ -162,7 +182,7 @@ export class Menu extends PIXI.Container {
     const contentContainer = new PIXI.Container();
     scrollContainer.addChild(contentContainer);
 
-    const title = new PIXI.Text('排行榜', {
+    const title = new PIXI.Text('排行榜（当日）', {
       fontFamily: 'Arial',
       fontSize: 24,
       fill: 'black',
