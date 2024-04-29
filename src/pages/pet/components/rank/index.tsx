@@ -148,6 +148,7 @@ export const Rank = (props: IProps) => {
         onChange={handleTabChange}
       />
       <div className={styles.rankList} ref={listRef}>
+        {rankList.length === 0 && <div className={styles.rankItem}>虚位以待~</div>}
         {rankList.map((it, idx) => (
           <div
             className={clsx(styles.rankItem, {

@@ -76,7 +76,7 @@ export class Menu extends PIXI.Container {
       width: 100,
       height: 40,
       app: this.app,
-      text: '总排行榜',
+      text: '排行榜',
       bgAlpha: 0.1,
       fillColor: 0xffffff,
       textStyle: { fontFamily: 'Arial', fontSize: 20, fill: 0xeeeeee },
