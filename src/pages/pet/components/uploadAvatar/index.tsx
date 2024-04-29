@@ -21,11 +21,14 @@ export const UploadAvatar = (props: IProps) => {
   const { onClose, onSelect } = props;
 
   useEffect(() => {
+    const close = loading('加载中', 30000, false, 300);
+
     myFetch('/pet/config_list')
       .then((res: { data: ConfigItem[] }) => {
         setHistoryList(res.data);
       })
-      .catch(() => [toast('网络错误')]);
+      .catch(() => toast('网络错误'))
+      .finally(close);
   }, []);
 
   const handleFileChange = useCallback((file) => {
