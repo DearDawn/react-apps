@@ -120,6 +120,10 @@ export class Game {
         .then((res: any) => {
           const avatarSrc = res?.data?.avatar;
           this.playerObj.setAvatar(avatarSrc);
+
+          if (avatarSrc) {
+            changeShareInfo({ image: avatarSrc });
+          }
         })
         .catch(() => {
           toast('网络错误');
