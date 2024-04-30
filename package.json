@@ -46,6 +46,7 @@
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "^7.0.2",
     "@typescript-eslint/parser": "^7.0.2",
+    "chart.js": "^4.4.2",
     "clsx": "^2.0.0",
     "dayjs": "^1.11.10",
     "eslint": "^8.57.0",
@@ -54,6 +55,7 @@
     "pixi.js": "^7.3.2",
     "pixi6.js": "npm:pixi.js@^6.5.10",
     "react": "^18.2.0",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "run-script-os": "^1.1.6",
     "socket.io-client": "^4.7.2",
