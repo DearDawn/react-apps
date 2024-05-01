@@ -1,8 +1,9 @@
-import { Button } from 'sweet-me';
+import { Button, showMdViewer } from 'sweet-me';
 import * as styles from './index.module.less';
 import Image from 'src/assets/bunny.png';
 import { Comp } from '../type';
 import { useCallback, useState } from 'react';
+import README from '../../../../../README.md';
 
 export const Notice: Comp = ({ style }) => {
   const [badge, setBadge] = useState(0);
@@ -20,6 +21,10 @@ export const Notice: Comp = ({ style }) => {
 
     setBadge(newVal);
   }, [badge]);
+
+  const handleMd = useCallback(() => {
+    showMdViewer(README);
+  }, []);
 
   const handleClick = () => {
     if ('Notification' in window) {
@@ -94,6 +99,7 @@ export const Notice: Comp = ({ style }) => {
       <Button onClick={handleNotice}>通知</Button>
       <Button onClick={handleNoticeSW}>SW 通知</Button>
       <Button onClick={handleBadge}>Badge {badge}</Button>
+      <Button onClick={handleMd}>README.md</Button>
     </div>
   );
 };

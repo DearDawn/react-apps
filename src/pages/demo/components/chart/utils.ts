@@ -11,7 +11,7 @@ export const getDateList = (from = yesterday, to = now): string[] => {
   const hoursArray = [];
   let currentTime = from;
 
-  while (currentTime.isBefore(to)) {
+  while (currentTime.startOf('hour').isBefore(to)) {
     const hourString = currentTime.format('MM-DD HH');
     hoursArray.push(hourString);
     currentTime = currentTime.add(1, 'hour');

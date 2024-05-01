@@ -7,6 +7,8 @@ declare module '*.ttf';
 declare module '*.woff';
 declare module '*.woff2';
 declare module '*.less';
+declare module '*.md';
+
 declare namespace NodeJS {
   interface ProcessEnv {
     /** 构建时间 */
@@ -14,6 +16,6 @@ declare namespace NodeJS {
     /** 环境 */
     NODE_ENV: 'development' | 'production';
     /** 版本号 */
-    APP_VERSION: string
+    APP_VERSION: string;
   }
 }

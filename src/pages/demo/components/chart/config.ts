@@ -4,6 +4,9 @@ import { _DeepPartialObject } from 'chart.js/dist/types/utils';
 export const options: ChartOptions<'line'> = {
   responsive: true,
   plugins: {
+    colors: {
+      forceOverride: true,
+    },
     legend: {
       position: 'top' as const,
       labels: {
@@ -37,8 +40,22 @@ export const options: ChartOptions<'line'> = {
       callbacks: {
         title(tooltipItem) {
           tooltipItem.forEach((it) => {
-            const type = it.dataset.yAxisID === 'y' ? 'PV' : 'UV';
-            it.label += `时 ${type}`;
+            it.label += `时`;
+          });
+        },
+        label(tooltipItem) {
+          console.log('[dodo] ', 'tooltipItem', tooltipItem);
+        },
+        beforeBody(tooltipItems) {
+          tooltipItems.forEach((it) => {
+            const label = it.dataset.label;
+            const isUV = it.dataset.yAxisID === 'y';
+
+            if (label.endsWith('UV') || label.endsWith('PV')) {
+              return;
+            }
+
+            it.dataset.label = label + (isUV ? ' PV' : ' UV');
           });
         },
       },
