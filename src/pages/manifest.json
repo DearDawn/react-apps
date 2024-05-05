@@ -1,0 +1,49 @@
+{
+  "name": "小项目",
+  "short_name": "小项目",
+  "description": "小项目合集",
+  "display": "standalone",
+  "display_override": [
+    "window-control-overlay",
+    "minimal-ui"
+  ],
+  "theme_color": "#b2f2bb",
+  "background_color": "#fff",
+  "start_url": "./",
+  "icons": [
+    {
+      "src": "/src/assets/help.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/src/assets/demo-mobile.png",
+      "type": "image/png",
+      "sizes": "375x667",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "/src/assets/demo-pc.png",
+      "type": "image/png",
+      "sizes": "1366x768",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "快捷方式",
+      "short_name": "指令",
+      "description": "快捷方式，还没实现",
+      "url": "./?test=123",
+      "icons": [
+        {
+          "src": "/src/assets/phone.png",
+          "sizes": "256x256",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}
