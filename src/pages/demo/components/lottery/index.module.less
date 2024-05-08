@@ -4,6 +4,8 @@
   position: relative;
   overflow: auto;
   width: fit-content;
+  min-width: 250px;
+  font-size: 12px;
 
   .title {
     font-size: 24px;
@@ -26,15 +28,59 @@
   }
 }
 
+.myInfo {
+  border: 1px solid #8ce99a;
+  border-radius: 10px;
+  padding: 6px 10px;
+  box-sizing: border-box;
+  font-size: 12px;
+  margin-top: 6px;
+
+  .number {
+    display: flex;
+    align-items: center;
+  }
+
+  .date {
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .myList {
+    .dfx();
+
+    .before,
+    .end {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background-color: #339af0;
+      font-size: 10px;
+      .dfx();
+      margin-right: 4px;
+      box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3), inset 1px 1px 3px rgba(0, 0, 0, 0.1);
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .end {
+      background-color: #fcc419;
+      color: #1f2129;
+    }
+  }
+}
+
 .lotteryList {
   box-sizing: border-box;
   padding: 0 10px 10px;
-  margin: 10px 0 0;
+  margin: 6px auto 0;
   border: 1px solid #8ce99a;
   border-radius: 10px;
   height: 200px;
   overflow: auto;
-  width: 100%;
+  width: 250px;
 }
 
 .lotteryItem {
@@ -44,6 +90,13 @@
 
   .date {
     font-size: 11px;
+
+    .win {
+      margin-left: 8px;
+      background-color: #f03e3e;
+      color: #fff;
+      font-weight: 500;
+    }
   }
 
   .ballList {

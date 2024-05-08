@@ -14,7 +14,9 @@ export const options: ChartOptions<'line'> = {
         borderRadius: 6,
         boxPadding: 1,
         useBorderRadius: true,
-        filter: (item) => !!item.text,
+        filter: (item) => {
+          return item.datasetIndex % 2 === 1;
+        },
       },
       onClick: function (_, legendItem) {
         const index = legendItem.datasetIndex; // 获取被点击的图例项的数据集索引
@@ -43,9 +45,6 @@ export const options: ChartOptions<'line'> = {
             it.label += `时`;
           });
         },
-        label(tooltipItem) {
-          console.log('[dodo] ', 'tooltipItem', tooltipItem);
-        },
         beforeBody(tooltipItems) {
           tooltipItems.forEach((it) => {
             const label = it.dataset.label;
@@ -55,7 +54,10 @@ export const options: ChartOptions<'line'> = {
               return;
             }
 
-            it.dataset.label = label + (isUV ? ' PV' : ' UV');
+            it.dataset = {
+              ...it.dataset,
+              label: label + (isUV ? ' PV' : ' UV'),
+            };
           });
         },
       },

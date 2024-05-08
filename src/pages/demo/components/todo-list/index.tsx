@@ -5,16 +5,20 @@ import {
   Form,
   Input,
   Space,
-  storage,
+  Storage,
   useFormState,
   usePageVisible,
 } from 'sweet-me';
 import { Comp } from '../type';
+import { isDev } from '@/utils/dev';
+
+const storage = new Storage();
 
 storage.config({
   namespace: 'todo-list',
   sync: true,
   params: { dodokey: 777 },
+  remoteUrl: isDev ? '/api/storage' : undefined,
 });
 
 export const TodoList: Comp = ({ style, visible }) => {
@@ -26,11 +30,14 @@ export const TodoList: Comp = ({ style, visible }) => {
     if (!visible || !pageVisible) return;
 
     setTodos(storage.localGet('todos') || []);
-    storage.get('todos').then((storedTodos) => {
-      if (storedTodos) {
-        updateTodoStore(storedTodos);
-      }
-    }).catch(console.error);
+    storage
+      .get('todos')
+      .then((storedTodos) => {
+        if (storedTodos) {
+          updateTodoStore(storedTodos);
+        }
+      })
+      .catch(console.error);
   }, [visible, pageVisible]);
 
   const updateTodoStore = (todoInfo) => {
