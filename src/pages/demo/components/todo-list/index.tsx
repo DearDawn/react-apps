@@ -23,7 +23,7 @@ export const TodoList: Comp = ({ style, visible }) => {
   const { form } = useFormState();
 
   useEffect(() => {
-    if (!visible && !pageVisible) return;
+    if (!visible || !pageVisible) return;
 
     setTodos(storage.localGet('todos') || []);
     storage.get('todos').then((storedTodos) => {
