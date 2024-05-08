@@ -94,10 +94,14 @@ export const Lottery: Comp = ({ style, visible }) => {
           我的号码：
           <div className={styles.myList}>
             {myBefore.map((it) => (
-              <div className={styles.before}>{it}</div>
+              <div className={styles.before} key={`before-${it}`}>
+                {it}
+              </div>
             ))}
             {myEnd.map((it) => (
-              <div className={styles.end}>{it}</div>
+              <div className={styles.end} key={`end-${it}`}>
+                {it}
+              </div>
             ))}
           </div>
         </div>

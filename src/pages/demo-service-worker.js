@@ -1,5 +1,3 @@
-console.log('[dodo] ', 'self', self);
-
 self.addEventListener('push', event => {
   const title = '通知标题123';
   const options = {
