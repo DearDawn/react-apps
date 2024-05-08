@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as styles from './index.module.less';
-import { Space, Storage, usePageVisible } from 'sweet-me';
+import { Space, Storage, loading, usePageVisible } from 'sweet-me';
 import { Comp } from '../type';
 import { useFetch } from '@/utils/fetch';
 import clsx from 'clsx';
@@ -31,6 +31,7 @@ const MY_DATE_DEFAULT = dayjs().format('YYYY-MM-DD');
 
 export const Lottery: Comp = ({ style, visible }) => {
   const { pageVisible } = usePageVisible();
+  const rootRef = useRef(null);
   const [myNumber, setMyNumber] = useState<string>(
     storage.get(MY_NUMBER_KEY) || MY_NUMBER_DEFAULT
   );
@@ -40,6 +41,8 @@ export const Lottery: Comp = ({ style, visible }) => {
   const { data, runApi } = useFetch<ILottery>({
     url: '/crawler/lottery',
     autoRun: false,
+    loadingFn: () =>
+      loading('数据加载中...', undefined, false, 300, rootRef.current),
   });
 
   const { list: sourceList = [], updateAt } = data?.data || {};
@@ -86,7 +89,7 @@ export const Lottery: Comp = ({ style, visible }) => {
   }, [visible, pageVisible]);
 
   return (
-    <div className={styles.lotteryCard} style={style}>
+    <div className={styles.lotteryCard} style={style} ref={rootRef}>
       <div className={styles.title}>超级大乐透</div>
       <div className={styles.subtitle}>更新时间：{updateAt}</div>
       <div className={styles.myInfo}>
