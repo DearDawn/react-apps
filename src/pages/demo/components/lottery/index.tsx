@@ -113,7 +113,10 @@ export const Lottery: Comp = ({ style, visible }) => {
             <div className={styles.date}>
               <span>{`${item.date} 第 ${item.no} 期`}</span>
               {item.rule.level > 0 && (
-                <span className={styles.win}>{item.rule.levelText}</span>
+                <span className={styles.win}>
+                  {item.rule.levelText}&nbsp;
+                  {item.rule.reward}
+                </span>
               )}
             </div>
             <div className={styles.ballList}>

@@ -20,5 +20,5 @@ export const getWinRules = (beforeCount = 0, endCount = 0) => {
   const level = getLevel(id);
   const reward = rewards[level];
 
-  return { level, reward, levelText: levelText[level] + '等奖' };
+  return { level, reward: '￥' + reward, levelText: levelText[level] + '等奖' };
 };
