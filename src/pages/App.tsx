@@ -35,7 +35,7 @@ export const App = (props: IProps) => {
   ];
 
   return (
-    <Page maxWidth='100vw' className={styles.app}>
+    <Page minWidth='300px' className={styles.app}>
       <Header title='小糖的 React 项目合集' isSticky />
       <div className={styles.blockWrap}>
         {PageList.map((it) => (
