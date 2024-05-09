@@ -1,12 +1,43 @@
-.app {
-  .title {
-    margin: 10px 10px 0;
-    width: auto;
+@import url('/src/assets/mixin.less');
 
-    a {
-      text-decoration: none;
-      color: inherit;
-      width: 100%;
+.app {
+  .blockWrap {
+    display: grid;
+    padding: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    grid-gap: 10px;
+  }
+
+  .block {
+    width: 100%;
+    font-size: 14px;
+    cursor: pointer;
+    transition: transform 0.1s linear;
+
+    @media (any-hover: hover) {
+      &:hover {
+        transform: scale(1.05);
+      }
     }
+
+    &:active:not(:visited) {
+      transform: scale(0.95);
+    }
+  }
+
+  .logo {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 10px;
+    .dfx();
+    font-size: 40px;
+    line-height: normal;
+    font-weight: 200;
+  }
+
+  .name {
+    width: 100%;
+    text-align: center;
+    margin-top: 5px;
   }
 }
