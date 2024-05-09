@@ -127,9 +127,9 @@ export const Chart: Comp = ({ style }) => {
         value={tabKey}
         onValueChange={handleTabChange}
       />
-      <Line className={styles.chart} options={options} data={data} />
+      <Line width={400} height={250} className={styles.chart} options={options} data={data} />
     </div>
   );
 };
 
-Chart.scale = 0.5;
+Chart.scale = 0.4;
