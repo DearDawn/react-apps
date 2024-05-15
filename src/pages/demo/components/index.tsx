@@ -2,6 +2,7 @@ import { Bubble } from './bubble';
 import { Chart } from './chart';
 import { Lottery } from './lottery';
 import { Notice } from './notice';
+import { Scale } from './scale';
 import { TodoList } from './todo-list';
 
 export default {
@@ -9,5 +10,7 @@ export default {
   Notice,
   TodoList,
   Chart,
-  Lottery
+  Lottery,
+  Scale,
+  // VideoChat,
 };
