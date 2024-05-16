@@ -1,12 +1,34 @@
 import * as styles from './App.module.less';
 import { Page, Header, Modal, Button, Icon, ICON } from 'sweet-me';
 import Comps from './components';
-import React from 'react';
+import React, { useRef } from 'react';
 import { useCardDetailModal } from '@/utils/hooks';
 import clsx from 'clsx';
 
+const Item = ({ Component, onClick, modalVisible }) => {
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <div className={styles.item}>
+      <div className={styles.itemCell} ref={parentRef}>
+        <Component
+          style={{ transform: `scale(${(Component as any).scale})` }}
+          visible={!modalVisible}
+          parent={parentRef}
+        />
+        <Icon
+          className={styles.detail}
+          type={ICON.magicBar}
+          onClick={onClick}
+        />
+      </div>
+    </div>
+  );
+};
+
 export const App = () => {
-  const { handleClickCard, closeModal, detail, modalVisible } = useCardDetailModal();
+  const { handleClickCard, closeModal, detail, modalVisible } =
+    useCardDetailModal();
 
   const TargetCompo = React.useMemo(() => {
     if (!Comps[detail]) return '';
@@ -16,23 +38,16 @@ export const App = () => {
 
   return (
     <Page maxWidth='100vw' minWidth='300px' className={styles.app}>
-      <Header title="小玩意儿~" isSticky />
+      <Header title='小玩意儿~' isSticky />
 
       <div className={styles.list}>
         {Object.entries(Comps).map(([key, Component]) => (
-          <div className={styles.item} key={key}>
-            <div className={styles.itemCell}>
-              <Component
-                style={{ transform: `scale(${(Component as any).scale})` }}
-                visible={!modalVisible}
-              />
-              <Icon
-                className={styles.detail}
-                type={ICON.magicBar}
-                onClick={handleClickCard(key)}
-              />
-            </div>
-          </div>
+          <Item
+            key={key}
+            Component={Component}
+            onClick={handleClickCard(key)}
+            modalVisible={modalVisible}
+          />
         ))}
       </div>
       <Modal
@@ -42,10 +57,14 @@ export const App = () => {
         onClose={closeModal}
         footer={<Button onClick={closeModal}>关闭</Button>}
       >
-        <div className={clsx(styles.bigItem, { [styles.fitHeight]: TargetCompo.fitHeight })}>
+        <div
+          className={clsx(styles.bigItem, {
+            [styles.fitHeight]: TargetCompo.fitHeight,
+          })}
+        >
           <TargetCompo visible />
         </div>
       </Modal>
-    </Page >
+    </Page>
   );
 };

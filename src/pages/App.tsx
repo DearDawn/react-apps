@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as styles from './App.module.less';
-import { Header, Page, Title } from 'sweet-me';
+import { Header, Page } from 'sweet-me';
+import { ScaleWrap } from './demo/components/scale';
 
 interface IProps {}
 
@@ -10,9 +11,40 @@ function generateRandomColor() {
   return randomColor;
 }
 
+const PageItem = ({ onClick, item, parent }) => {
+  const fromRef = React.useRef<HTMLDivElement>();
+
+  return (
+    <>
+      <div className={styles.block} onClick={onClick} ref={fromRef}>
+        <div
+          className={styles.logo}
+          style={{ backgroundColor: generateRandomColor() }}
+        >
+          {item.title.slice(0, 1)}
+        </div>
+        <div className={styles.name}>{item.title}</div>
+      </div>
+      <ScaleWrap fromRef={fromRef} root={parent}>
+        {({ onClose }) => (
+          <iframe
+            onClick={()=>{
+              onClose();
+              console.log('[dodo] ', '1211  ;', 1211);
+            }}
+            className={styles.iframeWrap}
+            src={item.href}
+          ></iframe>
+        )}
+      </ScaleWrap>
+    </>
+  );
+};
+
 export const App = (props: IProps) => {
+  const appRef = React.useRef<HTMLDivElement>();
   const handleClick = (it: { href: string; title: string }) => () => {
-    window.location.href = it.href;
+    // window.location.href = it.href;
   };
 
   React.useEffect(() => {
@@ -35,19 +67,16 @@ export const App = (props: IProps) => {
   ];
 
   return (
-    <Page minWidth='300px' className={styles.app}>
+    <Page minWidth='300px' className={styles.app} pageRef={appRef}>
       <Header title='小糖的 React 项目合集' isSticky />
       <div className={styles.blockWrap}>
         {PageList.map((it) => (
-          <div className={styles.block} key={it.href} onClick={handleClick(it)}>
-            <div
-              className={styles.logo}
-              style={{ backgroundColor: generateRandomColor() }}
-            >
-              {it.title.slice(0, 1)}
-            </div>
-            <div className={styles.name}>{it.title}</div>
-          </div>
+          <PageItem
+            onClick={handleClick(it)}
+            key={it.href}
+            item={it}
+            parent={appRef}
+          />
         ))}
       </div>
     </Page>

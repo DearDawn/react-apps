@@ -1,14 +1,5 @@
 @import url('/src/assets/mixin.less');
 
-.container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  z-index: 1;
-  transform: translateZ(0);
-}
-
 .target {
   position: absolute;
   top: 60px;
@@ -22,7 +13,6 @@
   align-items: center;
   cursor: pointer;
   box-sizing: border-box;
-  margin: 10px;
 }
 
 .fullscreenBox {
@@ -35,10 +25,18 @@
   left: 0;
   width: 100%;
   height: 100%;
+  overflow: hidden;
+
+  &.ready {
+    .holder {
+      opacity: 1;
+    }
+  }
 
   &.expend,
   &.shrink {
     transition: all 0.3s ease-in-out;
+    z-index: 10001;
 
     .content,
     .holder {
@@ -84,7 +82,7 @@
     left: 0;
     top: 0;
     transform-origin: left top;
-    opacity: 1;
+    opacity: 0;
     z-index: 1;
   }
 }
@@ -103,10 +101,12 @@
   &.expend {
     background-color: rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease-in-out;
+    z-index: 10000;
   }
 
   &.shrink {
     background-color: rgba(0, 0, 0, 0);
     transition: all 0.3s ease-in-out;
+    z-index: 10000;
   }
 }
