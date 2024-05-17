@@ -41,9 +41,7 @@ const PageItem = ({ onClick, item, parent }) => {
 
 export const App = (props: IProps) => {
   const appRef = React.useRef<HTMLDivElement>();
-  const handleClick = (it: { href: string; title: string }) => () => {
-    // window.location.href = it.href;
-  };
+  const handleClick = (it: { href: string; title: string }) => () => {};
 
   React.useEffect(() => {
     // eslint-disable-next-line no-console
