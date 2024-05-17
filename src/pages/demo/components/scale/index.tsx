@@ -1,9 +1,17 @@
 import * as styles from './index.module.less';
 import { Comp } from '../type';
-import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import clsx from 'clsx';
 import { useScaleCard } from './hooks';
 import { createPortal } from 'react-dom';
+
+const InstanceSet = [];
 
 const ScaleCore: Comp<{
   fromRef: React.MutableRefObject<HTMLDivElement>;
@@ -26,6 +34,22 @@ const ScaleCore: Comp<{
     await close();
     onClose();
   };
+
+  useEffect(() => {
+    if (!fromRef.current) return;
+
+    const fromDom = fromRef.current;
+
+    const cb = () => {
+      show();
+    };
+
+    fromDom.addEventListener('click', cb);
+
+    return () => {
+      fromDom.removeEventListener('click', cb);
+    };
+  }, [fromRef, show]);
 
   useEffect(() => {
     if (fromRef.current && toRef.current && transform && !showed.current) {
@@ -73,16 +97,23 @@ const ScaleCore: Comp<{
 export const ScaleWrap: Comp<{
   fromRef: React.MutableRefObject<HTMLDivElement>;
   root: Element | React.MutableRefObject<HTMLDivElement>;
+  unmountDestroy?: boolean;
   children?:
     | ReactElement
     | ((props: { onClose: VoidFunction }) => ReactElement);
-}> = ({ fromRef, root, children, ...rest }) => {
+}> = ({ fromRef, root, children, unmountDestroy, ...rest }) => {
   const [scaleRoot, setScaleRoot] = useState<Element>(null);
   const [mount, setMount] = useState(false);
 
-  const handleClose = useCallback(() => {
+  const unmount = useCallback(() => {
     setMount(false);
   }, []);
+
+  const handleClose = useCallback(() => {
+    if (unmountDestroy) {
+      unmount();
+    }
+  }, [unmountDestroy, unmount]);
 
   useEffect(() => {
     if (!fromRef.current) return;
@@ -92,7 +123,7 @@ export const ScaleWrap: Comp<{
     const cb = async () => {
       setTimeout(() => {
         setMount(true);
-      }, 150);
+      }, 0);
     };
 
     fromDom.addEventListener('click', cb);
@@ -109,6 +140,16 @@ export const ScaleWrap: Comp<{
       setScaleRoot(root?.current);
     }
   }, [root]);
+
+  useEffect(() => {
+    if (!InstanceSet.find(unmount)) {
+      InstanceSet.push(unmount);
+
+      if (InstanceSet.length > 3) {
+        InstanceSet.pop()();
+      }
+    }
+  }, [unmount]);
 
   if (!scaleRoot || !mount) return null;
 

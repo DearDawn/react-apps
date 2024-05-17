@@ -46,6 +46,18 @@
       background-color: #b2f2bb;
       z-index: 2;
       border-radius: 0 0 10px 0;
+      cursor: pointer;
+
+
+      @media (any-hover: hover) {
+        &:hover {
+          transform: scale(1.05);
+        }
+      }
+
+      &:active:not(:visited) {
+        transform: scale(0.95);
+      }
     }
   }
 
