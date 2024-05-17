@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as styles from './App.module.less';
-import { Header, Page } from 'sweet-me';
+import { Header, ICON, Icon, Page } from 'sweet-me';
 import { ScaleWrap } from './demo/components/scale';
 
 interface IProps {}
@@ -27,14 +27,12 @@ const PageItem = ({ onClick, item, parent }) => {
       </div>
       <ScaleWrap fromRef={fromRef} root={parent}>
         {({ onClose }) => (
-          <iframe
-            onClick={()=>{
-              onClose();
-              console.log('[dodo] ', '1211  ;', 1211);
-            }}
-            className={styles.iframeWrap}
-            src={item.href}
-          ></iframe>
+          <div className={styles.iframeWrap}>
+            <iframe className={styles.iframe} src={item.href} />
+            <div className={styles.closeWrap} onClick={onClose}>
+              <Icon type={ICON.close} />
+            </div>
+          </div>
         )}
       </ScaleWrap>
     </>
