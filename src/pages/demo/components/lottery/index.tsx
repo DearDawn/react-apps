@@ -27,7 +27,7 @@ const MY_NUMBER_KEY = 'my_number';
 const MY_DATE_KEY = 'my_date';
 
 const MY_NUMBER_DEFAULT = '02 05 17 19 27 01 09';
-const MY_DATE_DEFAULT = dayjs().format('YYYY-MM-DD');
+const MY_DATE_DEFAULT = dayjs('2024-05-04').format('YYYY-MM-DD');
 
 export const Lottery: Comp = ({ style, visible }) => {
   const { pageVisible } = usePageVisible();
