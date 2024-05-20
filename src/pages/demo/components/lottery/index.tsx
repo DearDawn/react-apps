@@ -54,7 +54,7 @@ export const Lottery: Comp = ({ style, visible }) => {
     const lastRecord = sourceList.findIndex((it) => it.date <= myDate);
 
     if (lastRecord > -1) {
-      return 20 - lastRecord;
+      return 20 - lastRecord - 1;
     }
   }, [sourceList, myDate]);
 
