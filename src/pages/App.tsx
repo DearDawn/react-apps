@@ -39,6 +39,17 @@ const PageItem = ({ onClick, item, parent }) => {
   );
 };
 
+const PageList = [
+  { href: './nine', title: '几点下班' },
+  { href: './link', title: '短链生成器' },
+  { href: './webshot', title: '网页截图' },
+  { href: './piece', title: '破碎 & 完整' },
+  { href: './demo', title: '小玩意儿~' },
+  { href: './bounty', title: '赏金猎人' },
+  { href: './share', title: '共享' },
+  { href: './pet', title: '宠物' },
+];
+
 export const App = (props: IProps) => {
   const appRef = React.useRef<HTMLDivElement>();
   const handleClick = (it: { href: string; title: string }) => () => {};
@@ -49,18 +60,23 @@ export const App = (props: IProps) => {
       '%c[dodo] 小糖的 React 项目合集!',
       'color: #fff; background: orange;'
     );
-  }, []);
 
-  const PageList = [
-    { href: './nine', title: '几点下班' },
-    { href: './link', title: '短链生成器' },
-    { href: './webshot', title: '网页截图' },
-    { href: './piece', title: '破碎 & 完整' },
-    { href: './demo', title: '小玩意儿~' },
-    { href: './bounty', title: '赏金猎人' },
-    { href: './share', title: '共享' },
-    { href: './pet', title: '宠物' },
-  ];
+    const fragment = document.createDocumentFragment();
+
+    PageList.forEach((page) => {
+      // 创建一个 <link> 元素
+      const linkElement = document.createElement('link');
+
+      // 设置 <link> 元素的属性和值
+      linkElement.rel = 'preload';
+      linkElement.href = page.href;
+      linkElement.as = 'document';
+      fragment.appendChild(linkElement);
+    });
+
+    // 将 <link> 元素插入到头部（head）中
+    document.head.appendChild(fragment);
+  }, []);
 
   return (
     <Page minWidth='300px' className={styles.app} pageRef={appRef}>
