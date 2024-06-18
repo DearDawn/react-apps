@@ -40,14 +40,14 @@ const PageItem = ({ onClick, item, parent }) => {
 };
 
 const PageList = [
-  { href: './nine', title: '几点下班' },
-  { href: './link', title: '短链生成器' },
-  { href: './webshot', title: '网页截图' },
-  { href: './piece', title: '破碎 & 完整' },
-  { href: './demo', title: '小玩意儿~' },
-  { href: './bounty', title: '赏金猎人' },
-  { href: './share', title: '共享' },
-  { href: './pet', title: '宠物' },
+  { href: './nine/', title: '几点下班' },
+  { href: './link/', title: '短链生成器' },
+  { href: './webshot/', title: '网页截图' },
+  { href: './piece/', title: '破碎 & 完整' },
+  { href: './demo/', title: '小玩意儿~' },
+  { href: './bounty/', title: '赏金猎人' },
+  { href: './share/', title: '共享' },
+  { href: './pet/', title: '宠物' },
 ];
 
 export const App = (props: IProps) => {
