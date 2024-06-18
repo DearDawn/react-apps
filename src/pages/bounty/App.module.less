@@ -42,9 +42,29 @@
       display: none;
     }
 
+    .labelWithText {
+      min-width: 0;
+    }
+
     .input {
       width: 100%;
       box-sizing: border-box;
+    }
+
+    .priority,
+    .level {
+      overflow: auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      height: auto;
+      width: 100%;
+
+      &>div {
+        min-width: 0px;
+        max-width: 80px;
+      }
     }
 
     .select {
