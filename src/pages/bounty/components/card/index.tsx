@@ -17,16 +17,16 @@ export const Card = (props: IProps) => {
 
   return (
     <div className={clsx(styles.card, className)} onClick={onClick}>
-      <div className={styles.title}>
+      <div className={styles.title}>{title}</div>
+      <div className={styles.content}>{content}</div>
+      <div className={styles.info}>
         <Tag className={styles.tag} color={priorityInfo.color}>
           {priorityInfo.text}
         </Tag>
         <Tag className={styles.tag} color={levelInfo.color}>
           {levelInfo.text}
         </Tag>
-        {title}
       </div>
-      <div className={styles.content}>{content}</div>
     </div>
   );
 };

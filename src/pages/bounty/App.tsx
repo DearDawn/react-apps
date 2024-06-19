@@ -34,6 +34,20 @@ export const App = () => {
     loadingFn: () => loading('列表加载中...', undefined, false),
   });
 
+  const finishTodo = () => {
+    console.log('[dodo] ', 'detail', detail);
+    myPost('/bounty/finish', {}, { id: detail?._id })
+      .then((res: any) => {
+        if (res?.message) {
+          toast(res?.message);
+        } else {
+          closeModal();
+          runApi();
+        }
+      })
+      .catch(console.error);
+  };
+
   const handleCreate = React.useCallback(() => {
     const pass = form.validate();
 
@@ -111,7 +125,7 @@ export const App = () => {
                 type='radio'
                 options={Object.entries(PriorityMap).map(([key, val]) => ({
                   label: <Tag color={val.color}>{val.text}</Tag>,
-                  value: key,
+                  value: Number(key),
                 }))}
               />
             </Form.Item>
@@ -128,7 +142,7 @@ export const App = () => {
                 type='radio'
                 options={Object.entries(LevelMap).map(([key, val]) => ({
                   label: <Tag color={val.color}>{val.text}</Tag>,
-                  value: key,
+                  value: Number(key),
                 }))}
               />
             </Form.Item>
@@ -159,7 +173,7 @@ export const App = () => {
         onClose={closeModal}
         footer={
           <Space padding='0' className={styles.footer}>
-            <Button onClick={closeModal} status='success'>
+            <Button onClick={finishTodo} status='success'>
               完成
             </Button>
             <Button onClick={closeModal} status='error'>
