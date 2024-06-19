@@ -13,11 +13,14 @@ import {
   Textarea,
   useFormState,
   Radio,
+  Space,
+  Tag,
 } from 'sweet-me';
 import { myPost, useFetch } from '@/utils/fetch';
 import { PieceInfo } from './constants';
 import { Card } from './components/card';
 import { useCardDetailModal } from '@/utils/hooks';
+import { LevelMap, PriorityMap } from './constant';
 
 export const App = () => {
   const [createModalVisible, showCreateModal, closeCreateModal] = useBoolean();
@@ -106,13 +109,10 @@ export const App = () => {
               <Radio
                 className={styles.priority}
                 type='radio'
-                options={[
-                  { label: '紧急', value: 0 },
-                  { label: '还行', value: 5 },
-                  { label: '佛系', value: 10 },
-                  { label: '都行', value: 15 },
-                  { label: '待定', value: 20 },
-                ]}
+                options={Object.entries(PriorityMap).map(([key, val]) => ({
+                  label: <Tag color={val.color}>{val.text}</Tag>,
+                  value: key,
+                }))}
               />
             </Form.Item>
             <Form.Item
@@ -125,15 +125,11 @@ export const App = () => {
             >
               <Radio
                 className={styles.level}
-                defaultValue={20}
                 type='radio'
-                options={[
-                  { label: '挺难', value: 0 },
-                  { label: '麻烦', value: 5 },
-                  { label: '轻松', value: 10 },
-                  { label: '不屑', value: 15 },
-                  { label: '未知', value: 20 },
-                ]}
+                options={Object.entries(LevelMap).map(([key, val]) => ({
+                  label: <Tag color={val.color}>{val.text}</Tag>,
+                  value: key,
+                }))}
               />
             </Form.Item>
             <div className={styles.holder} />
@@ -161,7 +157,20 @@ export const App = () => {
         visible={modalVisible}
         maskClosable
         onClose={closeModal}
-        footer={<Button onClick={closeModal}>关闭</Button>}
+        footer={
+          <Space padding='0' className={styles.footer}>
+            <Button onClick={closeModal} status='success'>
+              完成
+            </Button>
+            <Button onClick={closeModal} status='error'>
+              终止
+            </Button>
+            <Button onClick={closeModal} status='warning'>
+              编辑
+            </Button>
+            <Button onClick={closeModal}>关闭</Button>
+          </Space>
+        }
       >
         <Card className={styles.cardItem} info={detail} />
       </Modal>
