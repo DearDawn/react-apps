@@ -1,17 +1,30 @@
-import { RequestUrl, apiGet, apiPost, useRequest } from "sweet-me";
-import { isDev } from ".";
+import { RequestUrl, apiGet, apiPost, toast, useRequest } from 'sweet-me';
+import { isDev } from '.';
 
-export const HOST = isDev
-  ? '/api'
-  : 'https://www.dododawn.com:7020/api';
+export const HOST = isDev ? '/api' : 'https://www.dododawn.com:7020/api';
 
-export const myFetch = <T> (input: `/${string}`, params: Record<string, any> = {}, init?: RequestInit) => {
+export const myFetch = async <T>(
+  input: `/${string}`,
+  params: Record<string, any> = {},
+  init?: RequestInit
+) => {
   const _url: RequestUrl = `${HOST}${input}`;
 
-  return apiGet<T>(_url, { ...params, dodokey: "123" }, init);
+  try {
+    const res = await apiGet<T>(_url, { ...params, dodokey: '123' }, init);
+
+    if ((res as any)?.message) {
+      return Promise.reject((res as any).message);
+    }
+
+    return Promise.resolve(res);
+  } catch (error) {
+    console.error(error);
+    return Promise.reject(error);
+  }
 };
 
-export const myPost = <T> (
+export const myPost = async <T>(
   input: `/${string}`,
   params: Record<string, any> = {},
   body: Record<string, any>,
@@ -19,7 +32,24 @@ export const myPost = <T> (
 ) => {
   const _url: RequestUrl = `${HOST}${input}`;
 
-  return apiPost<T>(_url, { ...params, dodokey: "123" }, body, init);
+  try {
+    const res = await apiPost<T>(
+      _url,
+      { ...params, dodokey: '123' },
+      body,
+      init
+    );
+
+    if ((res as any)?.message) {
+      toast((res as any).message);
+      return Promise.reject((res as any).message);
+    }
+
+    return Promise.resolve(res);
+  } catch (error) {
+    console.error(error);
+    return Promise.reject(error);
+  }
 };
 
 export const useFetch: typeof useRequest = (props) => {
@@ -29,7 +59,7 @@ export const useFetch: typeof useRequest = (props) => {
   const res = useRequest({
     url,
     params: { dodokey: 123, ...params },
-    ...rest
+    ...rest,
   });
 
   return res;

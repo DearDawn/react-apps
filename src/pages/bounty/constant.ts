@@ -1,5 +1,14 @@
 import { ETagColor } from 'sweet-me';
 
+export interface PieceInfo {
+  _id?: string;
+  title: string;
+  content: string;
+  level: number;
+  priority: number;
+  status: number;
+}
+
 export const PriorityMap: Record<number, { color: ETagColor; text: string }> = {
   0: { color: 'red', text: '紧急' },
   5: { color: 'orange', text: '还行' },

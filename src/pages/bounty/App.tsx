@@ -17,38 +17,40 @@ import {
   Tag,
 } from 'sweet-me';
 import { myPost, useFetch } from '@/utils/fetch';
-import { PieceInfo } from './constants';
+import { PieceInfo, LevelMap, PriorityMap } from './constant';
 import { Card } from './components/card';
 import { useCardDetailModal } from '@/utils/hooks';
-import { LevelMap, PriorityMap } from './constant';
 
 export const App = () => {
   const [createModalVisible, showCreateModal, closeCreateModal] = useBoolean();
-  const { handleClickCard, closeModal, detail, modalVisible } =
-    useCardDetailModal<PieceInfo>();
-  const { form } = useFormState<PieceInfo>();
 
+  const { form } = useFormState<PieceInfo>();
   const { data: listData = [], runApi } = useFetch<PieceInfo[]>({
     url: '/bounty/list',
     autoRun: true,
     loadingFn: () => loading('列表加载中...', undefined, false),
   });
 
+  const { handleClickCard, closeModal, detail, modalVisible } =
+    useCardDetailModal<PieceInfo>({ listData });
+
+  const isEditMode = !!detail && createModalVisible;
+
   const finishTodo = () => {
-    console.log('[dodo] ', 'detail', detail);
-    myPost('/bounty/finish', {}, { id: detail?._id })
-      .then((res: any) => {
-        if (res?.message) {
-          toast(res?.message);
-        } else {
-          closeModal();
-          runApi();
-        }
-      })
-      .catch(console.error);
+    myPost('/bounty/finish', {}, { id: detail?._id }).then(() => {
+      closeModal();
+      runApi();
+    });
   };
 
-  const handleCreate = React.useCallback(() => {
+  const cancelTodo = () => {
+    myPost('/bounty/cancel', {}, { id: detail?._id }).then(() => {
+      closeModal();
+      runApi();
+    });
+  };
+
+  const handleEdit = () => {
     const pass = form.validate();
 
     if (!pass) {
@@ -57,44 +59,71 @@ export const App = () => {
     }
 
     const values = form.getFieldsValue();
-    console.log('[dodo] ', 'values', values);
     const { title = '', content = '', priority, level } = values;
-    myPost<PieceInfo>(
-      '/bounty/create',
-      {},
-      {
-        title: title.trim(),
-        content: content.trim(),
-        priority,
-        level,
-      }
-    )
-      .then((res: any) => {
-        if (res?.message) {
-          toast(res?.message);
-        } else {
-          console.log('[dodo] ', 'res', res);
-          form.resetField();
-          closeCreateModal();
-          runApi();
-        }
-      })
-      .catch(console.error);
-  }, [closeCreateModal, form, runApi]);
+
+    const data: Record<string, any> = {
+      title: title.trim(),
+      content: content.trim(),
+      priority,
+      level,
+      id: detail?._id,
+    };
+
+    myPost<PieceInfo>('/bounty/update', {}, data).then(() => {
+      form.resetField();
+      closeCreateModal();
+      toast('修改成功');
+      runApi();
+    });
+  };
+
+  const handleCreate = () => {
+    const pass = form.validate();
+
+    if (!pass) {
+      toast('请完整填写内容');
+      return;
+    }
+
+    const values = form.getFieldsValue();
+    const { title = '', content = '', priority, level } = values;
+
+    const data = {
+      title: title.trim(),
+      content: content.trim(),
+      priority,
+      level,
+    };
+
+    myPost<PieceInfo>('/bounty/create', {}, data).then(() => {
+      form.resetField();
+      closeCreateModal();
+      runApi();
+    });
+  };
+
+  const handleEditTodo = () => {
+    showCreateModal();
+  };
 
   React.useEffect(() => {
     if (!modalVisible) {
       form.resetField();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [modalVisible]);
+  }, [form, modalVisible]);
+
+  React.useEffect(() => {
+    if (createModalVisible) {
+      form.setFieldsValue(detail);
+    }
+  }, [createModalVisible, detail, form]);
 
   return (
     <Page maxWidth='100vw' minWidth='300px' className={styles.app}>
       <Header title='赏金猎人' isSticky />
       <div className={styles.list}>
-        {listData?.map((it) => (
-          <Card info={it} key={it._id} onClick={handleClickCard(it)} />
+        {listData?.map((it, idx) => (
+          <Card info={it} key={it._id} onClick={handleClickCard(idx, it)} />
         ))}
       </div>
       <Button
@@ -155,13 +184,23 @@ export const App = () => {
               >
                 取消
               </Button>
-              <Button
-                className={styles.addBtn}
-                status='success'
-                onClick={handleCreate}
-              >
-                添加
-              </Button>
+              {isEditMode ? (
+                <Button
+                  className={styles.addBtn}
+                  status='success'
+                  onClick={handleEdit}
+                >
+                  保存
+                </Button>
+              ) : (
+                <Button
+                  className={styles.addBtn}
+                  status='success'
+                  onClick={handleCreate}
+                >
+                  添加
+                </Button>
+              )}
             </div>
           </Form>
         </div>
@@ -173,15 +212,19 @@ export const App = () => {
         onClose={closeModal}
         footer={
           <Space padding='0' className={styles.footer}>
-            <Button onClick={finishTodo} status='success'>
-              完成
-            </Button>
-            <Button onClick={closeModal} status='error'>
-              终止
-            </Button>
-            <Button onClick={closeModal} status='warning'>
-              编辑
-            </Button>
+            {!detail?.status && (
+              <>
+                <Button onClick={finishTodo} status='success'>
+                  完成
+                </Button>
+                <Button onClick={cancelTodo} status='error'>
+                  终止
+                </Button>
+                <Button onClick={handleEditTodo} status='warning'>
+                  编辑
+                </Button>
+              </>
+            )}
             <Button onClick={closeModal}>关闭</Button>
           </Space>
         }

@@ -12,6 +12,27 @@
   flex: 1;
   margin-right: auto;
   position: relative;
+  cursor: pointer;
+  transition: all 0.1s ease;
+
+  @media (any-hover: hover) {
+    &:hover {
+      box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.6);
+    }
+  }
+
+  &:active:not(:visited) {
+    transform: scale(0.98);
+  }
+
+  &.done {
+    background-color: #ebfbee;
+  }
+
+  &.cancel {
+    background-color: #f1f3f5;
+    opacity: 0.7;
+  }
 
   .title {
     font-size: 16px;

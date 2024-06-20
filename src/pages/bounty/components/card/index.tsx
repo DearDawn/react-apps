@@ -1,9 +1,8 @@
 import * as styles from './index.module.less';
-import { PieceInfo } from '../../constants';
+import { PieceInfo, LevelMap, PriorityMap } from '../../constant';
 import clsx from 'clsx';
 import { CommonProps } from '@/types';
 import { Tag } from 'sweet-me';
-import { LevelMap, PriorityMap } from '../../constant';
 
 interface IProps extends CommonProps {
   info: PieceInfo;
@@ -11,12 +10,22 @@ interface IProps extends CommonProps {
 
 export const Card = (props: IProps) => {
   const { info, className, onClick } = props;
-  const { title, content, priority = 0, level = 0 } = info || {};
+  const { title, content, priority = 0, level = 0, status = 0 } = info || {};
   const priorityInfo = PriorityMap[priority];
   const levelInfo = LevelMap[level];
 
   return (
-    <div className={clsx(styles.card, className)} onClick={onClick}>
+    <div
+      className={clsx(
+        styles.card,
+        {
+          [styles.done]: status === 1,
+          [styles.cancel]: status === -1,
+        },
+        className
+      )}
+      onClick={onClick}
+    >
       <div className={styles.title}>{title}</div>
       <div className={styles.content}>{content}</div>
       <div className={styles.info}>

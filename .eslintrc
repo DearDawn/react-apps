@@ -18,7 +18,14 @@
   },
   "rules": {
     "semi": "error",
-    "no-console": "warn",
+    "no-console": [
+      "warn",
+      {
+        "allow": [
+          "error"
+        ]
+      }
+    ],
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-unused-vars": [
       "error",
