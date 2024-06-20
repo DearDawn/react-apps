@@ -113,7 +113,7 @@ export const App = () => {
   }, [form, modalVisible]);
 
   React.useEffect(() => {
-    if (createModalVisible) {
+    if (createModalVisible && detail) {
       form.setFieldsValue(detail);
     }
   }, [createModalVisible, detail, form]);
