@@ -17,29 +17,29 @@ export const useCardDetailModal = <T = any>(
   const { defaultDetail, defaultVisible = false, listData = [] } = config || {};
   const [modalVisible, showModal, closeModal] = useBoolean(defaultVisible);
   const [detail, setDetail] = useState<T>(defaultDetail);
-  const [detailIndex, setDetailIndex] = useState(-1);
-  const detailIndexRef = useRef(detailIndex);
+  const detailId = useRef('');
 
   const handleClickCard = React.useCallback(
-    (idx = -1, data?: T) =>
-      () => {
-        setDetail(listData[idx] || data);
-        setDetailIndex(idx);
-        detailIndexRef.current = idx;
-        showModal();
-      },
-    [listData, showModal]
+    (data?: T) => () => {
+      setDetail(data);
+      detailId.current = data['_id'];
+      showModal();
+    },
+    [showModal]
   );
 
   useEffect(() => {
     if (modalVisible) return;
 
     setDetail(defaultDetail);
+    detailId.current = '';
   }, [defaultDetail, modalVisible]);
 
   useEffect(() => {
-    if (detailIndexRef.current >= 0) {
-      setDetail(listData[detailIndexRef.current]);
+    const item = listData.find((it) => it['_id'] === detailId.current);
+
+    if (item) {
+      setDetail(item);
     }
   }, [listData]);
 
@@ -48,7 +48,6 @@ export const useCardDetailModal = <T = any>(
     showModal,
     closeModal,
     detail,
-    detailIndex,
     handleClickCard,
   };
 };

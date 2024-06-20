@@ -122,8 +122,8 @@ export const App = () => {
     <Page maxWidth='100vw' minWidth='300px' className={styles.app}>
       <Header title='赏金猎人' isSticky />
       <div className={styles.list}>
-        {listData?.map((it, idx) => (
-          <Card info={it} key={it._id} onClick={handleClickCard(idx, it)} />
+        {listData?.map((it) => (
+          <Card info={it} key={it._id} onClick={handleClickCard(it)} />
         ))}
       </div>
       <Button

@@ -13,6 +13,7 @@ export const Card = (props: IProps) => {
   const { title, content, priority = 0, level = 0, status = 0 } = info || {};
   const priorityInfo = PriorityMap[priority];
   const levelInfo = LevelMap[level];
+  const stampInfo = { 1: '已完成', [-1]: '废弃' }[status];
 
   return (
     <div
@@ -28,6 +29,7 @@ export const Card = (props: IProps) => {
     >
       <div className={styles.title}>{title}</div>
       <div className={styles.content}>{content}</div>
+      <div className={styles.stamp}>{stampInfo}</div>
       <div className={styles.info}>
         <Tag className={styles.tag} color={priorityInfo.color}>
           {priorityInfo.text}
