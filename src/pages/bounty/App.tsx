@@ -23,6 +23,7 @@ import { useCardDetailModal } from '@/utils/hooks';
 
 export const App = () => {
   const [createModalVisible, showCreateModal, closeCreateModal] = useBoolean();
+  const [isLoading, startLoading, endLoading] = useBoolean();
 
   const { form } = useFormState<PieceInfo>();
   const { data: listData = [], runApi } = useFetch<PieceInfo[]>({
@@ -30,6 +31,7 @@ export const App = () => {
     autoRun: true,
     loadingFn: () => loading('列表加载中...', undefined, false),
   });
+  const loadingCb = React.useRef(() => {});
 
   const { handleClickCard, closeModal, detail, modalVisible } =
     useCardDetailModal<PieceInfo>({ listData });
@@ -37,17 +39,23 @@ export const App = () => {
   const isEditMode = !!detail && createModalVisible;
 
   const finishTodo = () => {
-    myPost('/bounty/finish', {}, { id: detail?._id }).then(() => {
-      closeModal();
-      runApi();
-    });
+    startLoading();
+    myPost('/bounty/finish', {}, { id: detail?._id })
+      .then(() => {
+        closeModal();
+        runApi();
+      })
+      .finally(endLoading);
   };
 
   const cancelTodo = () => {
-    myPost('/bounty/cancel', {}, { id: detail?._id }).then(() => {
-      closeModal();
-      runApi();
-    });
+    startLoading();
+    myPost('/bounty/cancel', {}, { id: detail?._id })
+      .then(() => {
+        closeModal();
+        runApi();
+      })
+      .finally(endLoading);
   };
 
   const handleEdit = () => {
@@ -69,12 +77,15 @@ export const App = () => {
       id: detail?._id,
     };
 
-    myPost<PieceInfo>('/bounty/update', {}, data).then(() => {
-      form.resetField();
-      closeCreateModal();
-      toast('修改成功');
-      runApi();
-    });
+    startLoading();
+    myPost<PieceInfo>('/bounty/update', {}, data)
+      .then(() => {
+        form.resetField();
+        closeCreateModal();
+        toast('修改成功');
+        runApi();
+      })
+      .finally(endLoading);
   };
 
   const handleCreate = () => {
@@ -95,11 +106,14 @@ export const App = () => {
       level,
     };
 
-    myPost<PieceInfo>('/bounty/create', {}, data).then(() => {
-      form.resetField();
-      closeCreateModal();
-      runApi();
-    });
+    startLoading();
+    myPost<PieceInfo>('/bounty/create', {}, data)
+      .then(() => {
+        form.resetField();
+        closeCreateModal();
+        runApi();
+      })
+      .finally(endLoading);
   };
 
   const handleEditTodo = () => {
@@ -111,6 +125,14 @@ export const App = () => {
       form.resetField();
     }
   }, [form, modalVisible]);
+
+  React.useEffect(() => {
+    if (isLoading) {
+      loadingCb.current = loading('请求中...');
+    } else {
+      loadingCb.current();
+    }
+  }, [isLoading]);
 
   React.useEffect(() => {
     if (createModalVisible && detail) {
