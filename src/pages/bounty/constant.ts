@@ -11,9 +11,9 @@ export interface PieceInfo {
 
 export const PriorityMap: Record<number, { color: ETagColor; text: string }> = {
   0: { color: 'red', text: '紧急' },
-  5: { color: 'orange', text: '还行' },
+  5: { color: 'orange', text: '略急' },
   10: { color: 'yellow', text: '佛系' },
-  15: { color: 'green', text: '都行' },
+  15: { color: 'green', text: '不急' },
   20: { color: 'gray', text: '待定' },
 };
 
