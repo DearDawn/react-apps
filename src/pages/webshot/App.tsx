@@ -1,6 +1,18 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import * as styles from './App.module.less';
-import { Button, Header, ICON, Icon, Input, Page, Select, Title, loading, toast } from 'sweet-me';
+import {
+  Button,
+  Header,
+  ICON,
+  Icon,
+  Image,
+  Input,
+  Page,
+  Select,
+  Title,
+  loading,
+  toast,
+} from 'sweet-me';
 import { validUrl } from '@/utils/valid';
 import { useFetch } from '@/utils/fetch';
 
@@ -17,19 +29,20 @@ interface ApiResponse {
 type IDevice = 'pc' | 'pad' | 'mobile';
 
 export const App = () => {
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState('');
   const [device, setDevice] = useState<IDevice>('pc');
+  const pageRef = useRef<HTMLDivElement>(null);
   const { data: response, runApi } = useFetch<ApiResponse>({
-    url: "/web-info",
+    url: '/web-info',
     params: { url, device },
-    loadingFn: () => loading('加载中')
+    loadingFn: () => loading('加载中'),
   });
 
   const { data: listData } = useFetch<ApiResponse[]>({
-    url: "/web-info/list",
+    url: '/web-info/list',
     params: { url },
     autoRun: true,
-    loadingFn: () => loading('列表加载中...', undefined, false)
+    loadingFn: () => loading('列表加载中...', undefined, false),
   });
 
   const getCover = (res: ApiResponse) => {
@@ -40,7 +53,7 @@ export const App = () => {
 
   const handleButtonClick = async () => {
     if (!validUrl(url)) {
-      toast("链接格式校验失败，请重新输入");
+      toast('链接格式校验失败，请重新输入');
 
       return;
     }
@@ -49,23 +62,23 @@ export const App = () => {
   };
 
   return (
-    <Page className={styles.page}>
-      <Header title="网页信息抓取" isSticky />
+    <Page className={styles.page} pageRef={pageRef}>
+      <Header title='网页信息抓取' isSticky />
       <div className={styles.inputContainer}>
         <Input
           className={styles.input}
           onValueChange={(val = '') => setUrl(val.trim())}
-          placeholder="输入网址"
+          placeholder='输入网址'
         />
         <Select
           className={styles.select}
           type='icon'
           value={device}
-          onValueChange={it => setDevice(it.value as IDevice)}
+          onValueChange={(it) => setDevice(it.value as IDevice)}
           options={[
             { label: <Icon type={ICON.pc} />, value: 'pc' },
             { label: <Icon type={ICON.mobile} />, value: 'mobile' },
-            { label: <Icon type={ICON.pad} />, value: 'pad' }
+            { label: <Icon type={ICON.pad} />, value: 'pad' },
           ]}
         />
         <Button onClick={handleButtonClick}>开始抓取</Button>
@@ -74,27 +87,43 @@ export const App = () => {
         <div className={styles.responseContainer}>
           <Title>网页标题</Title>
           <div className={styles.titleWrap}>
-            <img className={styles.icon} src={response.favicon} alt="网页图标" />
+            <Image
+              className={styles.icon}
+              src={response.favicon}
+              alt='网页图标'
+            />
             <div className={styles.title}>{response.title}</div>
           </div>
           <Title>网页截图</Title>
-          <img className={styles.cover} src={getCover(response)} alt="网页截图" />
+          <img
+            className={styles.cover}
+            src={getCover(response)}
+            alt='网页截图'
+          />
         </div>
       ) : (
-        <div className={styles.emptyHolder}>
-          待抓取
-        </div>
+        <div className={styles.emptyHolder}>待抓取</div>
       )}
 
       <Title className={styles.listTitle}>已抓取页面</Title>
       <div className={styles.listWrap}>
-        {listData?.map(info => (
+        {listData?.map((info) => (
           <div className={styles.responseContainer} key={info.url}>
             <Title className={styles.itemTitle}>
-              <img className={styles.icon} src={info.favicon} alt="网页图标" />
+              <Image
+                className={styles.icon}
+                src={info.favicon}
+                alt='网页图标'
+              />
               <div className={styles.title}>{info.title}</div>
             </Title>
-            <img className={styles.cover} src={getCover(info)} alt="网页截图" />
+            <Image
+              className={styles.cover}
+              src={getCover(info)}
+              alt='网页截图'
+              lazyLoad
+              lazyRoot={pageRef.current}
+            />
           </div>
         ))}
       </div>
