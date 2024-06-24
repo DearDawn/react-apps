@@ -67,6 +67,7 @@ export const useScaleCard = (config: {
     await waitTime(400);
     setStatus(EStatus.init);
     fromRef.current.style.opacity = '1';
+    await waitTime(100);
     cloneNodeRef.current.style.opacity = '0';
   };
 

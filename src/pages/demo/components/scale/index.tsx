@@ -16,10 +16,12 @@ const InstanceSet = [];
 const ScaleCore: Comp<{
   fromRef: React.MutableRefObject<HTMLDivElement>;
   onClose: VoidFunction;
+  /** 延迟执行，适用于有 hover 动画的情况 */
+  delay?: number;
   children?:
     | ReactElement
     | ((props: { onClose: VoidFunction }) => ReactElement);
-}> = ({ fromRef, children, onClose }) => {
+}> = ({ fromRef, children, onClose, delay = 100 }) => {
   const toRef = useRef<HTMLDivElement>(null);
   const cloneNodeRef = useRef<HTMLDivElement>(null);
   const showed = useRef(false);
@@ -41,7 +43,9 @@ const ScaleCore: Comp<{
     const fromDom = fromRef.current;
 
     const cb = () => {
-      show();
+      setTimeout(() => {
+        show();
+      }, delay);
     };
 
     fromDom.addEventListener('click', cb);
@@ -49,16 +53,16 @@ const ScaleCore: Comp<{
     return () => {
       fromDom.removeEventListener('click', cb);
     };
-  }, [fromRef, show]);
+  }, [delay, fromRef, show]);
 
   useEffect(() => {
     if (fromRef.current && toRef.current && transform && !showed.current) {
       setTimeout(() => {
         showed.current = true;
         show();
-      }, 300);
+      }, delay);
     }
-  }, [fromRef, show, transform]);
+  }, [delay, fromRef, show, transform]);
 
   // 使用React.cloneElement克隆children组件并添加新的props
   const modifiedChildren =
@@ -98,10 +102,12 @@ export const ScaleWrap: Comp<{
   fromRef: React.MutableRefObject<HTMLDivElement>;
   root: Element | React.MutableRefObject<HTMLDivElement>;
   unmountDestroy?: boolean;
+  /** 延迟执行，适用于有 hover 动画的情况 */
+  delay?: number;
   children?:
     | ReactElement
     | ((props: { onClose: VoidFunction }) => ReactElement);
-}> = ({ fromRef, root, children, unmountDestroy, ...rest }) => {
+}> = ({ fromRef, root, children, delay = 100, unmountDestroy, ...rest }) => {
   const [scaleRoot, setScaleRoot] = useState<Element>(null);
   const [mount, setMount] = useState(false);
 
@@ -123,7 +129,7 @@ export const ScaleWrap: Comp<{
     const cb = async () => {
       setTimeout(() => {
         setMount(true);
-      }, 0);
+      }, delay);
     };
 
     fromDom.addEventListener('click', cb);
@@ -131,7 +137,7 @@ export const ScaleWrap: Comp<{
     return () => {
       fromDom.removeEventListener('click', cb);
     };
-  }, [fromRef]);
+  }, [delay, fromRef]);
 
   useEffect(() => {
     if (root instanceof Element) {
