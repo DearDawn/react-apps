@@ -29,6 +29,7 @@ const Item = ({ Component, onClick, modalVisible }) => {
 export const App = () => {
   const { handleClickCard, closeModal, detail, modalVisible } =
     useCardDetailModal();
+  const parentRef = useRef<HTMLDivElement>(null);
 
   const TargetCompo = React.useMemo(() => {
     if (!Comps[detail]) return '';
@@ -61,8 +62,9 @@ export const App = () => {
           className={clsx(styles.bigItem, {
             [styles.fitHeight]: TargetCompo.fitHeight,
           })}
+          ref={parentRef}
         >
-          <TargetCompo visible />
+          <TargetCompo visible parent={parentRef} />
         </div>
       </Modal>
     </Page>

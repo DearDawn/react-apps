@@ -7,5 +7,6 @@
   --ratio: 0;
   --angle: calc(var(--ratio) * 50px / 1.414);
   box-shadow: var(--angle) var(--angle) 0 0 #000;
+  transform: translate(calc(-1 * var(--angle)), calc(-1 * var(--angle)));
   border-radius: 50%;
 }

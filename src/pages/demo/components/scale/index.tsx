@@ -175,7 +175,7 @@ export const Scale: Comp = ({ parent, ...rest }) => {
       <div className={styles.target} ref={fromRef}>
         点击我放大
       </div>
-      <ScaleWrap fromRef={fromRef} root={parent} {...rest}>
+      <ScaleWrap fromRef={fromRef} delay={300} root={parent} {...rest}>
         {({ onClose = () => {} }) => <div onClick={onClose}>放大的div</div>}
       </ScaleWrap>
     </>

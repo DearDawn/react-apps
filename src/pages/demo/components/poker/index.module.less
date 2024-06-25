@@ -1,0 +1,150 @@
+@import url('/src/assets/mixin.less');
+
+.poker {
+  width: 250px;
+  height: 250px;
+
+  .cardWrap {
+    width: 100%;
+    height: calc(100% - 60px);
+    position: relative;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+    transition: transform 0.3s linear;
+
+    &.cutNext {
+      animation: swapStart 0.3s linear forwards,
+        swapEnd 0.3s 0.7s linear forwards;
+
+      .card {
+        &:first-child {
+          animation: swapCardTop 0.5s 0.3s ease-out forwards;
+        }
+
+        &:not(:first-child) {
+          animation: swapCardOther 0.5s 0.3s ease-out forwards;
+        }
+      }
+    }
+
+    &.cutPrev {
+      animation: swapStart 0.3s linear forwards,
+        swapEnd 0.3s 0.7s linear forwards;
+
+      .card {
+        &:last-child {
+          animation: backSwapCardBottom 0.5s 0.3s ease-out forwards;
+        }
+
+        &:not(:last-child) {
+          animation: backSwapCardOther 0.5s 0.3s ease-out forwards;
+        }
+      }
+    }
+  }
+
+  .card {
+    width: 120px;
+    height: 150px;
+    position: absolute;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s linear;
+    border-radius: 12px;
+    left: 0;
+    right: 0;
+    top: 0;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    transform: translate3d(0, 0, 0);
+    z-index: calc(var(--total) - var(--index) + 1);
+
+    &:not(:first-child) {
+      transform: translate3d(calc((var(--index) - 1) * 3px), 0, calc((var(--index) - 1) * -8px));
+    }
+  }
+
+  .options {
+    margin: auto;
+  }
+}
+
+@keyframes swapStart {
+  0% {
+    transform: rotateY(0);
+  }
+
+  100% {
+    transform: rotateY(-30deg);
+  }
+}
+
+@keyframes swapEnd {
+  0% {
+    transform: rotateY(-30deg);
+  }
+
+  100% {
+    transform: rotateY(0);
+  }
+}
+
+@keyframes swapCardTop {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(-100%, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(calc((var(--total) - 1) * 3px), 0, calc((var(--total) - 1) * -8px));
+  }
+}
+
+@keyframes swapCardOther {
+
+  0%,
+  50% {
+    transform: translate3d(calc((var(--index) - 1) * 3px), 0, calc((var(--index) - 1) * -8px));
+  }
+
+  100% {
+    transform: translate3d(calc((var(--index) - 2) * 3px), 0, calc((var(--index) - 2) * -8px));
+  }
+}
+
+@keyframes backSwapCardBottom {
+  0% {
+    transform: translate3d(calc((var(--total) - 1) * 3px), 0, calc((var(--total) - 1) * -8px));
+  }
+
+  50% {
+    transform: translate3d(calc((var(--total) - 1) * -3px - 100%), 0, calc((var(--total) - 1) * -8px));
+  }
+
+  55% {
+    transform: translate3d(calc((var(--total) - 1) * -3px - 100%), 0, 0);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes backSwapCardOther {
+
+  0%,
+  50% {
+    transform: translate3d(calc((var(--index) - 1) * 3px), 0, calc((var(--index) - 1) * -8px));
+  }
+
+  100% {
+    transform: translate3d(calc((var(--index)) * 3px), 0, calc((var(--index)) * -8px));
+  }
+}
