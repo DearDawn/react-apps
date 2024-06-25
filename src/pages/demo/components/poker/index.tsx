@@ -31,8 +31,6 @@ export const Poker: Comp = ({ style }) => {
     lock.current = false;
   };
 
-  console.log('[dodo] ', 'cardList', cardList);
-
   return (
     <div className={styles.poker} style={style}>
       <div
