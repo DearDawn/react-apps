@@ -58,6 +58,7 @@ export const Poker: Comp = ({ style }) => {
             className={styles.card}
             key={item}
           >
+            <div className={styles.numTop}>{item}</div>
             {item}
           </div>
         ))}
