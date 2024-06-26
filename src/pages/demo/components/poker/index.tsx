@@ -4,16 +4,23 @@ import * as styles from './index.module.less';
 import { useRef, useState } from 'react';
 import clsx from 'clsx';
 import { waitTime } from '@/utils';
+import { RangeSlider } from './rangeSlide';
 
 type CUT_MODE = 'next' | 'prev';
 
 export const Poker: Comp = ({ style }) => {
   const [cutMode, setCutMode] = useState<CUT_MODE>();
+  const [offsetX, setOffsetX] = useState(0);
   const lock = useRef(false);
 
   const [cardList, setCardList] = useState(
     Array.from({ length: 5 }, (_, i) => i + 1)
   );
+
+  const handleChangeOffset = (_offset: number) => {
+    const offset = Math.round(((_offset - 50) / 50) * 10);
+    setOffsetX(offset);
+  };
 
   const handleCut = (mode: CUT_MODE) => async () => {
     if (lock.current) return;
@@ -38,6 +45,7 @@ export const Poker: Comp = ({ style }) => {
           [styles.cutNext]: cutMode === 'next',
           [styles.cutPrev]: cutMode === 'prev',
         })}
+        style={{ '--offset-x': `${offsetX}px` } as any}
       >
         {cardList.map((item, idx) => (
           <div
@@ -54,6 +62,10 @@ export const Poker: Comp = ({ style }) => {
           </div>
         ))}
       </div>
+      <Space stretch isColumn>
+        <div className={styles.count}>{offsetX}</div>
+        <RangeSlider onInput={handleChangeOffset} className={styles.slider} />
+      </Space>
       <Space className={styles.options}>
         <Button onClick={handleCut('prev')}>上一张</Button>
         <Button onClick={handleCut('next')}>下一张</Button>
