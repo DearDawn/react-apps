@@ -105,6 +105,10 @@
     transform: translate3d(-100%, 0, 0);
   }
 
+  55% {
+    transform: translate3d(-100%, 0, calc((var(--total) - 1) * -8px));
+  }
+
   100% {
     transform: translate3d(calc((var(--total) - 1) * 3px), 0, calc((var(--total) - 1) * -8px));
   }
