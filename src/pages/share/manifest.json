@@ -39,7 +39,7 @@
       "url": "./?room=123",
       "icons": [
         {
-          "src": "/src/assets/help.png",
+          "src": "/src/assets/sugar-box.png",
           "sizes": "256x256",
           "type": "image/png"
         }
