@@ -9,7 +9,7 @@
   ],
   "theme_color": "#b2f2bb",
   "background_color": "#fff",
-  "start_url": "./",
+  "start_url": "./?version=1.0.0",
   "icons": [
     {
       "src": "/src/assets/sugar-box.png",
