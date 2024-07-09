@@ -1,6 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import '@/assets/global.less';
-import '@/utils/init'
+import '@/utils/init';
 import { App } from './App';
 
 const app = document.getElementById('app');
@@ -9,7 +9,7 @@ root.render(<App />);
 
 
 if ('serviceWorker' in navigator) {
-  // @ts-ignore import.meta.url
+  // @ts-expect-error import.meta.url
   navigator.serviceWorker.register(new URL('../demo-service-worker.js', import.meta.url), { type: 'module' })
     .then(function (registration) {
       console.log('Service Worker registered with scope:', registration.scope);

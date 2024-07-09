@@ -8,7 +8,17 @@ export const Moon: Comp = () => {
   const ratio =
     age > 0 ? 1 - age / LUNAR_CYCLE_DAYS : 1 + age / LUNAR_CYCLE_DAYS;
 
-  return <div className={styles.moon} style={{ '--ratio': ratio } as any} />;
+  return (
+    <div className={styles.moonWrap}>
+      <div className={styles.moon} style={{ '--ratio': ratio } as any} />
+      <div className={styles.info}>
+        <span>月龄：{lunarAge.toFixed(2)} 天</span>
+        <a href='https://starwalk.space/zh-Hant/moon-calendar' target='_blank'>
+          参考
+        </a>
+      </div>
+    </div>
+  );
 };
 
 Moon.scale = 1;
