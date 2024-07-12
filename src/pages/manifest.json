@@ -4,7 +4,6 @@
   "description": "小项目合集",
   "display": "standalone",
   "display_override": [
-    "fullscreen",
     "minimal-ui",
     "window-controls-overlay"
   ],
