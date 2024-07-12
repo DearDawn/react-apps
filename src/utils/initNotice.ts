@@ -1,5 +1,9 @@
 import { HOST } from './fetch';
 
+if ('Notification' in window) {
+  Notification.requestPermission();
+}
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
