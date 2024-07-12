@@ -53,7 +53,7 @@ function connect() {
     console.error('EventSource failed:', err);
 
     setTimeout(() => {
-      console.log('[dodo] ', '重连中....');
+      console.log('[dodo] ', '重连中...');
       connect();
     }, 15000);
   };
