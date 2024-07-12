@@ -4,8 +4,9 @@
   "description": "小项目合集",
   "display": "standalone",
   "display_override": [
-    "window-control-overlay",
-    "minimal-ui"
+    "fullscreen",
+    "minimal-ui",
+    "window-controls-overlay"
   ],
   "theme_color": "#b2f2bb",
   "background_color": "#fff",
