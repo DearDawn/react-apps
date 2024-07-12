@@ -6,6 +6,12 @@ const generateRandomId = () => {
   );
 };
 
-const clientId = generateRandomId();
+const storageID = localStorage.getItem('SSE_CLIENT_ID');
+
+const clientId = storageID || generateRandomId();
+
+if (!storageID) {
+  localStorage.setItem('SSE_CLIENT_ID', clientId);
+}
 
 export { clientId };
