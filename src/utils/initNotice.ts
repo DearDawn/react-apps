@@ -1,7 +1,13 @@
 import { HOST } from './fetch';
 
-if ('Notification' in window) {
+const reqGrant = () => {
   Notification.requestPermission();
+};
+
+if ('Notification' in window) {
+  if (Notification.permission !== 'granted') {
+    document.addEventListener('touchstart', reqGrant);
+  }
 }
 
 if ('serviceWorker' in navigator) {
@@ -54,3 +60,7 @@ function connect() {
 }
 
 connect();
+
+window.addEventListener('beforeunload', () => {
+  document.removeEventListener('touchstart', reqGrant);
+});
