@@ -30,17 +30,27 @@ const generateRandomId = () => {
 };
 
 const clientId = generateRandomId();
-const eventSource = new EventSource(`${HOST}/notice/${clientId}`);
 
-eventSource.onmessage = function (event) {
-  console.log('Message from server:', event);
-  navigator.serviceWorker.ready.then((registration) => {
-    registration.showNotification('New Message', {
-      body: event.data,
+function connect() {
+  const eventSource = new EventSource(`${HOST}/notice/${clientId}`);
+
+  eventSource.onmessage = function (event) {
+    console.log('Message from server:', event);
+    navigator.serviceWorker.ready.then((registration) => {
+      registration.showNotification('New Message', {
+        body: event.data,
+      });
     });
-  });
-};
+  };
 
-eventSource.onerror = function (err) {
-  console.error('EventSource failed:', err);
-};
+  eventSource.onerror = function (err) {
+    console.error('EventSource failed:', err);
+
+    setTimeout(() => {
+      console.log('[dodo] ', '重连中...');
+      connect();
+    }, 15000);
+  };
+}
+
+connect();
