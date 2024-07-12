@@ -48,6 +48,8 @@ import {
 import { FileStore, fileStore } from './fileStore';
 import { FileItem } from './components/fileItem';
 import { copyTextToClipboard } from '@/utils/text';
+import { myPost } from '@/utils/fetch';
+import { clientId } from '@/utils/id';
 
 export const App = () => {
   const { form } = useFormState();
@@ -121,6 +123,9 @@ export const App = () => {
     if (text.trim()) {
       socket.emit('text', text);
       loadingRef.current = loading('发送中...', undefined, false);
+
+      const data = { data: `收到消息：${text.slice(0, 10)}...` };
+      myPost(`/notice/say/${clientId}`, {}, data);
     }
 
     if (file) {
@@ -141,6 +146,8 @@ export const App = () => {
         });
       });
       loadingRef.current = loading('发送中...');
+      const data = { data: `收到文件：${file.name.slice(0, 10)}...` };
+      myPost(`/notice/say/${clientId}`, {}, data);
     }
 
     form.resetField();

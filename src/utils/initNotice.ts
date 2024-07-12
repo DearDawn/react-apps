@@ -1,4 +1,5 @@
 import { HOST } from './fetch';
+import { clientId } from './id';
 
 const reqGrant = () => {
   Notification.requestPermission();
@@ -26,16 +27,6 @@ if ('serviceWorker' in navigator) {
       });
   });
 }
-
-// 生成一个随机的 clientId
-const generateRandomId = () => {
-  return (
-    Math.random().toString(36).substring(2, 15) +
-    Math.random().toString(36).substring(2, 15)
-  );
-};
-
-const clientId = generateRandomId();
 
 function connect() {
   const eventSource = new EventSource(`${HOST}/notice/${clientId}`);
