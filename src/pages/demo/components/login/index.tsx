@@ -6,11 +6,18 @@ import { myFetch, myPost } from '@/utils/fetch';
 
 export const Login: Comp = ({ style }) => {
   const [ticket, setTicket] = useState('');
-  const [status, setStatus] = useState('请使用微信扫描小程序码登录');
+  const [isLogin, setIsLogin] = useState(false);
+  const [status, setStatus] = useState('');
   const [imageSrc, setImageSrc] = useState('');
   const [loading, startLoading, endLoading] = useBoolean();
   const [loop, startLoop, endLoop] = useBoolean();
   const [loopCount, setLoopCount] = useState(0);
+
+  const handleLogout = useCallback(() => {
+    myFetch<{ data: boolean }>('/wechat/logout').then((res) => {
+      setIsLogin(false);
+    });
+  }, []);
 
   const handleGetLoginInfo = useCallback(() => {
     startLoading();
@@ -20,6 +27,7 @@ export const Login: Comp = ({ style }) => {
         setTicket(ticket);
         const dataUrl = `data:image/png;base64,${code}`;
         setImageSrc(dataUrl);
+        setStatus('请使用微信扫描小程序码登录');
         startLoop();
       })
       .finally(endLoading);
@@ -61,6 +69,17 @@ export const Login: Comp = ({ style }) => {
       .finally(endLoading);
   }, [endLoading, endLoop, loop, loopCount, ticket]);
 
+  useEffect(() => {
+    myFetch<{ data: boolean }>('/wechat/check_login').then((res) => {
+      console.log('[dodo] ', 'check_login res', res);
+
+      if (res.data) {
+        setIsLogin(true);
+        setStatus('已登录');
+      }
+    });
+  }, []);
+
   return (
     <div
       className={styles.card}
@@ -73,6 +92,16 @@ export const Login: Comp = ({ style }) => {
             src={imageSrc}
           />
           <div className={styles.status}>{status}</div>
+        </>
+      ) : isLogin ? (
+        <>
+          <div className={styles.status2}>{status}</div>
+          <Button
+            loading={loading}
+            onClick={handleLogout}
+          >
+            退出登录
+          </Button>
         </>
       ) : (
         <Button
