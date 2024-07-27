@@ -16,7 +16,11 @@ const PageItem = ({ onClick, item, parent }) => {
 
   return (
     <>
-      <div className={styles.block} onClick={onClick} ref={fromRef}>
+      <div
+        className={styles.block}
+        onClick={onClick}
+        ref={fromRef}
+      >
         <div
           className={styles.logo}
           style={{ backgroundColor: generateRandomColor() }}
@@ -25,11 +29,20 @@ const PageItem = ({ onClick, item, parent }) => {
         </div>
         <div className={styles.name}>{item.title}</div>
       </div>
-      <ScaleWrap fromRef={fromRef} root={parent}>
+      <ScaleWrap
+        fromRef={fromRef}
+        root={parent}
+      >
         {({ onClose }) => (
           <div className={styles.iframeWrap}>
-            <iframe className={styles.iframe} src={item.href} />
-            <div className={styles.closeWrap} onClick={onClose}>
+            <iframe
+              className={styles.iframe}
+              src={item.href}
+            />
+            <div
+              className={styles.closeWrap}
+              onClick={onClose}
+            >
               <Icon type={ICON.close} />
             </div>
           </div>
@@ -74,13 +87,20 @@ export const App = (props: IProps) => {
       fragment.appendChild(linkElement);
     });
 
-    // 将 <link> 元素插入到头部（head）中
+    // 将 <link> 元素插入到头部（head）中.
     document.head.appendChild(fragment);
   }, []);
 
   return (
-    <Page minWidth='300px' className={styles.app} pageRef={appRef}>
-      <Header title='小糖的 React 项目合集' isSticky />
+    <Page
+      minWidth='300px'
+      className={styles.app}
+      pageRef={appRef}
+    >
+      <Header
+        title='小糖的 React 项目合集'
+        isSticky
+      />
       <div className={styles.blockWrap}>
         {PageList.map((it) => (
           <PageItem
