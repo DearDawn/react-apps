@@ -11,7 +11,11 @@ export const myFetch = async <T>(
   const _url: RequestUrl = `${HOST}${input}`;
 
   try {
-    const res = await apiGet<T>(_url, { ...params, dodokey: '123' }, init);
+    const res = await apiGet<T>(
+      _url,
+      { ...params, dodokey: '123' },
+      { ...init, credentials: 'same-origin' }
+    );
 
     if ((res as any)?.message) {
       return Promise.reject((res as any).message);
@@ -33,12 +37,10 @@ export const myPost = async <T>(
   const _url: RequestUrl = `${HOST}${input}`;
 
   try {
-    const res = await apiPost<T>(
-      _url,
-      { ...params, dodokey: '123' },
-      body,
-      init
-    );
+    const res = await apiPost<T>(_url, { ...params, dodokey: '123' }, body, {
+      ...init,
+      credentials: 'same-origin',
+    });
 
     if ((res as any)?.message) {
       toast((res as any).message);
