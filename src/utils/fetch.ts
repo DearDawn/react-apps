@@ -14,7 +14,7 @@ export const myFetch = async <T>(
     const res = await apiGet<T>(
       _url,
       { ...params, dodokey: '123' },
-      { credentials: 'same-origin', ...init }
+      { credentials: 'include', ...init }
     );
 
     if ((res as any)?.message) {
@@ -38,7 +38,7 @@ export const myPost = async <T>(
 
   try {
     const res = await apiPost<T>(_url, { ...params, dodokey: '123' }, body, {
-      credentials: 'same-origin',
+      credentials: 'include',
       ...init,
     });
 
