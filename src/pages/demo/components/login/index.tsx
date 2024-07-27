@@ -82,6 +82,8 @@ export const Login: Comp = ({ style, visible }) => {
         setStatus('已登录');
       } else {
         setIsLogin(false);
+        setStatus('');
+        setImageSrc('');
       }
     });
   }, [pageVisible, visible]);
