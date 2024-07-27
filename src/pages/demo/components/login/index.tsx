@@ -71,8 +71,6 @@ export const Login: Comp = ({ style }) => {
 
   useEffect(() => {
     myFetch<{ data: boolean }>('/wechat/check_login').then((res) => {
-      console.log('[dodo] ', 'check_login res', res);
-
       if (res.data) {
         setIsLogin(true);
         setStatus('已登录');
