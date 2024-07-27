@@ -27,7 +27,7 @@ export const myFetch = async <T>(
 export const myPost = async <T>(
   input: `/${string}`,
   params: Record<string, any> = {},
-  body: Record<string, any>,
+  body: Record<string, any> = {},
   init?: RequestInit
 ) => {
   const _url: RequestUrl = `${HOST}${input}`;

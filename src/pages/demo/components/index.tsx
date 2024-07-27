@@ -1,5 +1,6 @@
 import { Bubble } from './bubble';
 import { Chart } from './chart';
+import { Login } from './login';
 import { Lottery } from './lottery';
 import { Moon } from './moon';
 import { Notice } from './notice';
@@ -16,5 +17,6 @@ export default {
   Scale,
   // VideoChat,
   Moon,
-  Poker
+  Poker,
+  Login,
 };
