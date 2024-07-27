@@ -1,10 +1,10 @@
-import { Button, Image, useBoolean } from 'sweet-me';
+import { Button, Image, useBoolean, usePageVisible } from 'sweet-me';
 import { Comp } from '../type';
 import * as styles from './index.module.less';
 import { useCallback, useEffect, useState } from 'react';
 import { myFetch, myPost } from '@/utils/fetch';
 
-export const Login: Comp = ({ style }) => {
+export const Login: Comp = ({ style, visible }) => {
   const [ticket, setTicket] = useState('');
   const [isLogin, setIsLogin] = useState(false);
   const [status, setStatus] = useState('');
@@ -12,6 +12,7 @@ export const Login: Comp = ({ style }) => {
   const [loading, startLoading, endLoading] = useBoolean();
   const [loop, startLoop, endLoop] = useBoolean();
   const [loopCount, setLoopCount] = useState(0);
+  const { pageVisible } = usePageVisible();
 
   const handleLogout = useCallback(() => {
     myFetch<{ data: boolean }>('/wechat/logout').then((res) => {
@@ -59,6 +60,9 @@ export const Login: Comp = ({ style }) => {
         if (action === 'confirm') {
           endLoop();
           setStatus('登录成功');
+          setTimeout(() => {
+            setIsLogin(true);
+          }, 1000);
           return;
         }
 
@@ -70,13 +74,34 @@ export const Login: Comp = ({ style }) => {
   }, [endLoading, endLoop, loop, loopCount, ticket]);
 
   useEffect(() => {
+    if (!visible || !pageVisible) return;
+
     myFetch<{ data: boolean }>('/wechat/check_login').then((res) => {
       if (res.data) {
         setIsLogin(true);
         setStatus('已登录');
+      } else {
+        setIsLogin(false);
       }
     });
-  }, []);
+  }, [pageVisible, visible]);
+
+  if (isLogin) {
+    return (
+      <div
+        className={styles.card}
+        style={style}
+      >
+        <div className={styles.status2}>{status}</div>
+        <Button
+          loading={loading}
+          onClick={handleLogout}
+        >
+          退出登录
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -90,16 +115,6 @@ export const Login: Comp = ({ style }) => {
             src={imageSrc}
           />
           <div className={styles.status}>{status}</div>
-        </>
-      ) : isLogin ? (
-        <>
-          <div className={styles.status2}>{status}</div>
-          <Button
-            loading={loading}
-            onClick={handleLogout}
-          >
-            退出登录
-          </Button>
         </>
       ) : (
         <Button
