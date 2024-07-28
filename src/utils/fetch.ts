@@ -54,6 +54,37 @@ export const myPost = async <T>(
   }
 };
 
+export const myPostForm = async <T>(
+  input: `/${string}`,
+  params: Record<string, any> = {},
+  formData: FormData,
+  init?: RequestInit
+) => {
+  const _url: RequestUrl = `${HOST}${input}`;
+  const searchStr = new URLSearchParams({
+    ...params,
+    dodokey: '123',
+  }).toString();
+  const url = searchStr ? `${_url}?${searchStr}` : _url;
+
+  try {
+    const res = (await fetch(url, {
+      method: 'POST',
+      body: formData,
+    }).then((res) => res.json())) as Promise<T>;
+
+    if ((res as any)?.message) {
+      toast((res as any).message);
+      return Promise.reject((res as any).message);
+    }
+
+    return Promise.resolve(res);
+  } catch (error) {
+    console.error(error);
+    return Promise.reject(error);
+  }
+};
+
 export const useFetch: typeof useRequest = (props) => {
   const { url: _url, params, ...rest } = props;
   const url: RequestUrl = `${HOST}${_url}`;
