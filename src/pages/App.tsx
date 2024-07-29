@@ -61,6 +61,7 @@ const PageList = [
   { href: './bounty/', title: '赏金猎人' },
   { href: './share/', title: '共享' },
   { href: './pet/', title: '宠物' },
+  { href: './upload/', title: '上传图片' },
   { href: '../sweet-me/', title: '小糖的组件库' },
 ];
 

@@ -1,0 +1,103 @@
+.card {
+  box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+  padding: 10px;
+  border-radius: 6px;
+  overflow: hidden;
+  white-space: pre-line;
+  word-break: break-all;
+  font-size: 14px;
+  min-width: 165px;
+  min-height: 220px;
+  flex: 1;
+  margin-right: auto;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.1s ease;
+
+  @media (any-hover: hover) {
+    &:hover {
+      box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.6);
+    }
+  }
+
+  &:active:not(:visited) {
+    transform: scale(0.98);
+  }
+
+  &.done {
+    background-color: #ebfbee;
+    --stamp-color: #2b8a3e;
+
+    .stamp {
+      display: flex;
+    }
+  }
+
+  &.cancel {
+    background-color: #f1f3f5;
+    opacity: 0.7;
+    --stamp-color: #212529;
+
+    .stamp {
+      display: flex;
+    }
+  }
+
+  .cover {
+    width: 100%;
+    object-fit: cover;
+    aspect-ratio: 1;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+  }
+
+  .info {
+    width: 100%;
+    margin: auto;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 10;
+  }
+
+  .tagList {
+    position: absolute;
+    top: -35px;
+    right: 5px;
+
+    .tag {
+      font-weight: normal;
+      font-size: 12px;
+      padding: 2px 5px;
+
+      &:not(:last-child) {
+        margin-right: 5px;
+      }
+    }
+  }
+
+  .title {
+    margin-top: 10px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+
+    .uploader {
+      font-size: 14px;
+    }
+
+    .uploadTime {
+      margin-left: 10px;
+      font-size: 14px;
+      opacity: 0.5;
+    }
+  }
+
+  .source {
+    font-size: 14px;
+  }
+
+  .content {
+    color: #777;
+  }
+}
