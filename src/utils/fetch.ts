@@ -101,15 +101,16 @@ export const useFetch: typeof useRequest = (props) => {
     ...rest,
   });
   const error = res.data?.message;
+  const { runApi } = res;
 
   useEffect(() => {
     if (error === 'No Login') {
       toast('请先登录');
       showLoginBox().then(() => {
-        res.runApi();
+        runApi();
       });
     }
-  }, [error, res]);
+  }, [error, runApi]);
 
   return res;
 };
