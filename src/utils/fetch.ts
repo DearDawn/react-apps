@@ -1,5 +1,7 @@
 import { RequestUrl, apiGet, apiPost, toast, useRequest } from 'sweet-me';
 import { isDev } from '.';
+import { useEffect } from 'react';
+import { showLoginBox } from './login';
 
 export const HOST = isDev ? '/api' : 'https://www.dododawn.com:7020/api';
 
@@ -94,6 +96,16 @@ export const useFetch: typeof useRequest = (props) => {
     params: { dodokey: 123, ...params },
     ...rest,
   });
+  const error = res.data?.message;
+
+  useEffect(() => {
+    if (error === 'No Login') {
+      toast('请先登录');
+      showLoginBox().then(() => {
+        res.runApi();
+      });
+    }
+  }, [error, res]);
 
   return res;
 };

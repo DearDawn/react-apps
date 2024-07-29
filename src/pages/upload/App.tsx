@@ -26,13 +26,14 @@ export const App = () => {
   const imageFile = React.useRef<File>(null);
 
   const { form } = useFormState<ImageCreateInfo>();
-  const { data: listData = [], runApi } = useFetch<ImageInfo[]>({
+  const { data, runApi } = useFetch<{ data: ImageInfo[] }>({
     url: '/upload/wx_list',
     autoRun: true,
     params: { all: true },
     loadingFn: () => loading('列表加载中...', undefined, false),
   });
   const loadingCb = React.useRef(() => {});
+  const listData = data?.data || [];
 
   const { handleClickCard, closeModal, detail, modalVisible } =
     useCardDetailModal<ImageInfo>({ listData });
