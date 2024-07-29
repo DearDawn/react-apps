@@ -71,6 +71,7 @@ export const myPostForm = async <T>(
 
   try {
     const res = (await fetch(url, {
+      credentials: 'include',
       method: 'POST',
       body: formData,
     }).then((res) => res.json())) as Promise<T>;
@@ -93,6 +94,9 @@ export const useFetch: typeof useRequest = (props) => {
 
   const res = useRequest({
     url,
+    init: {
+      credentials: 'include',
+    },
     params: { dodokey: 123, ...params },
     ...rest,
   });
