@@ -13,9 +13,10 @@ import {
   Space,
   Select,
   InputImage,
+  Input,
 } from 'sweet-me';
 import { myPostForm, useFetch } from '@/utils/fetch';
-import { PieceInfo } from './constant';
+import { ImageCreateInfo, ImageInfo } from './constant';
 import { Card } from './components/card';
 import { useCardDetailModal } from '@/utils/hooks';
 
@@ -24,21 +25,19 @@ export const App = () => {
   const [isLoading, startLoading, endLoading] = useBoolean();
   const imageFile = React.useRef<File>(null);
 
-  const { form } = useFormState<PieceInfo>();
-  const { data: listData = [], runApi } = useFetch<PieceInfo[]>({
-    url: '/bounty/list',
-    autoRun: false,
+  const { form } = useFormState<ImageCreateInfo>();
+  const { data: listData = [], runApi } = useFetch<ImageInfo[]>({
+    url: '/upload/wx_list',
+    autoRun: true,
+    params: { all: true },
     loadingFn: () => loading('列表加载中...', undefined, false),
   });
   const loadingCb = React.useRef(() => {});
 
   const { handleClickCard, closeModal, detail, modalVisible } =
-    useCardDetailModal<PieceInfo>({ listData });
-
-  const cancelTodo = () => {};
+    useCardDetailModal<ImageInfo>({ listData });
 
   const handleImageChange = React.useCallback((val) => {
-    console.log('[dodo] ', 'val', val);
     imageFile.current = val;
   }, []);
 
@@ -51,15 +50,16 @@ export const App = () => {
     }
 
     const values = form.getFieldsValue();
-    const { tag } = values;
+    const { tag, source } = values;
 
     const formData = new FormData();
     formData.append('file', imageFile.current);
     formData.append('tag', tag);
+    formData.append('source', source);
     formData.append('upload_key', 'dododawn');
 
     startLoading();
-    myPostForm<PieceInfo>('/upload/wx', {}, formData)
+    myPostForm<ImageInfo>('/upload/wx', {}, formData)
       .then(() => {
         toast('上传成功');
         form.resetField();
@@ -94,7 +94,7 @@ export const App = () => {
       <Header title='图片上传（半成品）' isSticky />
       <div className={styles.list}>
         {listData?.map((it) => (
-          <Card info={it} key={it.tag} onClick={handleClickCard(it)} />
+          <Card info={it} key={it.src} onClick={handleClickCard(it)} />
         ))}
       </div>
       <Button
@@ -107,7 +107,7 @@ export const App = () => {
       <Modal className={styles.modal} visible={createModalVisible}>
         <div className={styles.content}>
           <Form form={form}>
-            <Form.Item field='title' labelClassName={styles.label}>
+            <Form.Item field='src' label='图片'>
               <InputImage onValueChange={handleImageChange} />
             </Form.Item>
             <Form.Item field='tag' required defaultValue='snjxh' label='标签'>
@@ -117,6 +117,9 @@ export const App = () => {
                   value: label,
                 }))}
               />
+            </Form.Item>
+            <Form.Item field='source' required defaultValue='' label='来源'>
+              <Input placeholder='请输入' />
             </Form.Item>
             <div className={styles.holder} />
             <div className={styles.btnWrap}>
@@ -145,17 +148,17 @@ export const App = () => {
         onClose={closeModal}
         footer={
           <Space padding='0' className={styles.footer}>
-            <Button onClick={cancelTodo} status='success'>
+            {/* <Button onClick={cancelTodo} status='success'>
               隐藏
             </Button>
             <Button onClick={cancelTodo} status='error'>
               删除
-            </Button>
+            </Button> */}
             <Button onClick={closeModal}>关闭</Button>
           </Space>
         }
       >
-        <Card className={styles.cardItem} info={detail} />
+        <Card className={styles.cardItem} info={detail} detailMode />
       </Modal>
     </Page>
   );

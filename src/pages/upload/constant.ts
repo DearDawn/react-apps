@@ -1,8 +1,18 @@
 import { ETagColor } from 'sweet-me';
 
-export interface PieceInfo {
-  tag?: string;
+export interface ImageCreateInfo {
   src?: string;
+  source?: string;
+  tag?: string;
+}
+
+export interface ImageInfo {
+  src?: string;
+  uploader?: string;
+  source?: string;
+  tags?: string[];
+  uploadTime?: string;
+  http_src?: string;
 }
 
 export const PriorityMap: Record<number, { color: ETagColor; text: string }> = {
