@@ -22,6 +22,7 @@ import { ImageCreateInfo, ImageInfo } from './constant';
 import { Card } from './components/card';
 import { useCardDetailModal } from '@/utils/hooks';
 import { showLoginBox } from '@/utils/login';
+import { getFileExt } from '@/utils/file';
 
 export const App = () => {
   const [createModalVisible, showCreateModal, closeCreateModal] = useBoolean();
@@ -69,6 +70,7 @@ export const App = () => {
 
     const formData = new FormData();
     formData.append('file', imageFile.current);
+    formData.append('ext', getFileExt(imageFile.current));
     formData.append('tag', tag);
     formData.append('source', source);
     formData.append('upload_key', 'dododawn');
