@@ -120,7 +120,7 @@ export const App = () => {
             </Form.Item>
             <Form.Item field='tag' required defaultValue='snjxh' label='标签'>
               <Select
-                options={['snjxh', 'fddm'].map((label) => ({
+                options={['snjxh', 'fddm', 'test'].map((label) => ({
                   label,
                   value: label,
                 }))}
