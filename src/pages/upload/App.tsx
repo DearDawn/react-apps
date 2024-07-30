@@ -129,7 +129,10 @@ export const App = () => {
         <div className={styles.content}>
           <Form form={form}>
             <Form.Item field='src' label='图片'>
-              <InputImage onValueChange={handleImageChange} />
+              <InputImage
+                onValueChange={handleImageChange}
+                maxSize={2 * 1024 * 1024}
+              />
             </Form.Item>
             <Form.Item field='tag' required defaultValue='snjxh' label='标签'>
               <Select
