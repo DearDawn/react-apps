@@ -17,7 +17,7 @@ import {
   Icon,
   ICON,
 } from 'sweet-me';
-import { myPostForm, useFetch } from '@/utils/fetch';
+import { myPost, myPostForm, useFetch } from '@/utils/fetch';
 import { ImageCreateInfo, ImageInfo } from './constant';
 import { Card } from './components/card';
 import { useCardDetailModal } from '@/utils/hooks';
@@ -44,6 +44,17 @@ export const App = () => {
   const handleImageChange = React.useCallback((val) => {
     imageFile.current = val;
   }, []);
+
+  const handleDelCard = () => {
+    startLoading();
+    myPost<any>('/upload/wx_del', {}, { id: detail.src })
+      .then(() => {
+        closeModal();
+        toast('删除成功');
+        runApi();
+      })
+      .finally(endLoading);
+  };
 
   const handleCreate = () => {
     const pass = form.validate();
@@ -158,10 +169,10 @@ export const App = () => {
           <Space padding='0' className={styles.footer}>
             {/* <Button onClick={cancelTodo} status='success'>
               隐藏
-            </Button>
-            <Button onClick={cancelTodo} status='error'>
-              删除
             </Button> */}
+            <Button onClick={handleDelCard} status='error'>
+              删除
+            </Button>
             <Button onClick={closeModal}>关闭</Button>
           </Space>
         }

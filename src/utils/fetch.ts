@@ -20,6 +20,12 @@ export const myFetch = async <T>(
     );
 
     if ((res as any)?.message) {
+      if ((res as any)?.message === 'No Login') {
+        toast('请先登录');
+        showLoginBox(true);
+      } else {
+        toast((res as any).message);
+      }
       return Promise.reject((res as any).message);
     }
 
@@ -45,7 +51,12 @@ export const myPost = async <T>(
     });
 
     if ((res as any)?.message) {
-      toast((res as any).message);
+      if ((res as any)?.message === 'No Login') {
+        toast('请先登录');
+        showLoginBox(true);
+      } else {
+        toast((res as any).message);
+      }
       return Promise.reject((res as any).message);
     }
 
@@ -77,7 +88,12 @@ export const myPostForm = async <T>(
     }).then((res) => res.json())) as Promise<T>;
 
     if ((res as any)?.message) {
-      toast((res as any).message);
+      if ((res as any)?.message === 'No Login') {
+        toast('请先登录');
+        showLoginBox(true);
+      } else {
+        toast((res as any).message);
+      }
       return Promise.reject((res as any).message);
     }
 
