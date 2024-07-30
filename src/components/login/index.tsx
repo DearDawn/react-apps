@@ -3,8 +3,10 @@ import * as styles from './index.module.less';
 import { FC, useCallback, useEffect, useState } from 'react';
 import { myFetch, myPost } from '@/utils/fetch';
 
-export const LoginModal: FC<{ onClose?: VoidFunction }> = (props) => {
-  const { onClose } = props || {};
+export const LoginModal: FC<{ onClose?: VoidFunction; autoStart?: boolean }> = (
+  props
+) => {
+  const { onClose, autoStart } = props || {};
   const [ticket, setTicket] = useState('');
   const [isLogin, setIsLogin] = useState(false);
   const [status, setStatus] = useState('');
@@ -88,6 +90,12 @@ export const LoginModal: FC<{ onClose?: VoidFunction }> = (props) => {
       }
     });
   }, [pageVisible]);
+
+  useEffect(() => {
+    if (autoStart) {
+      handleGetLoginInfo();
+    }
+  }, [autoStart, handleGetLoginInfo]);
 
   if (isLogin) {
     return (
