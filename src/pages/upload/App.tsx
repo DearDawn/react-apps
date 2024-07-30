@@ -14,11 +14,14 @@ import {
   Select,
   InputImage,
   Input,
+  Icon,
+  ICON,
 } from 'sweet-me';
 import { myPostForm, useFetch } from '@/utils/fetch';
 import { ImageCreateInfo, ImageInfo } from './constant';
 import { Card } from './components/card';
 import { useCardDetailModal } from '@/utils/hooks';
+import { showLoginBox } from '@/utils/login';
 
 export const App = () => {
   const [createModalVisible, showCreateModal, closeCreateModal] = useBoolean();
@@ -91,22 +94,15 @@ export const App = () => {
   }, [createModalVisible, detail, form]);
 
   return (
-    <Page
-      maxWidth='100vw'
-      minWidth='300px'
-      className={styles.app}
-    >
+    <Page maxWidth='100vw' minWidth='300px' className={styles.app}>
       <Header
         title='图片上传（半成品）'
         isSticky
+        rightPart={<Icon type={ICON.sugar} onClick={() => showLoginBox()} />}
       />
       <div className={styles.list}>
         {listData?.map((it) => (
-          <Card
-            info={it}
-            key={it.src}
-            onClick={handleClickCard(it)}
-          />
+          <Card info={it} key={it.src} onClick={handleClickCard(it)} />
         ))}
       </div>
       <Button
@@ -116,24 +112,13 @@ export const App = () => {
       >
         上传图片
       </Button>
-      <Modal
-        className={styles.modal}
-        visible={createModalVisible}
-      >
+      <Modal className={styles.modal} visible={createModalVisible}>
         <div className={styles.content}>
           <Form form={form}>
-            <Form.Item
-              field='src'
-              label='图片'
-            >
+            <Form.Item field='src' label='图片'>
               <InputImage onValueChange={handleImageChange} />
             </Form.Item>
-            <Form.Item
-              field='tag'
-              required
-              defaultValue='snjxh'
-              label='标签'
-            >
+            <Form.Item field='tag' required defaultValue='snjxh' label='标签'>
               <Select
                 options={['snjxh', 'fddm'].map((label) => ({
                   label,
@@ -141,12 +126,7 @@ export const App = () => {
                 }))}
               />
             </Form.Item>
-            <Form.Item
-              field='source'
-              required
-              defaultValue=''
-              label='来源'
-            >
+            <Form.Item field='source' required defaultValue='' label='来源'>
               <Input placeholder='请输入' />
             </Form.Item>
             <div className={styles.holder} />
@@ -175,10 +155,7 @@ export const App = () => {
         maskClosable
         onClose={closeModal}
         footer={
-          <Space
-            padding='0'
-            className={styles.footer}
-          >
+          <Space padding='0' className={styles.footer}>
             {/* <Button onClick={cancelTodo} status='success'>
               隐藏
             </Button>
@@ -189,11 +166,7 @@ export const App = () => {
           </Space>
         }
       >
-        <Card
-          className={styles.cardItem}
-          info={detail}
-          detailMode
-        />
+        <Card className={styles.cardItem} info={detail} detailMode />
       </Modal>
     </Page>
   );
