@@ -41,6 +41,9 @@ export const LoginModal: FC<{ onClose?: VoidFunction; autoStart?: boolean }> = (
 
     if (loopCount > 60) {
       setStatus('已超时');
+      setTimeout(() => {
+        setImageSrc('');
+      }, 1000);
       return;
     }
 
@@ -85,8 +88,6 @@ export const LoginModal: FC<{ onClose?: VoidFunction; autoStart?: boolean }> = (
         setStatus('已登录');
       } else {
         setIsLogin(false);
-        setStatus('');
-        setImageSrc('');
       }
     });
   }, [pageVisible]);
