@@ -78,6 +78,7 @@ export const App = () => {
     startLoading();
     myPostForm<ImageInfo>('/upload/wx', {}, formData)
       .then(() => {
+        endLoading();
         toast('上传成功');
         form.resetField();
         closeCreateModal();
