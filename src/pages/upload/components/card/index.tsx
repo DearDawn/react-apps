@@ -12,6 +12,7 @@ interface IProps extends CommonProps {
 export const Card = (props: IProps) => {
   const { info, className, onClick, detailMode = false } = props;
   const { http_src, tags = [], uploadTime, uploader, source } = info || {};
+  const id = http_src.split('/').pop();
 
   return (
     <div className={clsx(styles.card, {}, className)} onClick={onClick}>
@@ -29,6 +30,7 @@ export const Card = (props: IProps) => {
             </Tag>
           ))}
         </div>
+        <div className={styles.id}>{id}</div>
         <div className={styles.title}>
           <div className={styles.uploader}>{uploader || '未知'}</div>
           <div className={styles.uploadTime}>{uploadTime}</div>
