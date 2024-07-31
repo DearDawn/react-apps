@@ -23,6 +23,7 @@ import { Card } from './components/card';
 import { useCardDetailModal } from '@/utils/hooks';
 import { showLoginBox } from '@/utils/login';
 import { getFileExt } from '@/utils/file';
+import { waitTime } from '@/utils';
 
 export const App = () => {
   const [createModalVisible, showCreateModal, closeCreateModal] = useBoolean();
@@ -77,11 +78,12 @@ export const App = () => {
 
     startLoading();
     myPostForm<ImageInfo>('/upload/wx', {}, formData)
-      .then(() => {
+      .then(async () => {
         endLoading();
         toast('上传成功');
         form.resetField();
         closeCreateModal();
+        await waitTime(300);
         runApi();
       })
       .finally(endLoading);
