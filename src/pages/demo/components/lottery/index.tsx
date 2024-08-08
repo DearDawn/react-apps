@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import * as styles from './index.module.less';
 import { Space, Storage, loading, usePageVisible } from 'sweet-me';
 import { Comp } from '../type';
