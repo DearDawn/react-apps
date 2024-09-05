@@ -17,8 +17,7 @@ export const Poker: Comp = ({ style }) => {
     Array.from({ length: 5 }, (_, i) => i + 1)
   );
 
-  const handleChangeOffset = (_offset: number) => {
-    const offset = Math.round(((_offset - 50) / 50) * 10);
+  const handleChangeOffset = (offset: number) => {
     setOffsetX(offset);
   };
 
@@ -65,7 +64,14 @@ export const Poker: Comp = ({ style }) => {
       </div>
       <Space stretch isColumn>
         <div className={styles.count}>{offsetX}</div>
-        <RangeSlider onInput={handleChangeOffset} className={styles.slider} />
+        <RangeSlider
+          min={-10}
+          max={10}
+          step={1}
+          value={0}
+          onInput={handleChangeOffset}
+          className={styles.slider}
+        />
       </Space>
       <Space className={styles.options}>
         <Button onClick={handleCut('prev')}>上一张</Button>

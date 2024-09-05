@@ -1,6 +1,6 @@
 export function changeExtToPNG(imageUrl = '') {
   // 使用正则表达式替换文件名后缀
-  const newUrl = imageUrl.replace(/(\.[^.\/]+$)/, '.png');
+  const newUrl = imageUrl.replace(/(\.[^./]+$)/, '.png');
 
   return newUrl;
 }

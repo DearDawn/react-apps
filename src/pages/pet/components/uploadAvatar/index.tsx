@@ -43,7 +43,7 @@ export const UploadAvatar = (props: IProps) => {
         quality: 0.1,
         callback: function (compressedFile) {
           fileRef.current = compressedFile;
-          const fileURL = URL.createObjectURL(file);
+          const fileURL = URL.createObjectURL(fileRef.current);
           setUrl(fileURL);
         },
       });
