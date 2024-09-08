@@ -16,11 +16,7 @@ const PageItem = ({ onClick, item, parent }) => {
 
   return (
     <>
-      <div
-        className={styles.block}
-        onClick={onClick}
-        ref={fromRef}
-      >
+      <div className={styles.block} onClick={onClick} ref={fromRef}>
         <div
           className={styles.logo}
           style={{ backgroundColor: generateRandomColor() }}
@@ -29,20 +25,11 @@ const PageItem = ({ onClick, item, parent }) => {
         </div>
         <div className={styles.name}>{item.title}</div>
       </div>
-      <ScaleWrap
-        fromRef={fromRef}
-        root={parent}
-      >
+      <ScaleWrap fromRef={fromRef} root={parent}>
         {({ onClose }) => (
           <div className={styles.iframeWrap}>
-            <iframe
-              className={styles.iframe}
-              src={item.href}
-            />
-            <div
-              className={styles.closeWrap}
-              onClick={onClose}
-            >
+            <iframe className={styles.iframe} src={item.href} />
+            <div className={styles.closeWrap} onClick={onClose}>
               <Icon type={ICON.close} />
             </div>
           </div>
@@ -69,6 +56,10 @@ export const App = (props: IProps) => {
   const appRef = React.useRef<HTMLDivElement>();
   const handleClick = (it: { href: string; title: string }) => () => {};
 
+  const handleRefresh = () => {
+    window.location.reload();
+  };
+
   React.useEffect(() => {
     // eslint-disable-next-line no-console
     console.log(
@@ -94,14 +85,11 @@ export const App = (props: IProps) => {
   }, []);
 
   return (
-    <Page
-      minWidth='300px'
-      className={styles.app}
-      pageRef={appRef}
-    >
+    <Page minWidth='300px' className={styles.app} pageRef={appRef}>
       <Header
         title='小糖的 React 项目合集'
         isSticky
+        rightPart={<Icon type={ICON.sugar} onClick={handleRefresh} />}
       />
       <div className={styles.blockWrap}>
         {PageList.map((it) => (
