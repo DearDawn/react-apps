@@ -22,8 +22,8 @@ export const ImageCompress: FC<
   const [loading, startLoading, endLoading] = useBoolean(false);
   const defaultScale = 50;
   const defaultQuality = 50;
-  const [scale, setScale] = useState(50);
-  const [quality, setQuality] = useState(50);
+  const [scale, setScale] = useState(defaultScale);
+  const [quality, setQuality] = useState(defaultQuality);
   const timer = useRef(null);
 
   const compress = useCallback(
@@ -42,26 +42,18 @@ export const ImageCompress: FC<
             setResFile(res.file || imgFile);
           })
           .finally(endLoading);
-      }, 300);
+      }, 500);
     },
     [endLoading, imgFile, imgUrl, initUrl, quality, startLoading]
   );
 
-  const handleQualityChange = useCallback(
-    (value) => {
-      compress(scale, value);
-      setQuality(value);
-    },
-    [compress, scale]
-  );
+  const handleQualityChange = useCallback((value) => {
+    setQuality(value);
+  }, []);
 
-  const handleScaleChange = useCallback(
-    (value) => {
-      compress(value, quality);
-      setScale(value);
-    },
-    [compress, quality]
-  );
+  const handleScaleChange = useCallback((value) => {
+    setScale(value);
+  }, []);
 
   const handleSubmit = useCallback(() => {
     onClose?.({ file: resFile, url: resUrl });
