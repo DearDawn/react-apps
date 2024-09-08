@@ -15,6 +15,7 @@ import {
   Modal,
   Space,
   useBoolean,
+  showModal,
 } from 'sweet-me';
 import { socket } from './socket';
 import {
@@ -50,6 +51,7 @@ import { FileItem } from './components/fileItem';
 import { copyTextToClipboard } from '@/utils/text';
 import { myPost } from '@/utils/fetch';
 import { clientId } from '@/utils/id';
+import { ImageCompress } from '@/components/imageCompress';
 
 export const App = () => {
   const { form } = useFormState();
@@ -81,25 +83,28 @@ export const App = () => {
   const handleCloseRoomInput = React.useCallback(() => {
     roomInputForm.resetField();
     closeRoomInput();
-  }, []);
+  }, [closeRoomInput, roomInputForm]);
 
-  const handleChangeRoom = React.useCallback((values) => {
-    if (!roomInputForm.validate()) {
-      return toast('未填写完整');
-    }
+  const handleChangeRoom = React.useCallback(
+    (values) => {
+      if (!roomInputForm.validate()) {
+        return toast('未填写完整');
+      }
 
-    const room = values.room?.trim();
+      const room = values.room?.trim();
 
-    if (room === ROOM_ID) {
-      return closeRoomInput();
-    }
+      if (room === ROOM_ID) {
+        return closeRoomInput();
+      }
 
-    const currentUrl = new URL(window.location.href);
-    const searchParams = new URLSearchParams(currentUrl.search);
-    searchParams.set('room', room);
-    currentUrl.search = searchParams.toString();
-    window.location.replace(currentUrl.href);
-  }, []);
+      const currentUrl = new URL(window.location.href);
+      const searchParams = new URLSearchParams(currentUrl.search);
+      searchParams.set('room', room);
+      currentUrl.search = searchParams.toString();
+      window.location.replace(currentUrl.href);
+    },
+    [closeRoomInput, roomInputForm]
+  );
 
   const handleFileChange = React.useCallback(
     async (_file: any) => {
@@ -117,8 +122,9 @@ export const App = () => {
     form.setFieldValue('file', undefined);
   };
 
-  const sendData = (values: { text: string; file: File }) => {
-    const { text = '', file } = values || {};
+  const sendData = async (values: { text: string; file: File }) => {
+    const { text = '', file: _file } = values || {};
+    let file = _file;
 
     if (text.trim()) {
       socket.emit('text', text);
@@ -129,6 +135,32 @@ export const App = () => {
     }
 
     if (file) {
+      await showModal(
+        ({ onClose }) => (
+          <ImageCompress
+            imgFile={file}
+            onClose={(res) => {
+              if (res) {
+                const { file: tempFile } = res || {};
+                file = tempFile;
+              } else {
+                file = null;
+              }
+              onClose();
+            }}
+          />
+        ),
+        {
+          maskClosable: false,
+        }
+      );
+
+      if (!file) {
+        toast('发送取消');
+        form.resetField();
+        return;
+      }
+
       if (file.size >= MAX_FILE_SIZE) {
         toast(`文件过大，最大 ${convertFileSize(MAX_FILE_SIZE)}`);
         form.resetField();
@@ -183,8 +215,6 @@ export const App = () => {
       const file = data.files[0];
 
       form.setFieldValue('file', file);
-      await waitTime(500);
-      form.dispatchSubmit();
     }
   };
 

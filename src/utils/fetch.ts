@@ -1,7 +1,7 @@
 import { RequestUrl, apiGet, apiPost, toast, useRequest } from 'sweet-me';
-import { isDev } from '.';
 import { useEffect } from 'react';
 import { showLoginBox } from './login';
+import { isDev } from './dev';
 
 export const HOST = isDev ? '/api' : 'https://www.dododawn.com:7020/api';
 
