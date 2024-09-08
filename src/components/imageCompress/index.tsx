@@ -20,20 +20,22 @@ export const ImageCompress: FC<
   const [resUrl, setResUrl] = useState(initUrl);
   const [resFile, setResFile] = useState(imgFile);
   const [loading, startLoading, endLoading] = useBoolean(false);
+  const defaultScale = 50;
+  const defaultQuality = 50;
+  const [scale, setScale] = useState(50);
+  const [quality, setQuality] = useState(50);
   const timer = useRef(null);
-  const defaultValue = 50;
 
-  const handleQualityChange = useCallback(
-    (value) => {
-      clearTimeout(timer.current);
-      endLoading();
-
+  const compress = useCallback(
+    (scaleRatio, qualityRatio) => {
+      startLoading();
       timer.current = setTimeout(() => {
-        startLoading();
         compressImage({
           imgUrl: initUrl,
           outputFileName: imgFile.name || imgUrl,
-          scaleRatio: value / 100,
+          scaleRatio: scaleRatio / 100,
+          quality: qualityRatio / 100,
+          targetType: quality < 100 ? 'jpeg' : 'png',
         })
           .then((res) => {
             setResUrl(res.url);
@@ -42,7 +44,23 @@ export const ImageCompress: FC<
           .finally(endLoading);
       }, 300);
     },
-    [endLoading, imgFile, imgUrl, initUrl, startLoading]
+    [endLoading, imgFile, imgUrl, initUrl, quality, startLoading]
+  );
+
+  const handleQualityChange = useCallback(
+    (value) => {
+      compress(scale, value);
+      setQuality(value);
+    },
+    [compress, scale]
+  );
+
+  const handleScaleChange = useCallback(
+    (value) => {
+      compress(value, quality);
+      setScale(value);
+    },
+    [compress, quality]
   );
 
   const handleSubmit = useCallback(() => {
@@ -54,26 +72,43 @@ export const ImageCompress: FC<
   }, [onClose]);
 
   useEffect(() => {
-    handleQualityChange(defaultValue);
-  }, [handleQualityChange]);
+    compress(scale, quality);
+
+    return () => {
+      endLoading();
+      clearTimeout(timer.current);
+    };
+  }, [compress, endLoading, quality, scale]);
 
   return (
     <div className={styles.card}>
       <Image className={styles.codeImg} src={resUrl} />
-      <Space className={styles.imgInfo} padding='10px'>
+      <Space padding='10px'>
+        <div>压缩比：{Number(resFile?.size / imgFile?.size).toFixed(2)}</div>
         <div>
           图片大小：{convertFileSize(resFile?.size || imgFile?.size || 0)}
         </div>
-        <div>压缩比：{Number(resFile?.size / imgFile?.size).toFixed(2)}</div>
       </Space>
       <Space className={styles.sliderWrap} padding='10px'>
+        压缩:
         <Slider
           className={styles.slider}
           min={10}
           max={100}
           step={5}
-          defaultValue={defaultValue}
+          defaultValue={defaultQuality}
           onValueChange={handleQualityChange}
+        />
+      </Space>
+      <Space className={styles.sliderWrap} padding='10px'>
+        缩放:
+        <Slider
+          className={styles.slider}
+          min={10}
+          max={100}
+          step={5}
+          defaultValue={defaultScale}
+          onValueChange={handleScaleChange}
         />
       </Space>
       <Space className={styles.sliderWrap} padding='10px 0 0' isColumn>
