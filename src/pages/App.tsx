@@ -50,6 +50,7 @@ const PageList = [
   { href: './pet/', title: '宠物' },
   { href: './upload/', title: '上传图片' },
   { href: '../sweet-me/', title: '小糖的组件库' },
+  { href: '../hope-wall/', title: '未来 TODO' },
 ];
 
 export const App = (props: IProps) => {
