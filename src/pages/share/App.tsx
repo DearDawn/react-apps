@@ -135,25 +135,27 @@ export const App = () => {
     }
 
     if (file) {
-      await showModal(
-        ({ onClose }) => (
-          <ImageCompress
-            imgFile={file}
-            onClose={(res) => {
-              if (res) {
-                const { file: tempFile } = res || {};
-                file = tempFile;
-              } else {
-                file = null;
-              }
-              onClose();
-            }}
-          />
-        ),
-        {
-          maskClosable: false,
-        }
-      );
+      if (file.type.startsWith('image/')) {
+        await showModal(
+          ({ onClose }) => (
+            <ImageCompress
+              imgFile={file}
+              onClose={(res) => {
+                if (res) {
+                  const { file: tempFile } = res || {};
+                  file = tempFile;
+                } else {
+                  file = null;
+                }
+                onClose();
+              }}
+            />
+          ),
+          {
+            maskClosable: false,
+          }
+        );
+      }
 
       if (!file) {
         toast('发送取消');
@@ -308,16 +310,31 @@ export const App = () => {
       >
         <Header
           title={
-            <div className={styles.title} onClick={showRoomInput}>
+            <div
+              className={styles.title}
+              onClick={showRoomInput}
+            >
               共享 (房间号：{ROOM_ID})
             </div>
           }
           isSticky
-          rightPart={<Icon type={ICON.sugar} onClick={handleRooms} />}
+          rightPart={
+            <Icon
+              type={ICON.sugar}
+              onClick={handleRooms}
+            />
+          }
         />
-        <div className={styles.contentWrap} ref={listRef}>
+        <div
+          className={styles.contentWrap}
+          ref={listRef}
+        >
           {messageList.map((it, idx) => (
-            <div className={styles.itemWrap} key={idx} draggable={false}>
+            <div
+              className={styles.itemWrap}
+              key={idx}
+              draggable={false}
+            >
               {it.type === 'text' && (
                 <div
                   className={styles.textItem}
@@ -332,14 +349,23 @@ export const App = () => {
                 </div>
               )}
               {it.type === 'img' && (
-                <FileItem className={styles.imgItem} fileInfo={it} />
+                <FileItem
+                  className={styles.imgItem}
+                  fileInfo={it}
+                />
               )}
               {it.type === 'file' && (
-                <FileItem className={styles.fileItem} fileInfo={it} />
+                <FileItem
+                  className={styles.fileItem}
+                  fileInfo={it}
+                />
               )}
             </div>
           ))}
-          <div className={styles.holder} ref={bottomHolderRef} />
+          <div
+            className={styles.holder}
+            ref={bottomHolderRef}
+          />
         </div>
         <Button
           className={clsx(styles.rocketBottom, showBack && styles.visible)}
@@ -347,19 +373,40 @@ export const App = () => {
         >
           <Icon type={ICON.rocket} />
         </Button>
-        <Form className={styles.footer} form={form} onSubmit={handleSubmit}>
-          <FileList className={styles.fileList} onDelete={handleDeleteFile} />
-          <Form.Item noMargin field='text' className={styles.inputWrap}>
-            <Textarea className={styles.input} placeholder='请输入...' />
+        <Form
+          className={styles.footer}
+          form={form}
+          onSubmit={handleSubmit}
+        >
+          <FileList
+            className={styles.fileList}
+            onDelete={handleDeleteFile}
+          />
+          <Form.Item
+            noMargin
+            field='text'
+            className={styles.inputWrap}
+          >
+            <Textarea
+              className={styles.input}
+              placeholder='请输入...'
+            />
           </Form.Item>
-          <Form.Item noMargin field='file' className={styles.inputFile}>
+          <Form.Item
+            noMargin
+            field='file'
+            className={styles.inputFile}
+          >
             <Input.File onValueChange={handleFileChange}>
               <Button className={styles.inputFileBtn}>
                 <Icon type={ICON.file} />
               </Button>
             </Input.File>
           </Form.Item>
-          <Button className={styles.submit} type='submit'>
+          <Button
+            className={styles.submit}
+            type='submit'
+          >
             发送
           </Button>
         </Form>
@@ -368,7 +415,10 @@ export const App = () => {
           onClose={handleCloseRoomInput}
           maskClosable
         >
-          <Form form={roomInputForm} onSubmit={handleChangeRoom}>
+          <Form
+            form={roomInputForm}
+            onSubmit={handleChangeRoom}
+          >
             <Form.Item
               field='room'
               required
@@ -377,11 +427,20 @@ export const App = () => {
             >
               <Input placeholder='房间号' />
             </Form.Item>
-            <Space stretch padding='5px 0 0'>
-              <Button status='error' onClick={handleCloseRoomInput}>
+            <Space
+              stretch
+              padding='5px 0 0'
+            >
+              <Button
+                status='error'
+                onClick={handleCloseRoomInput}
+              >
                 取消
               </Button>
-              <Button status='success' type='submit'>
+              <Button
+                status='success'
+                type='submit'
+              >
                 确认
               </Button>
             </Space>
