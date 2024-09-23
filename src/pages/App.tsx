@@ -51,6 +51,7 @@ const PageList = [
   { href: './upload/', title: '上传图片' },
   { href: '../sweet-me/', title: '小糖的组件库' },
   { href: '../hope-wall/', title: '未来 TODO' },
+  { href: './tower/', title: '塔防(无成品)' },
 ];
 
 export const App = (props: IProps) => {

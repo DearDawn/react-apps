@@ -5,6 +5,7 @@ import {
   Image,
   Slider,
   Space,
+  Switch,
   useBoolean,
 } from 'sweet-me';
 import * as styles from './index.module.less';
@@ -24,6 +25,7 @@ export const ImageCompress: FC<
   const defaultQuality = 50;
   const [scale, setScale] = useState(defaultScale);
   const [quality, setQuality] = useState(defaultQuality);
+  const [keepOpacity, setKeepOpacity] = useState(false);
   const timer = useRef(null);
 
   const compress = useCallback(
@@ -34,8 +36,8 @@ export const ImageCompress: FC<
           imgUrl: initUrl,
           outputFileName: imgFile.name || imgUrl,
           scaleRatio: scaleRatio / 100,
-          quality: qualityRatio / 100,
-          targetType: quality < 100 ? 'jpeg' : 'png',
+          quality: keepOpacity ? 1 : qualityRatio / 100,
+          targetType: keepOpacity ? 'png' : 'jpeg',
         })
           .then((res) => {
             setResUrl(res.url);
@@ -44,7 +46,7 @@ export const ImageCompress: FC<
           .finally(endLoading);
       }, 500);
     },
-    [endLoading, imgFile, imgUrl, initUrl, quality, startLoading]
+    [endLoading, imgFile, imgUrl, initUrl, keepOpacity, startLoading]
   );
 
   const handleQualityChange = useCallback((value) => {
@@ -53,6 +55,10 @@ export const ImageCompress: FC<
 
   const handleScaleChange = useCallback((value) => {
     setScale(value);
+  }, []);
+
+  const handleSwitchChange = useCallback((value) => {
+    setKeepOpacity(value);
   }, []);
 
   const handleSubmit = useCallback(() => {
@@ -83,14 +89,24 @@ export const ImageCompress: FC<
       </Space>
       <Space className={styles.sliderWrap} padding='10px'>
         压缩:
-        <Slider
-          className={styles.slider}
-          min={10}
-          max={100}
-          step={5}
-          defaultValue={defaultQuality}
-          onValueChange={handleQualityChange}
-        />
+        {keepOpacity ? (
+          <Slider
+            className={styles.slider}
+            min={100}
+            max={100}
+            step={1}
+            defaultValue={100}
+          />
+        ) : (
+          <Slider
+            className={styles.slider}
+            min={10}
+            max={100}
+            step={5}
+            defaultValue={defaultQuality}
+            onValueChange={handleQualityChange}
+          />
+        )}
       </Space>
       <Space className={styles.sliderWrap} padding='10px'>
         缩放:
@@ -102,6 +118,9 @@ export const ImageCompress: FC<
           defaultValue={defaultScale}
           onValueChange={handleScaleChange}
         />
+      </Space>
+      <Space>
+        保留透明度: <Switch onValueChange={handleSwitchChange} />
       </Space>
       <Space className={styles.sliderWrap} padding='10px 0 0' isColumn>
         <Button

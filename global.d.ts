@@ -8,6 +8,8 @@ declare module '*.woff';
 declare module '*.woff2';
 declare module '*.less';
 declare module '*.md';
+declare module '*.glb';
+declare module '*.gltf';
 
 declare namespace NodeJS {
   interface ProcessEnv {
