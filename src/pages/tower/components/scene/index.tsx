@@ -4,6 +4,7 @@ import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OrbitControls, Environment } from '@react-three/drei';
 import * as THREE from 'three';
 import * as GLBModel from '../../models/02.glb';
+import { CharacterWrap } from '../character';
 
 const Model = () => {
   const gltf = useLoader(GLTFLoader, GLBModel) as GLTF & ObjectMap;
@@ -58,6 +59,7 @@ const ThreeScene = () => {
         maxDistance={50}
         maxPolarAngle={Math.PI / 2}
       />
+      <CharacterWrap />
     </Canvas>
   );
 };
