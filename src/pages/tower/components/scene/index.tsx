@@ -5,6 +5,7 @@ import { OrbitControls, Environment } from '@react-three/drei';
 import * as THREE from 'three';
 import * as GLBModel from '../../models/02.glb';
 import { CharacterWrap } from '../character';
+import { CharacterWrapV2 } from '../characterV2';
 
 const Model = () => {
   const gltf = useLoader(GLTFLoader, GLBModel) as GLTF & ObjectMap;
@@ -60,6 +61,7 @@ const ThreeScene = () => {
         maxPolarAngle={Math.PI / 2}
       />
       <CharacterWrap />
+      <CharacterWrapV2 />
     </Canvas>
   );
 };
