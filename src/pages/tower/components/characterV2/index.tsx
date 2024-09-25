@@ -97,7 +97,6 @@ export const CharacterWrapV2 = () => {
   ]);
 
   const handleCollision = (index, weaponBox) => {
-    console.log('[dodo] ', 'characters[index]', characters[index]);
     const itsCharacter = characters[index].characterRef.current;
     const updatedCharacters = characters.map((character, i) => {
       if (i !== index && character.bodyRef.current) {
@@ -117,13 +116,7 @@ export const CharacterWrapV2 = () => {
         const distance = itsCharacter.position.distanceTo(
           character.characterRef.current.position
         );
-        console.log(
-          '[dodo] ',
-          'distance',
-          distance,
-          itsCharacter.position,
-          character.characterRef.current.position
-        );
+
         character.isAttacking = distance < 3;
       }
       return character;
