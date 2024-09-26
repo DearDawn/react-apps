@@ -1,11 +1,20 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect, useState, createContext, useContext } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Environment } from '@react-three/drei';
 import * as THREE from 'three';
 import { CharacterWrap } from '../character';
 import { CharacterWrapV2 } from '../characterV2';
+import Enemy from '../../entities/enemy';
+import { Tower } from '../../entities/tower';
+import Hero from '../../entities/hero';
 
-const Ground = () => {
+export const GameContext = createContext<{
+  tower: Tower;
+  hero: Hero;
+  enemies: Enemy[];
+}>(null);
+
+const GroundComp = () => {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.5, 0]} receiveShadow>
       <circleGeometry args={[20, 50]} />
@@ -14,46 +23,25 @@ const Ground = () => {
   );
 };
 
-const Tower = ({ towerRef }) => {
+const TowerComp = ({ tower }: { tower: Tower }) => {
   return (
-    <mesh ref={towerRef} position={[0, 2.5, 0]}>
+    <mesh ref={tower.meshRef} position={[0, 2.5, 0]}>
       <boxGeometry args={[2, 5, 2]} />
       <meshStandardMaterial color='gray' />
     </mesh>
   );
 };
 
-const Enemy = ({ enemy, onAttack }) => {
-  const { position, targetRef, delay, meshRef } = enemy;
-  const [isAttacking, setIsAttacking] = useState(false);
-  const attackLock = useRef(false);
+const EnemyComp = ({ enemy }: { enemy: Enemy }) => {
+  const { position, meshRef } = enemy;
+  const { tower } = useContext(GameContext);
+
+  useEffect(() => {
+    enemy.setTarget(tower);
+  }, [enemy, tower]);
 
   useFrame(() => {
-    if (isAttacking) {
-      if (attackLock.current) return;
-
-      attackLock.current = true;
-      setTimeout(() => {
-        attackLock.current = false;
-      }, delay);
-      onAttack(meshRef, targetRef);
-      return;
-    }
-
-    if (meshRef.current) {
-      const direction = new THREE.Vector3()
-        .subVectors(targetRef.current.position, meshRef.current.position)
-        .normalize();
-      meshRef.current.position.add(direction.multiplyScalar(0.01));
-
-      const distanceToTarget = meshRef.current.position.distanceTo(
-        targetRef.current.position
-      );
-
-      if (distanceToTarget < 1) {
-        setIsAttacking(true);
-      }
-    }
+    enemy.move();
   });
 
   return (
@@ -64,62 +52,36 @@ const Enemy = ({ enemy, onAttack }) => {
   );
 };
 
-const Hero = ({ enemies, onAttack }) => {
-  const meshRef = useRef<THREE.Mesh>();
-  const [targetEnemy, setTargetEnemy] = useState<{
-    meshRef: React.MutableRefObject<THREE.Mesh>;
-    id: string;
-  }>();
-  const [isAttacking, setIsAttacking] = useState(false);
-  const attackLock = useRef(false);
+const HeroComp = ({ hero }: { hero: Hero }) => {
+  const { enemies } = useContext(GameContext);
 
   useEffect(() => {
     if (enemies.length > 0) {
       const closestEnemy = enemies.reduce(
         (closest, enemy) => {
-          const distance = meshRef.current.position.distanceTo(enemy.position);
-          return distance < closest.distance ? { distance, ...enemy } : closest;
+          const distance = hero.position.distanceTo(enemy.position);
+          return distance < closest.distance ? { distance, enemy } : closest;
         },
-        { distance: Infinity, ...enemies[0] }
+        { distance: Infinity, enemy: enemies[0] }
       );
 
-      setTargetEnemy(closestEnemy);
+      hero.setTarget(closestEnemy.enemy);
     }
-  }, [enemies]);
+  }, [enemies, hero]);
 
   useFrame(() => {
-    if (isAttacking) {
-      if (attackLock.current) return;
-
-      attackLock.current = true;
-      setTimeout(() => {
-        attackLock.current = false;
-      }, 500);
-      onAttack(meshRef, targetEnemy);
-      return;
-    }
-
-    if (meshRef.current && targetEnemy) {
-      const direction = new THREE.Vector3()
-        .subVectors(
-          targetEnemy.meshRef.current.position,
-          meshRef.current.position
-        )
-        .normalize();
-      meshRef.current.position.add(direction.multiplyScalar(0.01));
-
-      const distanceToTarget = meshRef.current.position.distanceTo(
-        targetEnemy.meshRef.current.position
-      );
-
-      if (distanceToTarget < 1) {
-        setIsAttacking(true);
-      }
+    console.log('[dodo] ', '1111', hero.attacking);
+    if (hero.attacking) {
+      hero.attackTarget();
+    } else {
+      hero.move(() => {
+        hero.attackTarget();
+      });
     }
   });
 
   return (
-    <mesh ref={meshRef} position={[0, 0, 0]}>
+    <mesh ref={hero.meshRef} position={[0, 0, 0]}>
       <sphereGeometry args={[0.5, 32, 32]} />
       <meshStandardMaterial color='yellow' />
     </mesh>
@@ -127,8 +89,29 @@ const Hero = ({ enemies, onAttack }) => {
 };
 
 const ThreeScene = () => {
-  const [enemies, setEnemies] = useState([]);
-  const towerRef = useRef<THREE.Mesh>();
+  const [enemies, setEnemies] = useState<Enemy[]>([]);
+
+  const [tower] = useState(
+    new Tower({
+      position: new THREE.Vector3(0, 2.5, 0),
+      health: 100,
+      defense: 10,
+      attack: 20,
+      soldierCapacity: 10,
+    })
+  );
+
+  const [hero] = useState(
+    new Hero({
+      position: new THREE.Vector3(0, 0, 0),
+      health: 100,
+      defense: 5,
+      attack: 15,
+      attackSpeed: 500,
+      moveSpeed: 0.01,
+      id: Math.random().toString(),
+    })
+  );
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -141,13 +124,15 @@ const ThreeScene = () => {
           ? prevEnemies
           : [
               ...prevEnemies,
-              {
+              new Enemy({
                 position: new THREE.Vector3(x, 0, z),
-                meshRef: React.createRef(),
-                targetRef: towerRef,
-                delay: 700,
                 id: Math.random().toString(),
-              },
+                health: 50,
+                defense: 2,
+                attack: 10,
+                attackSpeed: 700,
+                moveSpeed: 0.01,
+              }),
             ]
       );
     }, 1000);
@@ -155,57 +140,38 @@ const ThreeScene = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleEnemyAttack = (attacker, hero) => {
-    hero.current.material.color.set('red');
-    setTimeout(() => {
-      hero.current.material.color.set('yellow');
-    }, 200);
-  };
-
-  const handleHeroAttack = (attacker, enemy) => {
-    const targetEnemyIndex = enemies.findIndex((e) => e.id === enemy.id);
-
-    setEnemies((prevEnemies) => {
-      prevEnemies[targetEnemyIndex].targetRef = attacker;
-      return [...prevEnemies];
-    });
-
-    enemy.meshRef.current.material.color.set('red');
-    setTimeout(() => {
-      enemy.meshRef.current.material.color.set('blue');
-    }, 200);
-  };
-
   return (
-    <Canvas
-      camera={{ position: [20, 10, 0], fov: 75 }}
-      style={{ width: '100%', height: '100vh' }}
-      gl={{
-        outputColorSpace: THREE.SRGBColorSpace,
-        toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 1,
-      }}
-    >
-      <Environment preset='city' background={false} />
-      <ambientLight intensity={1} color={0x6d513a} />
-      <directionalLight position={[1, 1, 1]} intensity={0.5} />
-      <OrbitControls
-        enableDamping
-        dampingFactor={0.05}
-        screenSpacePanning={false}
-        minDistance={1}
-        maxDistance={50}
-        maxPolarAngle={Math.PI / 2}
-      />
-      <CharacterWrap />
-      <CharacterWrapV2 />
-      <Ground />
-      <Tower towerRef={towerRef} />
-      {enemies.map((enemy, index) => (
-        <Enemy key={index} enemy={enemy} onAttack={handleEnemyAttack} />
-      ))}
-      <Hero enemies={enemies} onAttack={handleHeroAttack} />
-    </Canvas>
+    <GameContext.Provider value={{ tower, hero, enemies }}>
+      <Canvas
+        camera={{ position: [20, 10, 0], fov: 75 }}
+        style={{ width: '100%', height: '100vh' }}
+        gl={{
+          outputColorSpace: THREE.SRGBColorSpace,
+          toneMapping: THREE.ACESFilmicToneMapping,
+          toneMappingExposure: 1,
+        }}
+      >
+        <Environment preset='city' background={false} />
+        <ambientLight intensity={1} color={0x6d513a} />
+        <directionalLight position={[1, 1, 1]} intensity={0.5} />
+        <OrbitControls
+          enableDamping
+          dampingFactor={0.05}
+          screenSpacePanning={false}
+          minDistance={1}
+          maxDistance={50}
+          maxPolarAngle={Math.PI / 2}
+        />
+        <CharacterWrap />
+        <CharacterWrapV2 />
+        <GroundComp />
+        <TowerComp tower={tower} />
+        {enemies.map((enemy, index) => (
+          <EnemyComp key={index} enemy={enemy} />
+        ))}
+        <HeroComp hero={hero} />
+      </Canvas>
+    </GameContext.Provider>
   );
 };
 
