@@ -9,12 +9,14 @@ export class Character {
   attack: number;
   attackSpeed: number;
   moveSpeed: number;
+  range: number;
   id: string;
   meshRef: React.RefObject<THREE.Mesh>;
   attackLock: boolean;
   moveLock: boolean;
   moving: boolean;
   attacking: boolean;
+  alive: boolean;
   target: Character | Tower | null;
 
   constructor(props: {
@@ -38,8 +40,10 @@ export class Character {
     this.meshRef = React.createRef<THREE.Mesh>();
     this.moving = false;
     this.attacking = false;
+    this.alive = true;
     this.moveLock = false;
     this.attackLock = false;
+    this.range = 1;
     this.target = null;
   }
 
@@ -76,7 +80,7 @@ export class Character {
         this.target.position
       );
 
-      if (distanceToTarget < 1) {
+      if (distanceToTarget < this.target.range) {
         cb?.();
       }
     }
@@ -94,6 +98,12 @@ export class Character {
     if (this.attackLock) return;
 
     this.attackLock = true;
+
+    if (!this.target.alive) {
+      this.continueMove();
+      return;
+    }
+
     this.target.takeDamage(this, this.attack);
 
     setTimeout(() => {
@@ -124,5 +134,13 @@ export class Character {
   die(): void {
     // Implement death logic here
     console.log('[dodo] ', 'die');
+    this.alive = false;
+    this.afterDie();
+  }
+
+  afterDie() {}
+
+  onDeath(cb: () => void): void {
+    this.afterDie = cb;
   }
 }

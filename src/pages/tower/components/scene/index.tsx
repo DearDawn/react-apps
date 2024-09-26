@@ -12,6 +12,7 @@ export const GameContext = createContext<{
   tower: Tower;
   hero: Hero;
   enemies: Enemy[];
+  setEnemies: React.Dispatch<React.SetStateAction<Enemy[]>>;
 }>(null);
 
 const GroundComp = () => {
@@ -34,11 +35,14 @@ const TowerComp = ({ tower }: { tower: Tower }) => {
 
 const EnemyComp = ({ enemy }: { enemy: Enemy }) => {
   const { position, meshRef } = enemy;
-  const { tower } = useContext(GameContext);
+  const { tower, setEnemies } = useContext(GameContext);
 
   useEffect(() => {
     enemy.setTarget(tower);
-  }, [enemy, tower]);
+    enemy.onDeath(() => {
+      setEnemies((enemies) => enemies.filter((enemy) => enemy.alive));
+    });
+  }, [enemy, setEnemies, tower]);
 
   useFrame(() => {
     enemy.move();
@@ -141,7 +145,7 @@ const ThreeScene = () => {
   }, []);
 
   return (
-    <GameContext.Provider value={{ tower, hero, enemies }}>
+    <GameContext.Provider value={{ tower, hero, enemies, setEnemies }}>
       <Canvas
         camera={{ position: [20, 10, 0], fov: 75 }}
         style={{ width: '100%', height: '100vh' }}
