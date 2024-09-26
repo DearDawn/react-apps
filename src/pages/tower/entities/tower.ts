@@ -1,5 +1,6 @@
 import React from 'react';
 import { Mesh, MeshBasicMaterial, Vector3 } from 'three';
+import { Character } from './character';
 
 export class Tower {
   position: Vector3;
@@ -9,6 +10,7 @@ export class Tower {
   range: number;
   soldierCapacity: number;
   alive: boolean;
+  id: string;
   meshRef: React.RefObject<Mesh>;
   constructor(props: {
     position: Vector3;
@@ -22,13 +24,14 @@ export class Tower {
     this.health = health;
     this.defense = defense;
     this.alive = true;
-    this.range = 3;
+    this.range = 2;
     this.attack = attack;
+    this.id = Math.random().toString();
     this.soldierCapacity = soldierCapacity;
     this.meshRef = React.createRef<Mesh>();
   }
 
-  takeDamage(damage: number): void {
+  takeDamage(source: Character, damage: number): void {
     this.playInjureAnimation();
 
     const actualDamage = damage - this.defense;
@@ -44,7 +47,7 @@ export class Tower {
 
     material.color.set('red');
     setTimeout(() => {
-      material.color.set('yellow');
+      material.color.set('gray');
     }, 200);
   }
 
@@ -52,5 +55,12 @@ export class Tower {
     console.log('[dodo] ', 'tower die');
     // Implement death logic here
     this.alive = false;
+    this.afterDie();
+  }
+
+  afterDie() {}
+
+  onDeath(cb: () => void): void {
+    this.afterDie = cb;
   }
 }

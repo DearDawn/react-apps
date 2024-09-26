@@ -13,6 +13,8 @@ export const GameContext = createContext<{
   hero: Hero;
   enemies: Enemy[];
   setEnemies: React.Dispatch<React.SetStateAction<Enemy[]>>;
+  setHero: React.Dispatch<React.SetStateAction<Hero | null>>;
+  setTower: React.Dispatch<React.SetStateAction<Tower>>;
 }>(null);
 
 const GroundComp = () => {
@@ -25,6 +27,16 @@ const GroundComp = () => {
 };
 
 const TowerComp = ({ tower }: { tower: Tower }) => {
+  const { setTower } = useContext(GameContext);
+
+  useEffect(() => {
+    tower.onDeath(() => {
+      setTower(null);
+    });
+  }, [setTower, tower]);
+
+  if (!tower) return null;
+
   return (
     <mesh ref={tower.meshRef} position={[0, 2.5, 0]}>
       <boxGeometry args={[2, 5, 2]} />
@@ -45,7 +57,13 @@ const EnemyComp = ({ enemy }: { enemy: Enemy }) => {
   }, [enemy, setEnemies, tower]);
 
   useFrame(() => {
-    enemy.move();
+    if (enemy.status === 'attack') {
+      enemy.attackTarget();
+    } else {
+      enemy.move(() => {
+        enemy.attackTarget();
+      });
+    }
   });
 
   return (
@@ -57,9 +75,11 @@ const EnemyComp = ({ enemy }: { enemy: Enemy }) => {
 };
 
 const HeroComp = ({ hero }: { hero: Hero }) => {
-  const { enemies } = useContext(GameContext);
+  const { enemies, setHero } = useContext(GameContext);
 
   useEffect(() => {
+    if (!hero) return;
+
     if (enemies.length > 0) {
       const closestEnemy = enemies.reduce(
         (closest, enemy) => {
@@ -71,11 +91,17 @@ const HeroComp = ({ hero }: { hero: Hero }) => {
 
       hero.setTarget(closestEnemy.enemy);
     }
-  }, [enemies, hero]);
+
+    hero.onDeath(() => {
+      console.log('[dodo] ', '英雄牺牲', hero.score);
+      setHero(null);
+    });
+  }, [enemies, hero, setHero]);
 
   useFrame(() => {
-    console.log('[dodo] ', '1111', hero.attacking);
-    if (hero.attacking) {
+    if (!hero) return;
+
+    if (hero.status === 'attack') {
       hero.attackTarget();
     } else {
       hero.move(() => {
@@ -83,6 +109,8 @@ const HeroComp = ({ hero }: { hero: Hero }) => {
       });
     }
   });
+
+  if (!hero) return null;
 
   return (
     <mesh ref={hero.meshRef} position={[0, 0, 0]}>
@@ -95,25 +123,25 @@ const HeroComp = ({ hero }: { hero: Hero }) => {
 const ThreeScene = () => {
   const [enemies, setEnemies] = useState<Enemy[]>([]);
 
-  const [tower] = useState(
+  const [tower, setTower] = useState(
     new Tower({
       position: new THREE.Vector3(0, 2.5, 0),
       health: 100,
-      defense: 10,
+      defense: 5,
       attack: 20,
       soldierCapacity: 10,
     })
   );
 
-  const [hero] = useState(
+  const [hero, setHero] = useState(
     new Hero({
       position: new THREE.Vector3(0, 0, 0),
       health: 100,
       defense: 5,
       attack: 15,
       attackSpeed: 500,
-      moveSpeed: 0.01,
-      id: Math.random().toString(),
+      moveSpeed: 0.015,
+      id: 'hero',
     })
   );
 
@@ -124,18 +152,18 @@ const ThreeScene = () => {
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius;
       setEnemies((prevEnemies) =>
-        prevEnemies.length >= 3
+        prevEnemies.length >= 2
           ? prevEnemies
           : [
               ...prevEnemies,
               new Enemy({
                 position: new THREE.Vector3(x, 0, z),
-                id: Math.random().toString(),
+                id: Math.floor(Math.random() * 1000).toString(),
                 health: 50,
                 defense: 2,
                 attack: 10,
                 attackSpeed: 700,
-                moveSpeed: 0.01,
+                moveSpeed: 0.01 + Math.random() * 0.02,
               }),
             ]
       );
@@ -144,8 +172,16 @@ const ThreeScene = () => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    if (!tower) {
+      window.alert('塔阵亡');
+    }
+  }, [tower, hero]);
+
   return (
-    <GameContext.Provider value={{ tower, hero, enemies, setEnemies }}>
+    <GameContext.Provider
+      value={{ tower, hero, enemies, setEnemies, setHero, setTower }}
+    >
       <Canvas
         camera={{ position: [20, 10, 0], fov: 75 }}
         style={{ width: '100%', height: '100vh' }}

@@ -10,14 +10,14 @@ export class Character {
   attackSpeed: number;
   moveSpeed: number;
   range: number;
+  score: number;
   id: string;
   meshRef: React.RefObject<THREE.Mesh>;
   attackLock: boolean;
   moveLock: boolean;
-  moving: boolean;
-  attacking: boolean;
   alive: boolean;
   target: Character | Tower | null;
+  status: 'attack' | 'move' | 'static';
 
   constructor(props: {
     position: THREE.Vector3;
@@ -38,23 +38,21 @@ export class Character {
     this.moveSpeed = moveSpeed;
     this.id = id || Math.random().toString();
     this.meshRef = React.createRef<THREE.Mesh>();
-    this.moving = false;
-    this.attacking = false;
     this.alive = true;
     this.moveLock = false;
     this.attackLock = false;
     this.range = 1;
     this.target = null;
+    this.status = 'static';
+    this.score = 0;
   }
 
   stopMove() {
-    this.moving = false;
     this.moveLock = true;
   }
 
   continueMove() {
-    this.moveLock = false;
-    this.attacking = false;
+    this.status = 'move';
   }
 
   setTarget(target: Character | Tower) {
@@ -63,9 +61,7 @@ export class Character {
 
   moveTo(target: Character | Tower, cb?: () => void) {
     this.target = target || this.target;
-    this.moving = true;
-
-    if (this.moveLock) return;
+    this.status = 'move';
 
     if (this.meshRef.current && this.target) {
       const direction = new THREE.Vector3()
@@ -80,6 +76,7 @@ export class Character {
         this.target.position
       );
 
+      // console.log('[dodo] ', '距离', distanceToTarget);
       if (distanceToTarget < this.target.range) {
         cb?.();
       }
@@ -91,20 +88,27 @@ export class Character {
   }
 
   attackTarget(target?: Character | Tower): void {
+    // console.log('[dodo] ', '攻击', target?.id);
     this.target = target || this.target;
-    this.attacking = true;
 
+    this.status = 'attack';
     this.stopMove();
+
+    if (this.id === 'hero') {
+      console.log('[dodo] ', 'this.life', this.health);
+    }
+
     if (this.attackLock) return;
 
     this.attackLock = true;
 
-    if (!this.target.alive) {
-      this.continueMove();
-      return;
-    }
-
     this.target.takeDamage(this, this.attack);
+
+    if (!this.target.alive) {
+      this.score += 1;
+      this.target = null;
+      this.continueMove();
+    }
 
     setTimeout(() => {
       this.attackLock = false;
@@ -116,7 +120,7 @@ export class Character {
     this.playInjureAnimation();
     const actualDamage = damage - this.defense;
     this.health -= actualDamage;
-    console.log('[dodo] ', '血量', this.id, this.health);
+    // console.log('[dodo] ', '血量', this.id, this.health);
     if (this.health <= 0) {
       this.die();
     }
@@ -133,7 +137,7 @@ export class Character {
 
   die(): void {
     // Implement death logic here
-    console.log('[dodo] ', 'die');
+    // console.log('[dodo] ', 'die');
     this.alive = false;
     this.afterDie();
   }

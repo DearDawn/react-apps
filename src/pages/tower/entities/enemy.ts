@@ -18,4 +18,13 @@ export default class Enemy extends Character {
     super({ position, health, defense, attack, attackSpeed, moveSpeed, id });
     this.targetEnemy = null;
   }
+
+  playInjureAnimation(): void {
+    const material = this.meshRef.current.material as THREE.MeshBasicMaterial;
+
+    material.color.set('red');
+    setTimeout(() => {
+      material.color.set('blue');
+    }, 200);
+  }
 }
