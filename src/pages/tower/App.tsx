@@ -1,7 +1,7 @@
 import React from 'react';
 import ThreeScene from './components/scene';
 
-import styles from './App.module.less';
+import * as styles from './App.module.less';
 
 export const App = () => {
   return (
