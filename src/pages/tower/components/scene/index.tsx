@@ -1,6 +1,6 @@
 import React, { useEffect, useState, createContext } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { CharacterWrap } from '../character';
 import { CharacterWrapV2 } from '../characterV2';
@@ -11,7 +11,6 @@ import { HeroComp } from '../blocks/hero';
 import { EnemyComp } from '../blocks/enemy';
 import { GroundComp } from '../blocks/ground';
 import { TowerComp } from '../blocks/tower';
-import HDR from '../../resource/city.hdr';
 
 export const GameContext = createContext<{
   tower: Tower;
@@ -93,9 +92,8 @@ const ThreeScene = () => {
           toneMappingExposure: 1,
         }}
       >
-        <Environment files={HDR} background={true} />
-        <ambientLight intensity={1} color={0x6d513a} />
-        <directionalLight position={[1, 1, 1]} intensity={0.5} />
+        <ambientLight intensity={5} color={0x6d513a} />
+        <directionalLight position={[1, 1, 1]} intensity={5} />
         <OrbitControls
           enableDamping
           dampingFactor={0.05}
