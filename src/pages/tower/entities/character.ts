@@ -102,17 +102,17 @@ export class Character {
 
     this.attackLock = true;
 
-    this.target.takeDamage(this, this.attack);
+    setTimeout(() => {
+      this.attackLock = false;
+    }, this.attackSpeed);
 
-    if (!this.target.alive) {
+    if (!this.target || !this.target.alive) {
       this.score += 1;
       this.target = null;
       this.continueMove();
     }
 
-    setTimeout(() => {
-      this.attackLock = false;
-    }, this.attackSpeed);
+    this.target?.takeDamage(this, this.attack);
   }
 
   takeDamage(source: Character, damage: number): void {

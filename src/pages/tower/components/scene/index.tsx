@@ -1,5 +1,5 @@
-import React, { useEffect, useState, createContext, useContext } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import React, { useEffect, useState, createContext } from 'react';
+import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment } from '@react-three/drei';
 import * as THREE from 'three';
 import { CharacterWrap } from '../character';
@@ -7,6 +7,11 @@ import { CharacterWrapV2 } from '../characterV2';
 import Enemy from '../../entities/enemy';
 import { Tower } from '../../entities/tower';
 import Hero from '../../entities/hero';
+import { HeroComp } from '../blocks/hero';
+import { EnemyComp } from '../blocks/enemy';
+import { GroundComp } from '../blocks/ground';
+import { TowerComp } from '../blocks/tower';
+import HDR from '../../resource/city.hdr';
 
 export const GameContext = createContext<{
   tower: Tower;
@@ -16,112 +21,6 @@ export const GameContext = createContext<{
   setHero: React.Dispatch<React.SetStateAction<Hero | null>>;
   setTower: React.Dispatch<React.SetStateAction<Tower>>;
 }>(null);
-
-const GroundComp = () => {
-  return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.5, 0]} receiveShadow>
-      <circleGeometry args={[20, 50]} />
-      <meshStandardMaterial color='green' />
-    </mesh>
-  );
-};
-
-const TowerComp = ({ tower }: { tower: Tower }) => {
-  const { setTower } = useContext(GameContext);
-
-  useEffect(() => {
-    tower.onDeath(() => {
-      setTower(null);
-    });
-  }, [setTower, tower]);
-
-  if (!tower) return null;
-
-  return (
-    <mesh ref={tower.meshRef} position={[0, 2.5, 0]}>
-      <boxGeometry args={[2, 5, 2]} />
-      <meshStandardMaterial color='gray' />
-    </mesh>
-  );
-};
-
-const EnemyComp = ({ enemy }: { enemy: Enemy }) => {
-  const { position, meshRef } = enemy;
-  const { tower, setEnemies } = useContext(GameContext);
-
-  useEffect(() => {
-    enemy.setTarget(tower);
-    enemy.onDeath(() => {
-      setEnemies((enemies) => enemies.filter((enemy) => enemy.alive));
-    });
-  }, [enemy, setEnemies, tower]);
-
-  useFrame(() => {
-    if (enemy.status === 'attack') {
-      enemy.attackTarget();
-    } else {
-      enemy.move(() => {
-        if (!enemy.target) {
-          enemy.setTarget(tower);
-        }
-        enemy.attackTarget();
-      });
-    }
-  });
-
-  return (
-    <mesh ref={meshRef} position={position}>
-      <sphereGeometry args={[0.5, 32, 32]} />
-      <meshStandardMaterial color='blue' />
-    </mesh>
-  );
-};
-
-const HeroComp = ({ hero }: { hero: Hero }) => {
-  const { enemies, setHero } = useContext(GameContext);
-
-  useEffect(() => {
-    if (!hero) return;
-
-    if (enemies.length > 0) {
-      const closestEnemy = enemies.reduce(
-        (closest, enemy) => {
-          const distance = hero.position.distanceTo(enemy.position);
-          return distance < closest.distance ? { distance, enemy } : closest;
-        },
-        { distance: Infinity, enemy: enemies[0] }
-      );
-
-      hero.setTarget(closestEnemy.enemy);
-    }
-
-    hero.onDeath(() => {
-      console.log('[dodo] ', '英雄牺牲', hero.score);
-      setHero(null);
-    });
-  }, [enemies, hero, setHero]);
-
-  useFrame(() => {
-    if (!hero) return;
-
-    if (hero.status === 'attack') {
-      hero.attackTarget();
-    } else {
-      hero.move(() => {
-        hero.attackTarget();
-      });
-    }
-  });
-
-  if (!hero) return null;
-
-  return (
-    <mesh ref={hero.meshRef} position={[0, 0, 0]}>
-      <sphereGeometry args={[0.5, 32, 32]} />
-      <meshStandardMaterial color='yellow' />
-    </mesh>
-  );
-};
 
 const ThreeScene = () => {
   const [enemies, setEnemies] = useState<Enemy[]>([]);
@@ -143,7 +42,7 @@ const ThreeScene = () => {
       defense: 5,
       attack: 15,
       attackSpeed: 500,
-      moveSpeed: 0.015,
+      moveSpeed: 0.02,
       id: 'hero',
     })
   );
@@ -164,7 +63,7 @@ const ThreeScene = () => {
                 id: Math.floor(Math.random() * 1000).toString(),
                 health: 50,
                 defense: 2,
-                attack: 10,
+                attack: 10 + Math.floor(Math.random() * 10),
                 attackSpeed: 700,
                 moveSpeed: 0.01 + Math.random() * 0.02,
               }),
@@ -194,7 +93,7 @@ const ThreeScene = () => {
           toneMappingExposure: 1,
         }}
       >
-        <Environment preset='city' background={false} />
+        <Environment files={HDR} background={true} />
         <ambientLight intensity={1} color={0x6d513a} />
         <directionalLight position={[1, 1, 1]} intensity={0.5} />
         <OrbitControls

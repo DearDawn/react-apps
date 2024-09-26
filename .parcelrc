@@ -3,6 +3,7 @@
   "transformers": {
     "*.md": [ "parcel-transformer-markdown" ],
     "*.glb": ["@parcel/transformer-raw"],
+    "*.hdr": ["@parcel/transformer-raw"],
     "*.gltf": ["@parcel/transformer-raw"]
   }
 }

@@ -9,6 +9,7 @@ declare module '*.woff2';
 declare module '*.less';
 declare module '*.md';
 declare module '*.glb';
+declare module '*.hdr';
 declare module '*.gltf';
 
 declare namespace NodeJS {
