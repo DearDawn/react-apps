@@ -61,6 +61,9 @@ const EnemyComp = ({ enemy }: { enemy: Enemy }) => {
       enemy.attackTarget();
     } else {
       enemy.move(() => {
+        if (!enemy.target) {
+          enemy.setTarget(tower);
+        }
         enemy.attackTarget();
       });
     }
@@ -205,11 +208,11 @@ const ThreeScene = () => {
         <CharacterWrap />
         <CharacterWrapV2 />
         <GroundComp />
-        <TowerComp tower={tower} />
+        {tower && <TowerComp tower={tower} />}
         {enemies.map((enemy, index) => (
           <EnemyComp key={index} enemy={enemy} />
         ))}
-        <HeroComp hero={hero} />
+        {hero && <HeroComp hero={hero} />}
       </Canvas>
     </GameContext.Provider>
   );
