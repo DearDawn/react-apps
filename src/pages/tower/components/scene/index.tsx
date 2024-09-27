@@ -10,6 +10,8 @@ import { EnemyComp } from '../blocks/enemy';
 import { GroundComp } from '../blocks/ground';
 import { TowerComp } from '../blocks/tower';
 import { HeroBar } from '../blocks/heroBar';
+import { createXRStore, XR } from '@react-three/xr';
+const store = createXRStore();
 
 export const GameContext = createContext<{
   tower: Tower;
@@ -74,51 +76,57 @@ const ThreeScene = () => {
   }, [tower]);
 
   return (
-    <GameContext.Provider
-      value={{
-        tower,
-        heros,
-        enemies,
-        enemyRefresh,
-        setEnemyRefresh,
-        setEnemies,
-        setHeros,
-        setTower,
-        setEnableOrbitControls,
-      }}
-    >
-      <Canvas
-        camera={{ position: [30, 10, 0], fov: 75 }}
-        style={{ width: '100%', height: '100vh' }}
-        gl={{
-          outputColorSpace: THREE.SRGBColorSpace,
-          toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1,
+    <>
+      <button onClick={() => store.enterVR()}>Enter VR</button>
+      <button onClick={() => store.enterAR()}>Enter AR</button>
+      <GameContext.Provider
+        value={{
+          tower,
+          heros,
+          enemies,
+          enemyRefresh,
+          setEnemyRefresh,
+          setEnemies,
+          setHeros,
+          setTower,
+          setEnableOrbitControls,
         }}
       >
-        <ambientLight intensity={5} color={0x6d513a} />
-        <directionalLight position={[0, 1, 0]} intensity={5} />
-        <OrbitControls
-          enableDamping
-          dampingFactor={0.05}
-          screenSpacePanning={false}
-          minDistance={1}
-          maxDistance={50}
-          maxPolarAngle={Math.PI / 2}
-          enabled={enableOrbitControls}
-        />
-        <GroundComp />
-        {tower && <TowerComp tower={tower} />}
-        {enemies.map((enemy, index) => (
-          <EnemyComp key={index} enemy={enemy} />
-        ))}
-        {heros.map((hero, index) => (
-          <HeroComp key={index} hero={hero} />
-        ))}
-        <HeroBar setHeros={setHeros} />
-        <axesHelper args={[50]} />
-      </Canvas>
-    </GameContext.Provider>
+        <Canvas
+          camera={{ position: [30, 10, 0], fov: 75 }}
+          style={{ width: '100%', height: '100vh' }}
+          gl={{
+            outputColorSpace: THREE.SRGBColorSpace,
+            toneMapping: THREE.ACESFilmicToneMapping,
+            toneMappingExposure: 1,
+          }}
+        >
+          <XR store={store}>
+            <ambientLight intensity={5} color={0x6d513a} />
+            <directionalLight position={[0, 1, 0]} intensity={5} />
+            <OrbitControls
+              enableDamping
+              dampingFactor={0.05}
+              screenSpacePanning={false}
+              minDistance={1}
+              maxDistance={50}
+              maxPolarAngle={Math.PI / 2}
+              enabled={enableOrbitControls}
+            />
+            <GroundComp />
+            {tower && <TowerComp tower={tower} />}
+            {enemies.map((enemy, index) => (
+              <EnemyComp key={index} enemy={enemy} />
+            ))}
+            {heros.map((hero, index) => (
+              <HeroComp key={index} hero={hero} />
+            ))}
+            <HeroBar setHeros={setHeros} />
+            <axesHelper args={[50]} />
+          </XR>
+        </Canvas>
+      </GameContext.Provider>
+    </>
   );
 };
 

@@ -7,7 +7,7 @@ export const TowerComp = ({ tower }: { tower: Tower }) => {
 
   useEffect(() => {
     tower.onDeath(() => {
-      // setTower(null);
+      setTower(null);
     });
   }, [setTower, tower]);
 

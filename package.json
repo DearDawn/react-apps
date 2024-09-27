@@ -47,6 +47,7 @@
   "dependencies": {
     "@react-three/drei": "^9.113.0",
     "@react-three/fiber": "^8.17.7",
+    "@react-three/xr": "^6.2.11",
     "@types/three": "^0.168.0",
     "@typescript-eslint/eslint-plugin": "^7.0.2",
     "@typescript-eslint/parser": "^7.0.2",
