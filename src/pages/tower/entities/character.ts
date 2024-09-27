@@ -72,15 +72,17 @@ export class Character {
       );
       this.position.copy(this.meshRef.current.position);
 
-      const distanceToTarget = this.meshRef.current.position.distanceTo(
-        this.target.position
-      );
+      const distanceToTarget = this.getDistanceToTarget();
 
       // console.log('[dodo] ', '距离', distanceToTarget);
       if (distanceToTarget < this.target.range) {
         cb?.();
       }
     }
+  }
+
+  getDistanceToTarget(target: Character | Tower = this.target): number {
+    return this.position.distanceTo(target.position);
   }
 
   move(cb?: () => void) {
@@ -105,6 +107,15 @@ export class Character {
     setTimeout(() => {
       this.attackLock = false;
     }, this.attackSpeed);
+
+
+    const distanceToTarget = this.getDistanceToTarget();
+
+    // console.log('[dodo] ', '距离', distanceToTarget);
+    if (distanceToTarget >= this.target.range) {
+      this.continueMove();
+      return;
+    }
 
     if (!this.target || !this.target.alive) {
       this.score += 1;

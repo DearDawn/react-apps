@@ -11,18 +11,20 @@ import { HeroComp } from '../blocks/hero';
 import { EnemyComp } from '../blocks/enemy';
 import { GroundComp } from '../blocks/ground';
 import { TowerComp } from '../blocks/tower';
+import { HeroBar } from '../blocks/heroBar';
 
 export const GameContext = createContext<{
   tower: Tower;
-  hero: Hero;
+  heros: Hero[];
   enemies: Enemy[];
   setEnemies: React.Dispatch<React.SetStateAction<Enemy[]>>;
-  setHero: React.Dispatch<React.SetStateAction<Hero | null>>;
+  setHeros: React.Dispatch<React.SetStateAction<Hero[]>>;
   setTower: React.Dispatch<React.SetStateAction<Tower>>;
 }>(null);
 
 const ThreeScene = () => {
   const [enemies, setEnemies] = useState<Enemy[]>([]);
+  const [heros, setHeros] = useState<Hero[]>([]);
 
   const [tower, setTower] = useState(
     new Tower({
@@ -31,18 +33,6 @@ const ThreeScene = () => {
       defense: 5,
       attack: 20,
       soldierCapacity: 10,
-    })
-  );
-
-  const [hero, setHero] = useState(
-    new Hero({
-      position: new THREE.Vector3(0, 0, 0),
-      health: 100,
-      defense: 5,
-      attack: 15,
-      attackSpeed: 500,
-      moveSpeed: 0.02,
-      id: 'hero',
     })
   );
 
@@ -77,11 +67,11 @@ const ThreeScene = () => {
     if (!tower) {
       window.alert('塔阵亡');
     }
-  }, [tower, hero]);
+  }, [tower]);
 
   return (
     <GameContext.Provider
-      value={{ tower, hero, enemies, setEnemies, setHero, setTower }}
+      value={{ tower, heros, enemies, setEnemies, setHeros, setTower }}
     >
       <Canvas
         camera={{ position: [20, 10, 0], fov: 75 }}
@@ -109,7 +99,10 @@ const ThreeScene = () => {
         {enemies.map((enemy, index) => (
           <EnemyComp key={index} enemy={enemy} />
         ))}
-        {hero && <HeroComp hero={hero} />}
+        {heros.map((hero, index) => (
+          <HeroComp key={index} hero={hero} />
+        ))}
+        <HeroBar setHeros={setHeros} />
       </Canvas>
     </GameContext.Provider>
   );
