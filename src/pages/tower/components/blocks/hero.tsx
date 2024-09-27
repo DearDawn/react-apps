@@ -42,9 +42,9 @@ export const HeroComp = ({ hero }: { hero: Hero }) => {
   }, [camera, gl, hero, targetPosition]);
 
   useEffect(() => {
-    if (!hero) return;
+    if (!hero || hero.attack && hero.target.alive) return;
 
-    if (enemies.length > 0 && hero.status !== 'attack') {
+    if (enemies.length > 0) {
       const closestEnemy = hero.findClosestTarget(enemies, tower);
       hero.setTarget(closestEnemy);
     }
