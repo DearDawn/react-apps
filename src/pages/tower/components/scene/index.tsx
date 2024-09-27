@@ -16,20 +16,26 @@ import { HeroBar } from '../blocks/heroBar';
 export const GameContext = createContext<{
   tower: Tower;
   heros: Hero[];
+  enemyRefresh: number;
   enemies: Enemy[];
   setEnemies: React.Dispatch<React.SetStateAction<Enemy[]>>;
   setHeros: React.Dispatch<React.SetStateAction<Hero[]>>;
   setTower: React.Dispatch<React.SetStateAction<Tower>>;
+  setEnableOrbitControls: React.Dispatch<React.SetStateAction<boolean>>;
+  setEnemyRefresh: React.Dispatch<React.SetStateAction<number>>;
 }>(null);
 
 const ThreeScene = () => {
   const [enemies, setEnemies] = useState<Enemy[]>([]);
   const [heros, setHeros] = useState<Hero[]>([]);
+  const [enemyRefresh, setEnemyRefresh] = useState(0);
+  const [enableOrbitControls, setEnableOrbitControls] = useState(true);
 
   const [tower, setTower] = useState(
     new Tower({
-      position: new THREE.Vector3(0, 2.5, 0),
-      health: 100,
+      position: new THREE.Vector3(0, 0, 0),
+      // health: 100,
+      health: 10000,
       defense: 5,
       attack: 20,
       soldierCapacity: 10,
@@ -43,13 +49,13 @@ const ThreeScene = () => {
       const x = Math.cos(angle) * radius;
       const z = Math.sin(angle) * radius;
       setEnemies((prevEnemies) =>
-        prevEnemies.length >= 2
+        prevEnemies.length >= 5
           ? prevEnemies
           : [
               ...prevEnemies,
               new Enemy({
                 position: new THREE.Vector3(x, 0, z),
-                id: Math.floor(Math.random() * 1000).toString(),
+                id: 'enemy',
                 health: 50,
                 defense: 2,
                 attack: 10 + Math.floor(Math.random() * 10),
@@ -58,7 +64,7 @@ const ThreeScene = () => {
               }),
             ]
       );
-    }, 1000);
+    }, 500);
 
     return () => clearInterval(interval);
   }, []);
@@ -71,10 +77,20 @@ const ThreeScene = () => {
 
   return (
     <GameContext.Provider
-      value={{ tower, heros, enemies, setEnemies, setHeros, setTower }}
+      value={{
+        tower,
+        heros,
+        enemies,
+        enemyRefresh,
+        setEnemyRefresh,
+        setEnemies,
+        setHeros,
+        setTower,
+        setEnableOrbitControls,
+      }}
     >
       <Canvas
-        camera={{ position: [20, 10, 0], fov: 75 }}
+        camera={{ position: [30, 10, 0], fov: 75 }}
         style={{ width: '100%', height: '100vh' }}
         gl={{
           outputColorSpace: THREE.SRGBColorSpace,
@@ -83,7 +99,7 @@ const ThreeScene = () => {
         }}
       >
         <ambientLight intensity={5} color={0x6d513a} />
-        <directionalLight position={[1, 1, 1]} intensity={5} />
+        <directionalLight position={[0, 1, 0]} intensity={5} />
         <OrbitControls
           enableDamping
           dampingFactor={0.05}
@@ -91,6 +107,7 @@ const ThreeScene = () => {
           minDistance={1}
           maxDistance={50}
           maxPolarAngle={Math.PI / 2}
+          enabled={enableOrbitControls}
         />
         <CharacterWrap />
         <CharacterWrapV2 />
@@ -103,6 +120,7 @@ const ThreeScene = () => {
           <HeroComp key={index} hero={hero} />
         ))}
         <HeroBar setHeros={setHeros} />
+        <axesHelper args={[50]} />
       </Canvas>
     </GameContext.Provider>
   );

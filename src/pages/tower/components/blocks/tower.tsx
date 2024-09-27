@@ -14,8 +14,8 @@ export const TowerComp = ({ tower }: { tower: Tower }) => {
   if (!tower) return null;
 
   return (
-    <mesh ref={tower.meshRef} position={[0, 2.5, 0]}>
-      <boxGeometry args={[2, 5, 2]} />
+    <mesh ref={tower.meshRef} position={[0, 0, 0]}>
+      <boxGeometry args={[2, 8, 2]} />
       <meshStandardMaterial color='gray' />
     </mesh>
   );

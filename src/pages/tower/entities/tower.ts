@@ -12,6 +12,7 @@ export class Tower {
   alive: boolean;
   id: string;
   meshRef: React.RefObject<Mesh>;
+  source: Character | Tower | null;
   constructor(props: {
     position: Vector3;
     health: number;
@@ -26,7 +27,7 @@ export class Tower {
     this.alive = true;
     this.range = 2;
     this.attack = attack;
-    this.id = Math.random().toString();
+    this.id = 'tower';
     this.soldierCapacity = soldierCapacity;
     this.meshRef = React.createRef<Mesh>();
   }
