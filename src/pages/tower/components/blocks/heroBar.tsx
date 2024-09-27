@@ -55,8 +55,8 @@ const HeroBar = ({ setHeros }) => {
       health: 100,
       defense: 5,
       attack: 15,
-      attackSpeed: 500,
-      moveSpeed: 0.015 + Math.random() * 0.005,
+      attackSpeed: 500 + Math.random() * 300,
+      moveSpeed: 0.015 + Math.random() * 0.01,
       id: 'hero',
     });
     setHeros((prevHeros) => [...prevHeros, newHero]);

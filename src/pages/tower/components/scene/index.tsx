@@ -2,8 +2,6 @@ import React, { useEffect, useState, createContext } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
-import { CharacterWrap } from '../character';
-import { CharacterWrapV2 } from '../characterV2';
 import Enemy from '../../entities/enemy';
 import { Tower } from '../../entities/tower';
 import Hero from '../../entities/hero';
@@ -34,8 +32,8 @@ const ThreeScene = () => {
   const [tower, setTower] = useState(
     new Tower({
       position: new THREE.Vector3(0, 0, 0),
-      // health: 100,
-      health: 10000,
+      health: 100,
+      // health: 10000,
       defense: 5,
       attack: 20,
       soldierCapacity: 10,
@@ -109,8 +107,6 @@ const ThreeScene = () => {
           maxPolarAngle={Math.PI / 2}
           enabled={enableOrbitControls}
         />
-        <CharacterWrap />
-        <CharacterWrapV2 />
         <GroundComp />
         {tower && <TowerComp tower={tower} />}
         {enemies.map((enemy, index) => (
