@@ -19,6 +19,7 @@
   "alias": {
     "pixi.js": "./node_modules/pixi.js/dist/pixi.min.mjs",
     "pixi6.js": "./node_modules/pixi6.js/dist/esm/pixi.min.mjs",
+    "@pmndrs/xr/internals": "./node_modules/@pmndrs/xr/dist/internals.js",
     "pixi-live2d-display": "./node_modules/pixi-live2d-display/dist/cubism4.es.js",
     "pixi-live2d-display/extra": "./node_modules/pixi-live2d-display/dist/extra.es.js"
   },
@@ -46,7 +47,7 @@
   },
   "dependencies": {
     "@react-three/drei": "^9.113.0",
-    "@react-three/fiber": "^8.17.7",
+    "@react-three/fiber": "^8.17.8",
     "@react-three/xr": "^6.2.11",
     "@types/three": "^0.168.0",
     "@typescript-eslint/eslint-plugin": "^7.0.2",
