@@ -80,36 +80,37 @@ export const ImageCompress: FC<
 
   return (
     <div className={styles.card}>
-      <Image className={styles.codeImg} src={resUrl} />
+      <div className={styles.imageWrap}>
+        <Image
+          className={styles.codeImg}
+          src={resUrl}
+        />
+      </div>
       <Space padding='10px'>
         <div>压缩比：{Number(resFile?.size / imgFile?.size).toFixed(2)}</div>
         <div>
           图片大小：{convertFileSize(resFile?.size || imgFile?.size || 0)}
         </div>
       </Space>
-      <Space className={styles.sliderWrap} padding='10px'>
+      <Space
+        className={styles.sliderWrap}
+        padding='10px'
+      >
         压缩:
-        {keepOpacity ? (
-          <Slider
-            className={styles.slider}
-            min={100}
-            max={100}
-            step={1}
-            defaultValue={100}
-            disabled
-          />
-        ) : (
-          <Slider
-            className={styles.slider}
-            min={10}
-            max={100}
-            step={5}
-            defaultValue={defaultQuality}
-            onValueChange={handleQualityChange}
-          />
-        )}
+        <Slider
+          className={styles.slider}
+          min={10}
+          max={100}
+          step={5}
+          value={keepOpacity ? 100 : quality}
+          disabled={keepOpacity}
+          onValueChange={handleQualityChange}
+        />
       </Space>
-      <Space className={styles.sliderWrap} padding='10px'>
+      <Space
+        className={styles.sliderWrap}
+        padding='10px'
+      >
         缩放:
         <Slider
           className={styles.slider}
@@ -123,7 +124,11 @@ export const ImageCompress: FC<
       <Space>
         保留透明度: <Switch onValueChange={handleSwitchChange} />
       </Space>
-      <Space className={styles.sliderWrap} padding='10px 0 0' isColumn>
+      <Space
+        className={styles.sliderWrap}
+        padding='10px 0 0'
+        isColumn
+      >
         <Button
           status='success'
           size='long'
@@ -132,7 +137,10 @@ export const ImageCompress: FC<
         >
           发送
         </Button>
-        <Button size='long' onClick={handleClose}>
+        <Button
+          size='long'
+          onClick={handleClose}
+        >
           关闭
         </Button>
       </Space>
