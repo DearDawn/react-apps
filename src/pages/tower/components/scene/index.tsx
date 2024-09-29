@@ -34,8 +34,8 @@ const ThreeScene = () => {
   const [tower, setTower] = useState(
     new Tower({
       position: new THREE.Vector3(0, 0, 0),
-      health: 100,
-      // health: 10000,
+      // health: 100,
+      health: 10000,
       defense: 5,
       attack: 20,
       soldierCapacity: 10,

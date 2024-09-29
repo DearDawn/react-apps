@@ -96,6 +96,7 @@ export const ImageCompress: FC<
             max={100}
             step={1}
             defaultValue={100}
+            disabled
           />
         ) : (
           <Slider
