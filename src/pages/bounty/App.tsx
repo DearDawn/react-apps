@@ -34,7 +34,9 @@ export const App = () => {
     url: '/bounty/list',
     params: { page, limit: PAGE_LIMIT },
     autoRun: false,
-    loadingFn: () => loading('列表加载中...', undefined, false),
+    loadingFn: listData.length
+      ? () => loading('列表加载中...', undefined, false)
+      : undefined,
   });
   const loadingCb = React.useRef(() => {});
 
