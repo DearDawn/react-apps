@@ -17,18 +17,23 @@ import {
   Tag,
 } from 'sweet-me';
 import { myPost, useFetch } from '@/utils/fetch';
-import { PieceInfo, LevelMap, PriorityMap } from './constant';
+import { PieceInfo, LevelMap, PriorityMap, PAGE_LIMIT } from './constant';
 import { Card } from './components/card';
 import { useCardDetailModal } from '@/utils/hooks';
+import { ScrollContainer } from './components/scrollContainer';
+import { waitTime } from '@/utils';
 
 export const App = () => {
   const [createModalVisible, showCreateModal, closeCreateModal] = useBoolean();
   const [isLoading, startLoading, endLoading] = useBoolean();
+  const [page, setPage] = React.useState(0);
+  const [listData, setListData] = React.useState<PieceInfo[]>([]);
 
   const { form } = useFormState<PieceInfo>();
-  const { data: listData = [], runApi } = useFetch<PieceInfo[]>({
+  const { runApi } = useFetch<PieceInfo[]>({
     url: '/bounty/list',
-    autoRun: true,
+    params: { page, limit: PAGE_LIMIT },
+    autoRun: false,
     loadingFn: () => loading('列表加载中...', undefined, false),
   });
   const loadingCb = React.useRef(() => {});
@@ -37,6 +42,29 @@ export const App = () => {
     useCardDetailModal<PieceInfo>({ listData });
 
   const isEditMode = !!detail && createModalVisible;
+
+  const handleRefresh = async () => {
+    setPage(0);
+    await waitTime(0);
+    try {
+      const res = await runApi();
+      setListData([...res]);
+      setPage((p) => p + 1);
+    } catch (error) {
+      return false;
+    }
+  };
+
+  const handleLoadMore = async () => {
+    try {
+      const res = await runApi();
+      setListData((list) => [...list, ...res]);
+      setPage((p) => p + 1);
+      return { hasMore: res.length === PAGE_LIMIT };
+    } catch (error) {
+      return { hasMore: true };
+    }
+  };
 
   const finishTodo = () => {
     startLoading();
@@ -143,11 +171,17 @@ export const App = () => {
   return (
     <Page maxWidth='100vw' minWidth='300px' className={styles.app}>
       <Header title='赏金猎人' isSticky />
-      <div className={styles.list}>
-        {listData?.map((it) => (
-          <Card info={it} key={it._id} onClick={handleClickCard(it)} />
-        ))}
-      </div>
+      <ScrollContainer
+        className={styles.scrollContainer}
+        onPullDownRefresh={handleRefresh}
+        onLoadMore={handleLoadMore}
+      >
+        <div className={styles.list}>
+          {listData?.map((it) => (
+            <Card info={it} key={it._id} onClick={handleClickCard(it)} />
+          ))}
+        </div>
+      </ScrollContainer>
       <Button
         className={styles.addBtn}
         status='success'

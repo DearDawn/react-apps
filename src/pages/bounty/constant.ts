@@ -1,5 +1,7 @@
 import { ETagColor } from 'sweet-me';
 
+export const PAGE_LIMIT = 20;
+
 export interface PieceInfo {
   _id?: string;
   title: string;

@@ -13,7 +13,7 @@ export const Card = (props: IProps) => {
   const { title, content, priority = 0, level = 0, status = 0 } = info || {};
   const priorityInfo = PriorityMap[priority];
   const levelInfo = LevelMap[level];
-  const stampInfo = { 1: '已完成', [-1]: '废弃' }[status];
+  const stampInfo = { 1: '已完成', 2: '废弃' }[status];
 
   return (
     <div
@@ -21,7 +21,7 @@ export const Card = (props: IProps) => {
         styles.card,
         {
           [styles.done]: status === 1,
-          [styles.cancel]: status === -1,
+          [styles.cancel]: status === 2,
         },
         className
       )}
