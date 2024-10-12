@@ -35,8 +35,8 @@ export const App = () => {
     params: { page, limit: PAGE_LIMIT },
     autoRun: false,
     loadingFn: listData.length
-      ? () => loading('列表加载中...', undefined, false)
-      : undefined,
+      ? undefined
+      : () => loading('列表加载中...', undefined, false),
   });
   const loadingCb = React.useRef(() => {});
 
