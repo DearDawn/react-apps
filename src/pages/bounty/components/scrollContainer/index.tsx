@@ -13,10 +13,12 @@ interface IProps extends CommonProps {
   children?: any;
   /** 没有更多时的占位符, 默认不显示 */
   noMoreHolder?: boolean;
+  /** 是否刷新中（用于 api 自动触发的情况） */
+  refreshing?: boolean;
   /** 加载更多数据的方法 */
   onLoadMore?: () => Promise<{ hasMore?: boolean }>;
   /** 下拉刷新数据的方法 */
-  onPullDownRefresh?: () => Promise<any>;
+  onPullDownRefresh?: (manual?: boolean) => Promise<any>;
 }
 
 export const ScrollContainer = (props: IProps) => {
@@ -26,6 +28,7 @@ export const ScrollContainer = (props: IProps) => {
     loadMoreThreshold = 200,
     children,
     noMoreHolder = true,
+    refreshing,
     className,
     onLoadMore,
     onPullDownRefresh,
@@ -36,6 +39,7 @@ export const ScrollContainer = (props: IProps) => {
   const [listHidden, setListHidden] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isPressDown, setIsPressDown] = useState(false);
 
   const boxRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -56,8 +60,9 @@ export const ScrollContainer = (props: IProps) => {
   const DEG_LIMIT = 40;
 
   const handleStart = (e: React.TouchEvent | React.MouseEvent) => {
-    if (isLoading || isPulling || !enablePullDownRefresh) return;
+    if (isLoading || isPulling || !enablePullDownRefresh || refreshing) return;
 
+    setIsPressDown(true);
     touchData.current.startY =
       'touches' in e ? e.touches[0].clientY : e.clientY;
     touchData.current.startX =
@@ -65,7 +70,14 @@ export const ScrollContainer = (props: IProps) => {
   };
 
   const handleMove = (e: React.TouchEvent | React.MouseEvent) => {
-    if (isLoading || isPulling || !enablePullDownRefresh) return;
+    if (
+      isLoading ||
+      isPulling ||
+      !enablePullDownRefresh ||
+      !isPressDown ||
+      refreshing
+    )
+      return;
     touchData.current.endY = 'touches' in e ? e.touches[0].clientY : e.clientY;
     touchData.current.endX = 'touches' in e ? e.touches[0].clientX : e.clientX;
 
@@ -113,8 +125,18 @@ export const ScrollContainer = (props: IProps) => {
   };
 
   const handleEnd = () => {
-    if (isLoading || isPulling || !enablePullDownRefresh) return;
+    if (
+      isLoading ||
+      isPulling ||
+      !enablePullDownRefresh ||
+      !isPressDown ||
+      refreshing
+    )
+      return;
     if (touchData.current.endY - touchData.current.startY < 0) return;
+
+    setIsPressDown(false);
+
     if (touchData.current.realY < DISTANCE_Y_MIN_LIMIT) {
       boxRef.current!.style.transform = 'translateY(0px)';
       boxRef.current!.style.transition = 'all 0.3s linear';
@@ -132,7 +154,7 @@ export const ScrollContainer = (props: IProps) => {
       return;
     }
 
-    onPullDownRefresh?.().finally(() => {
+    onPullDownRefresh?.(true).finally(() => {
       setIsPulling(false);
       boxRef.current!.style.transform = 'translateY(0px)';
       boxRef.current!.style.transition = 'all 0.3s linear';
@@ -141,6 +163,22 @@ export const ScrollContainer = (props: IProps) => {
       setHasMore(true);
     });
   };
+
+  useEffect(() => {
+    if (refreshing) {
+      listRef.current!.scrollTop = 0;
+      boxRef.current!.style.transform = `translateY(${DISTANCE_Y_MIN_LIMIT}px)`;
+      boxRef.current!.style.transition = 'all 0.3s linear';
+      setIsRefreshing(true);
+      setListHidden(true);
+    } else {
+      boxRef.current!.style.transform = 'translateY(0px)';
+      boxRef.current!.style.transition = 'all 0.3s linear';
+      setIsRefreshing(false);
+      setListHidden(false);
+      setHasMore(true);
+    }
+  }, [DISTANCE_Y_MIN_LIMIT, refreshing]);
 
   useEffect(() => {
     if (!enableLoadMore || isLoading || !hasMore) return;
@@ -187,9 +225,11 @@ export const ScrollContainer = (props: IProps) => {
       onTouchStart={handleStart}
       onTouchMove={handleMove}
       onTouchEnd={handleEnd}
+      onTouchCancel={handleEnd}
       onMouseDown={handleStart}
       onMouseMove={handleMove}
       onMouseUp={handleEnd}
+      onMouseLeave={handleEnd}
     >
       <div className={styles.innerWrap} ref={boxRef}>
         {enablePullDownRefresh && (

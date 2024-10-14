@@ -16,28 +16,23 @@ import {
   Space,
   Tag,
 } from 'sweet-me';
-import { myPost, useFetch } from '@/utils/fetch';
-import { PieceInfo, LevelMap, PriorityMap, PAGE_LIMIT } from './constant';
+import { myPost } from '@/utils/fetch';
+import { PieceInfo, LevelMap, PriorityMap } from './constant';
 import { Card } from './components/card';
 import { useCardDetailModal } from '@/utils/hooks';
 import { ScrollContainer } from './components/scrollContainer';
-import { waitTime } from '@/utils';
+import { useListRequest } from './useListRequest';
 
 export const App = () => {
   const [createModalVisible, showCreateModal, closeCreateModal] = useBoolean();
   const [isLoading, startLoading, endLoading] = useBoolean();
-  const [page, setPage] = React.useState(0);
-  const [listData, setListData] = React.useState<PieceInfo[]>([]);
 
   const { form } = useFormState<PieceInfo>();
-  const { runApi } = useFetch<PieceInfo[]>({
+  const { data, refreshing, onLoadMore, onRefresh } = useListRequest<PieceInfo>({
     url: '/bounty/list',
-    params: { page, limit: PAGE_LIMIT },
-    autoRun: false,
-    loadingFn: listData.length
-      ? undefined
-      : () => loading('列表加载中...', undefined, false),
+    loadingFn: () => loading('列表加载中...', undefined, false),
   });
+  const { list: listData } = data || {};
   const loadingCb = React.useRef(() => {});
 
   const { handleClickCard, closeModal, detail, modalVisible } =
@@ -45,35 +40,12 @@ export const App = () => {
 
   const isEditMode = !!detail && createModalVisible;
 
-  const handleRefresh = async () => {
-    setPage(0);
-    await waitTime(0);
-    try {
-      const res = await runApi();
-      setListData([...res]);
-      setPage((p) => p + 1);
-    } catch (error) {
-      return false;
-    }
-  };
-
-  const handleLoadMore = async () => {
-    try {
-      const res = await runApi();
-      setListData((list) => [...list, ...res]);
-      setPage((p) => p + 1);
-      return { hasMore: res.length === PAGE_LIMIT };
-    } catch (error) {
-      return { hasMore: true };
-    }
-  };
-
   const finishTodo = () => {
     startLoading();
     myPost('/bounty/finish', {}, { id: detail?._id })
       .then(() => {
         closeModal();
-        runApi();
+        onRefresh();
       })
       .finally(endLoading);
   };
@@ -83,7 +55,7 @@ export const App = () => {
     myPost('/bounty/cancel', {}, { id: detail?._id })
       .then(() => {
         closeModal();
-        runApi();
+        onRefresh();
       })
       .finally(endLoading);
   };
@@ -113,7 +85,7 @@ export const App = () => {
         form.resetField();
         closeCreateModal();
         toast('修改成功');
-        runApi();
+        onRefresh();
       })
       .finally(endLoading);
   };
@@ -141,7 +113,7 @@ export const App = () => {
       .then(() => {
         form.resetField();
         closeCreateModal();
-        runApi();
+        onRefresh();
       })
       .finally(endLoading);
   };
@@ -175,8 +147,9 @@ export const App = () => {
       <Header title='赏金猎人' isSticky />
       <ScrollContainer
         className={styles.scrollContainer}
-        onPullDownRefresh={handleRefresh}
-        onLoadMore={handleLoadMore}
+        onPullDownRefresh={onRefresh}
+        onLoadMore={onLoadMore}
+        refreshing={refreshing}
       >
         <div className={styles.list}>
           {listData?.map((it) => (
