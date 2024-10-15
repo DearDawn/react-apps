@@ -1,4 +1,11 @@
-import { RequestUrl, apiGet, apiPost, toast, useRequest } from 'sweet-me';
+import {
+  RequestUrl,
+  apiGet,
+  apiPost,
+  toast,
+  useListRequest,
+  useRequest,
+} from 'sweet-me';
 import { useEffect } from 'react';
 import { showLoginBox } from './login';
 import { isDev } from './dev';
@@ -127,6 +134,33 @@ export const useFetch: typeof useRequest = (props) => {
       });
     }
   }, [error, runApi]);
+
+  return res;
+};
+
+export const useListFetch: typeof useListRequest = (props) => {
+  const { url: _url, params, ...rest } = props;
+  const url: RequestUrl = `${HOST}${_url}`;
+
+  const res = useListRequest({
+    url,
+    init: {
+      credentials: 'include',
+    },
+    params: { dodokey: 123, ...params },
+    ...rest,
+  });
+  // const error = res.data?.message;
+  // const { runApi } = res;
+
+  // useEffect(() => {
+  //   if (error === 'No Login') {
+  //     toast('请先登录');
+  //     showLoginBox(true).then(() => {
+  //       runApi();
+  //     });
+  //   }
+  // }, [error, runApi]);
 
   return res;
 };

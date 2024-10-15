@@ -15,20 +15,19 @@ import {
   Radio,
   Space,
   Tag,
+  ScrollContainer,
 } from 'sweet-me';
-import { myPost } from '@/utils/fetch';
+import { myPost, useListFetch } from '@/utils/fetch';
 import { PieceInfo, LevelMap, PriorityMap } from './constant';
 import { Card } from './components/card';
 import { useCardDetailModal } from '@/utils/hooks';
-import { ScrollContainer } from './components/scrollContainer';
-import { useListRequest } from './useListRequest';
 
 export const App = () => {
   const [createModalVisible, showCreateModal, closeCreateModal] = useBoolean();
   const [isLoading, startLoading, endLoading] = useBoolean();
 
   const { form } = useFormState<PieceInfo>();
-  const { data, refreshing, onLoadMore, onRefresh } = useListRequest<PieceInfo>({
+  const { data, refreshing, onLoadMore, onRefresh } = useListFetch<PieceInfo>({
     url: '/bounty/list',
     loadingFn: () => loading('列表加载中...', undefined, false),
   });
