@@ -40,7 +40,6 @@ export const ScrollContainer = (props: IProps) => {
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isPressDown, setIsPressDown] = useState(false);
 
   const boxRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -54,6 +53,7 @@ export const ScrollContainer = (props: IProps) => {
     distanceY: 0,
     distanceX: 0,
     realY: 0,
+    isPressDown: false,
   });
 
   const DISTANCE_Y_MIN_LIMIT = 35 * window.devicePixelRatio;
@@ -65,13 +65,15 @@ export const ScrollContainer = (props: IProps) => {
   };
 
   const handleStart = (e: React.TouchEvent | React.MouseEvent) => {
-    if (isLoading || isPulling || !enablePullDownRefresh || refreshing) return;
-
-    setIsPressDown(true);
+    touchData.current.isPressDown = true;
     touchData.current.startY =
       'touches' in e ? e.touches[0].clientY : e.clientY;
     touchData.current.startX =
       'touches' in e ? e.touches[0].clientX : e.clientX;
+
+    touchData.current.endX = touchData.current.startX;
+    touchData.current.endY = touchData.current.startY;
+    touchData.current.realY = 0;
   };
 
   const handleMove = (e: React.TouchEvent | React.MouseEvent) => {
@@ -79,7 +81,7 @@ export const ScrollContainer = (props: IProps) => {
       isLoading ||
       isPulling ||
       !enablePullDownRefresh ||
-      !isPressDown ||
+      !touchData.current.isPressDown ||
       refreshing
     )
       return;
@@ -134,13 +136,14 @@ export const ScrollContainer = (props: IProps) => {
       isLoading ||
       isPulling ||
       !enablePullDownRefresh ||
-      !isPressDown ||
+      !touchData.current.isPressDown ||
       refreshing
     )
       return;
-    if (touchData.current.endY - touchData.current.startY < 0) return;
 
-    setIsPressDown(false);
+    touchData.current.isPressDown = false;
+
+    if (touchData.current.endY - touchData.current.startY < 0) return;
 
     if (touchData.current.realY < DISTANCE_Y_MIN_LIMIT) {
       boxRef.current!.style.transform = 'translateY(0px)';
