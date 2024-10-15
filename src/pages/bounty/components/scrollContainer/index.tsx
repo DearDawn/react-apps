@@ -143,7 +143,10 @@ export const ScrollContainer = (props: IProps) => {
 
     touchData.current.isPressDown = false;
 
-    if (touchData.current.endY - touchData.current.startY < 0) return;
+    if (touchData.current.endY - touchData.current.startY < 0) {
+      setListHidden(false);
+      return;
+    }
 
     if (touchData.current.realY < DISTANCE_Y_MIN_LIMIT) {
       boxRef.current!.style.transform = 'translateY(0px)';
