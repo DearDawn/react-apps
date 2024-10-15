@@ -37,7 +37,8 @@ export const useListRequest = <T = any>(props: RequestProps) => {
     await waitTime(0);
     try {
       !manual && startRefreshing();
-      const res = await runApi();
+    await waitTime(300);
+    const res = await runApi();
       const { list, has_more } = res;
       setData({ list, has_more });
       setPage((p) => p + 1);
@@ -59,7 +60,7 @@ export const useListRequest = <T = any>(props: RequestProps) => {
       setPage((p) => p + 1);
       return { hasMore: res.has_more };
     } catch (error) {
-      return { hasMore: true };
+      return { hasMore: true, error };
     }
   };
 

@@ -16,7 +16,7 @@ interface IProps extends CommonProps {
   /** 是否刷新中（用于 api 自动触发的情况） */
   refreshing?: boolean;
   /** 加载更多数据的方法 */
-  onLoadMore?: () => Promise<{ hasMore?: boolean }>;
+  onLoadMore?: () => Promise<{ hasMore?: boolean; error?: any }>;
   /** 下拉刷新数据的方法 */
   onPullDownRefresh?: (manual?: boolean) => Promise<any>;
 }
@@ -38,6 +38,7 @@ export const ScrollContainer = (props: IProps) => {
   const [isPulling, setIsPulling] = useState(false);
   const [listHidden, setListHidden] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [error, setError] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isPressDown, setIsPressDown] = useState(false);
 
@@ -58,6 +59,10 @@ export const ScrollContainer = (props: IProps) => {
   const DISTANCE_Y_MIN_LIMIT = 35 * window.devicePixelRatio;
   const Y_FACTOR = 20;
   const DEG_LIMIT = 40;
+
+  const handleLoadMore = () => {
+    setError(false);
+  };
 
   const handleStart = (e: React.TouchEvent | React.MouseEvent) => {
     if (isLoading || isPulling || !enablePullDownRefresh || refreshing) return;
@@ -181,7 +186,7 @@ export const ScrollContainer = (props: IProps) => {
   }, [DISTANCE_Y_MIN_LIMIT, refreshing]);
 
   useEffect(() => {
-    if (!enableLoadMore || isLoading || !hasMore) return;
+    if (!enableLoadMore || isLoading || !hasMore || error) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -194,8 +199,12 @@ export const ScrollContainer = (props: IProps) => {
 
             setIsLoading(true);
             onLoadMore()
-              .then(({ hasMore }) => {
-                setHasMore(hasMore);
+              .then(({ hasMore, error }) => {
+                if (error) {
+                  setError(true);
+                } else {
+                  setHasMore(hasMore);
+                }
               })
               .finally(() => {
                 setIsLoading(false);
@@ -216,7 +225,14 @@ export const ScrollContainer = (props: IProps) => {
     return () => {
       observer.disconnect();
     };
-  }, [enableLoadMore, hasMore, isLoading, loadMoreThreshold, onLoadMore]);
+  }, [
+    enableLoadMore,
+    error,
+    hasMore,
+    isLoading,
+    loadMoreThreshold,
+    onLoadMore,
+  ]);
 
   return (
     <div
@@ -248,9 +264,15 @@ export const ScrollContainer = (props: IProps) => {
           {children}
           {enableLoadMore && hasMore && (
             <div ref={bottomLoaderRef} className={styles.bottomLoader}>
-              <div
-                className={clsx(styles.loader, { [styles.loading]: true })}
-              ></div>
+              {error ? (
+                <div className={styles.loaderText} onClick={handleLoadMore}>
+                  点击刷新
+                </div>
+              ) : (
+                <div
+                  className={clsx(styles.loader, { [styles.loading]: true })}
+                />
+              )}
             </div>
           )}
           {!hasMore && noMoreHolder && (
