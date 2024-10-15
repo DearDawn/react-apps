@@ -52,6 +52,7 @@ const PageList = [
   { href: '../sweet-me/', title: '小糖的组件库' },
   { href: '../hope-wall/', title: '未来 TODO' },
   { href: './tower/', title: '塔防(无成品)' },
+  { href: './3.0/', title: '小破站 3.0 (无成品)' },
 ];
 
 export const App = (props: IProps) => {
