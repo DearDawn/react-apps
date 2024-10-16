@@ -199,7 +199,7 @@ export const App = () => {
         maskClosable
         onClose={closeModal}
         footer={
-          <Space padding='0' className={styles.footer}>
+          <Space padding='0'>
             {/* <Button onClick={showCreateModal} status='warning'>
               编辑
             </Button> */}
