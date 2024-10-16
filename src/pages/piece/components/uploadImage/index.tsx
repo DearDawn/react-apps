@@ -14,7 +14,7 @@ type ConfigItem = {
   avatar: string;
 };
 
-export const UploadAvatar = (props: IProps) => {
+export const UploadImage = (props: IProps) => {
   const [url, setUrl] = useState('');
   const [historyList, setHistoryList] = useState<ConfigItem[]>([]);
   const fileRef = useRef<File>();
@@ -78,7 +78,7 @@ export const UploadAvatar = (props: IProps) => {
         close();
         onClose(url || '');
       });
-  }, [onClose, url]);
+  }, [url]);
 
   return (
     <div className={styles.uploadWrap}>

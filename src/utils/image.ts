@@ -1,3 +1,5 @@
+import { HOST } from './fetch';
+
 export function changeExtToPNG(imageUrl = '') {
   // 使用正则表达式替换文件名后缀
   const newUrl = imageUrl.replace(/(\.[^./]+$)/, '.png');
@@ -68,7 +70,6 @@ export const compressImage = ({
   img.src = fileURL;
 };
 
-
 export const getBlob = (imgPath: string): Promise<Blob> => {
   return new Promise((resolve, reject) => {
     const image = new Image();
@@ -84,5 +85,27 @@ export const getBlob = (imgPath: string): Promise<Blob> => {
 
     image.onerror = reject;
     image.src = imgPath;
+  });
+};
+
+export const imageUploader = async (file: File) => {
+  const formData = new FormData();
+
+  formData.append('file', file);
+  formData.append('upload_key', 'dododawn');
+  formData.append('file_name', file.name);
+
+  return new Promise<string>((resolve, reject) => {
+    fetch(`${HOST}/upload/cdn?dodokey=123`, {
+      method: 'POST',
+      body: formData,
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        resolve(res.imageUrl || '');
+      })
+      .catch((err) => {
+        reject(err);
+      });
   });
 };
