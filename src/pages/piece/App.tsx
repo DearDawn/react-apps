@@ -15,8 +15,10 @@ import {
   InputImage,
   ScrollContainer,
   Space,
+  Select,
+  waitTime,
 } from 'sweet-me';
-import { myPost, useListFetch } from '@/utils/fetch';
+import { myPost, useFetch, useListFetch } from '@/utils/fetch';
 import { FormPieceInfo, PieceInfo } from './constants';
 import { Card } from './components/card';
 import { useCardDetailModal } from '@/utils/hooks';
@@ -27,8 +29,14 @@ export const App = () => {
   const [isLoading, startLoading, endLoading] = useBoolean();
 
   const { form } = useFormState<FormPieceInfo>();
+  const { data: tagList } = useFetch({
+    url: '/piece/tag',
+    autoRun: true,
+  });
+  const [tag, setTag] = React.useState('全部');
   const { data, onRefresh, onLoadMore, refreshing } = useListFetch<PieceInfo>({
     url: '/piece/list',
+    params: { tag },
     autoRun: true,
     loadingFn: () => loading('列表加载中...', undefined, false),
   });
@@ -37,6 +45,12 @@ export const App = () => {
     useCardDetailModal<PieceInfo>({ listData });
   const loadingCb = React.useRef(() => {});
   const isEditMode = !!detail && createModalVisible;
+
+  const handleTagChange = async (option: { label; value }) => {
+    setTag(option.value);
+    await waitTime(0);
+    onRefresh();
+  };
 
   const handleEdit = () => {
     const pass = form.validate();
@@ -124,6 +138,21 @@ export const App = () => {
   return (
     <Page maxWidth='100vw' minWidth='300px' className={styles.app}>
       <Header title='完整 & 破碎' isSticky />
+      <Space className={styles.filter}>
+        标签
+        <Select
+          className={styles.select}
+          value={tag}
+          onValueChange={handleTagChange}
+          options={[
+            { label: '全部', value: '全部' },
+            ...(tagList?.map((it) => ({
+              label: it,
+              value: it,
+            })) || []),
+          ]}
+        />
+      </Space>
       <ScrollContainer
         className={styles.scrollContainer}
         refreshing={refreshing}
