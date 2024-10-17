@@ -7,6 +7,7 @@ export interface PieceInfo {
   tag?: string;
 }
 
-export interface FormPieceInfo extends Omit<PieceInfo, 'image'> {
+export interface FormPieceInfo extends Omit<PieceInfo, 'image' | 'link'> {
   image?: { file?: File; url?: string };
+  link?: string[];
 }

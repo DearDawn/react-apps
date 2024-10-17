@@ -17,6 +17,7 @@ import {
   Space,
   Select,
   waitTime,
+  MultiInput,
 } from 'sweet-me';
 import { myPost, useFetch, useListFetch } from '@/utils/fetch';
 import { FormPieceInfo, PieceInfo } from './constants';
@@ -68,7 +69,7 @@ export const App = () => {
     const data: Record<string, any> = {
       title: title.trim(),
       content: content.trim(),
-      link: link?.trim(),
+      link: link?.map((it) => it.trim())?.join('\n'),
       image: url,
       tag: tag,
       id: detail?._id,
@@ -103,7 +104,7 @@ export const App = () => {
       {
         title: title.trim(),
         content: content.trim(),
-        link: link?.trim(),
+        link: link?.map((it) => it.trim())?.join('\n'),
         tag: tag?.trim(),
         image: url,
       }
@@ -131,7 +132,12 @@ export const App = () => {
 
   React.useEffect(() => {
     if (createModalVisible && detail) {
-      form.setFieldsValue(detail);
+      const { link, ...rest } = detail || {};
+
+      form.setFieldsValue({
+        ...rest,
+        link: link?.split('\n') || [],
+      });
     }
   }, [createModalVisible, detail, form]);
 
@@ -182,10 +188,9 @@ export const App = () => {
               <Textarea className={styles.input} placeholder='内容' />
             </Form.Item>
             <Form.Item field='link' labelClassName={styles.label}>
-              <Textarea
-                className={styles.input}
-                placeholder='链接, 多个需换行'
-              />
+              <MultiInput creatable>
+                <Input placeholder='链接' />
+              </MultiInput>
             </Form.Item>
             <Form.Item field='tag' labelClassName={styles.label}>
               <Textarea className={styles.input} placeholder='标签, 逗号分隔' />
