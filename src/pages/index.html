@@ -18,7 +18,7 @@
   <script>
     VersionPolling.createVersionPolling({
       appETagKey: "__APP_ETAG__",
-      pollingInterval: 5 * 1000,
+      pollingInterval: 10 * 1000,
       onUpdate: (self) => {
         // 当检测到有新版本时，执行的回调函数，可以在这里提示用户刷新页面
         const result = confirm("页面有更新，点击确定刷新页面！");
