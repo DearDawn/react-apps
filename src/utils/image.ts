@@ -14,6 +14,7 @@ export const compressImage = ({
   scaleSize = 100,
   callback,
 }) => {
+  console.log('[dodo] ', 'file', file);
   const fileURL = URL.createObjectURL(file);
 
   // 创建一个图片元素

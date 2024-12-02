@@ -31,7 +31,7 @@ export const UploadAvatar = (props: IProps) => {
       .finally(close);
   }, []);
 
-  const handleFileChange = useCallback((file) => {
+  const handleFileChange = useCallback(({ file, url }) => {
     fileRef.current = file;
 
     if (!file) {
@@ -79,6 +79,8 @@ export const UploadAvatar = (props: IProps) => {
         onClose(url || '');
       });
   }, [onClose, url]);
+
+  console.log('[dodo] ', 'url', url);
 
   return (
     <div className={styles.uploadWrap}>
