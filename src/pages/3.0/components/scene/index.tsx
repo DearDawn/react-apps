@@ -12,6 +12,7 @@ export const GameContext = createContext<{
 
 const ThreeScene = () => {
   const [enableOrbitControls, setEnableOrbitControls] = useState(true);
+  console.log('[dodo] ', 'enableOrbitControls', enableOrbitControls);
 
   return (
     <>
@@ -19,7 +20,11 @@ const ThreeScene = () => {
       <button onClick={() => store.enterAR()}>Enter AR</button> */}
       <GameContext.Provider value={{ setEnableOrbitControls }}>
         <Canvas
-          camera={{ position: [30, 10, 0], fov: 75 }}
+          camera={{
+            position: [8, -5, 2],
+            fov: 50,
+            rotation: [-Math.PI / 12, Math.PI / 3, Math.PI / 12],
+          }}
           style={{ width: '100%', height: '100vh' }}
           gl={{
             outputColorSpace: THREE.SRGBColorSpace,
@@ -28,8 +33,8 @@ const ThreeScene = () => {
           }}
         >
           <XR store={store}>
-            <ambientLight intensity={5} color={0xffffff} />
-            <directionalLight position={[0, 1, 0]} intensity={5} />
+            <ambientLight intensity={2} color={0xffffff} />
+            <directionalLight position={[0, 10, 0]} intensity={2} />
             <OrbitControls
               enableDamping
               dampingFactor={0.05}
@@ -37,7 +42,7 @@ const ThreeScene = () => {
               minDistance={1}
               maxDistance={50}
               maxPolarAngle={Math.PI / 2}
-              enabled={enableOrbitControls}
+              enabled={false}
             />
             <Model />
           </XR>

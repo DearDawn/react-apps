@@ -10,9 +10,9 @@ export const Model = () => {
   const mixerRef = useRef<THREE.AnimationMixer>();
 
   useEffect(() => {
-    modelRef.current.rotation.y = Math.PI / 4; // 绕 Z 轴旋转 30 度
+    // modelRef.current.rotation.y = Math.PI / 4; // 绕 Z 轴旋转 30 度
     modelRef.current.scale.set(3, 3, 3);
-    modelRef.current.position.setY(-9);
+    modelRef.current.position.setY(-10);
 
     if (gltf && gltf.animations.length > 0) {
       mixerRef.current = new THREE.AnimationMixer(modelRef.current);
