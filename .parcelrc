@@ -1,9 +1,21 @@
 {
   "extends": "@parcel/config-default",
   "transformers": {
-    "*.md": [ "parcel-transformer-markdown" ],
-    "*.glb": ["@parcel/transformer-raw"],
-    "*.hdr": ["@parcel/transformer-raw"],
-    "*.gltf": ["@parcel/transformer-raw"]
-  }
+    "*.md": [
+      "parcel-transformer-markdown"
+    ],
+    "*.glb": [
+      "@parcel/transformer-raw"
+    ],
+    "*.hdr": [
+      "@parcel/transformer-raw"
+    ],
+    "*.gltf": [
+      "@parcel/transformer-raw"
+    ]
+  },
+  "reporters": [
+    "...",
+    "parcel-reporter-static-files-copy"
+  ]
 }

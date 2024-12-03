@@ -1,11 +1,12 @@
 import { useRef, useEffect } from 'react';
-import { ObjectMap, useFrame, useLoader } from '@react-three/fiber';
-import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { ObjectMap, useFrame } from '@react-three/fiber';
+import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
 import * as GLBModel from '../../models/room.glb';
+import { useGltfLoader } from '../../hooks';
 
 export const Model = () => {
-  const gltf = useLoader(GLTFLoader, GLBModel) as GLTF & ObjectMap;
+  const gltf = useGltfLoader(GLBModel) as GLTF & ObjectMap;
   const modelRef = useRef<THREE.Object3D>();
   const mixerRef = useRef<THREE.AnimationMixer>();
 
