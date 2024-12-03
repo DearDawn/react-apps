@@ -20,11 +20,7 @@ const ThreeScene = () => {
       <button onClick={() => store.enterAR()}>Enter AR</button> */}
       <GameContext.Provider value={{ setEnableOrbitControls }}>
         <Canvas
-          camera={{
-            position: [8, -5, 2],
-            fov: 50,
-            rotation: [-Math.PI / 12, Math.PI / 3, Math.PI / 12],
-          }}
+          camera={{ position: [8, -5, 2], fov: 50 }}
           style={{ width: '100%', height: '100vh' }}
           gl={{
             outputColorSpace: THREE.SRGBColorSpace,
