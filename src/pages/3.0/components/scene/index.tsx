@@ -1,6 +1,6 @@
 import React, { useState, createContext } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+// import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { createXRStore, XR } from '@react-three/xr';
 import { Model } from '../model';
@@ -35,7 +35,7 @@ const ThreeScene = () => {
           <XR store={store}>
             <ambientLight intensity={2} color={0xffffff} />
             <directionalLight position={[0, 10, 0]} intensity={2} />
-            <OrbitControls
+            {/* <OrbitControls
               enableDamping
               dampingFactor={0.05}
               screenSpacePanning={false}
@@ -43,7 +43,7 @@ const ThreeScene = () => {
               maxDistance={50}
               maxPolarAngle={Math.PI / 2}
               enabled={false}
-            />
+            /> */}
             <Model />
           </XR>
         </Canvas>
