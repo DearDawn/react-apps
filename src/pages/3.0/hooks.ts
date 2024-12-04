@@ -6,6 +6,8 @@ export const useGltfLoader = (inputPath: string) =>
   useLoader(GLTFLoader, inputPath, (loader) => {
     const dracoLoader = new DRACOLoader();
     //解析器路径
-    dracoLoader.setDecoderPath('../public/draco/');
+    dracoLoader.setDecoderPath(
+      'https://dododawn-1300422826.cos.ap-shanghai.myqcloud.com/public/files/draco/'
+    );
     loader.setDRACOLoader(dracoLoader);
   });

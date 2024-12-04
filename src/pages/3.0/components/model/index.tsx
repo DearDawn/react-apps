@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import { ThreeEvent, useFrame, useThree } from '@react-three/fiber';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
-import * as GLBModel from '../../models/room_v1.glb';
+// import * as GLBModel from '../../models/room_v1.glb';
 import { useGltfLoader } from '../../hooks';
 
 type GLTFResult = GLTF & {
@@ -41,7 +41,10 @@ type GLTFResult = GLTF & {
 };
 
 export const Model = (props) => {
-  const gltf = useGltfLoader(GLBModel) as GLTFResult;
+  const gltf = useGltfLoader(
+    'https://dododawn-1300422826.cos.ap-shanghai.myqcloud.com/public%2Fmodels%2F3.0%2Froom_v1.glb'
+  ) as GLTFResult;
+  // const gltf = useGltfLoader(GLBModel) as GLTFResult;
   const { camera } = useThree();
   const { nodes, materials } = gltf || {};
   const [isFocus, setIsFocus] = useState(false);
@@ -62,12 +65,23 @@ export const Model = (props) => {
   const handleFocus = (e: ThreeEvent<MouseEvent>) => {
     if (moving) return;
 
-    handlePlayAnimation(!isFocus);
     e.stopPropagation();
 
-    setIsFocus((_isFocus) => !_isFocus);
-    elapsedTime.current = 0;
-    setMoving(true);
+    setTimeout(
+      () => {
+        handlePlayAnimation(!isFocus);
+      },
+      isFocus ? 100 : 0
+    );
+
+    setTimeout(
+      () => {
+        setIsFocus((_isFocus) => !_isFocus);
+        elapsedTime.current = 0;
+        setMoving(true);
+      },
+      isFocus ? 0 : 300
+    );
   };
 
   const handlePlayAnimation = (leave = false) => {
@@ -153,14 +167,14 @@ export const Model = (props) => {
             userData={{ name: 'chair' }}
           />
           <group name='Collection' userData={{ name: 'Collection' }}>
-            <mesh
+            {/* <mesh
               name='平面'
               castShadow
               receiveShadow
               geometry={nodes.平面.geometry}
               material={materials.wall}
               userData={{ name: '平面' }}
-            />
+            /> */}
             <mesh
               name='table'
               castShadow
