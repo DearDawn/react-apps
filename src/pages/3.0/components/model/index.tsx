@@ -2,25 +2,32 @@ import { useRef, useEffect, useState } from 'react';
 import { ThreeEvent, useFrame, useThree } from '@react-three/fiber';
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
-import * as GLBModel from '../../models/room.glb';
+import * as GLBModel from '../../models/room_v1.glb';
 import { useGltfLoader } from '../../hooks';
 
 type GLTFResult = GLTF & {
   nodes: {
+    chair: THREE.Mesh;
     平面: THREE.Mesh;
-    立方体: THREE.Mesh;
+    table: THREE.Mesh;
     柱体: THREE.Mesh;
+    立方体001: THREE.Mesh;
     立方体001_1: THREE.Mesh;
-    立方体001_2: THREE.Mesh;
     ['02-v2']: THREE.Mesh;
-    立方体002: THREE.Mesh;
+    keyboard: THREE.Mesh;
     立方体003: THREE.Mesh;
+    立方体002: THREE.Mesh;
     立方体002_1: THREE.Mesh;
-    立方体002_2: THREE.Mesh;
+    球体: THREE.Mesh;
+    立方体006: THREE.Mesh;
+    立方体007: THREE.Mesh;
+    立方体008: THREE.Mesh;
+    立方体009: THREE.Mesh;
+    立方体010: THREE.Mesh;
   };
   materials: {
-    wall: THREE.MeshStandardMaterial;
     table: THREE.MeshStandardMaterial;
+    wall: THREE.MeshStandardMaterial;
     leg: THREE.MeshStandardMaterial;
     pc: THREE.MeshStandardMaterial;
     screen: THREE.MeshStandardMaterial;
@@ -29,6 +36,7 @@ type GLTFResult = GLTF & {
     keyboard_inner: THREE.MeshStandardMaterial;
     mouse_board: THREE.MeshStandardMaterial;
     mouse_board_top: THREE.MeshStandardMaterial;
+    person: THREE.MeshStandardMaterial;
   };
 };
 
@@ -52,10 +60,27 @@ export const Model = (props) => {
   const elapsedTime = useRef(0); // 累计时间
 
   const handleFocus = (e: ThreeEvent<MouseEvent>) => {
+    if (moving) return;
+
+    handlePlayAnimation(!isFocus);
     e.stopPropagation();
+
     setIsFocus((_isFocus) => !_isFocus);
     elapsedTime.current = 0;
     setMoving(true);
+  };
+
+  const handlePlayAnimation = (leave = false) => {
+    const action = mixerRef.current.clipAction(gltf.animations[0]);
+    action.reset();
+    if (leave) {
+      action.timeScale = 2; // 正放
+      action.play();
+    } else {
+      action.timeScale = -2; // 倒放
+      action.time = gltf.animations[0].duration; // 倒放时重置到最后一帧
+      action.play();
+    }
   };
 
   useEffect(() => {
@@ -65,14 +90,9 @@ export const Model = (props) => {
 
     if (gltf && gltf.animations.length > 0) {
       mixerRef.current = new THREE.AnimationMixer(modelRef.current);
-      gltf.animations.forEach((clip) => {
-        const action = mixerRef.current.clipAction(clip);
-        action.play();
-      });
-
-      return () => {
-        mixerRef.current.stopAllAction();
-      };
+      const action = mixerRef.current.clipAction(gltf.animations[0]);
+      action.setLoop(THREE.LoopOnce, 1);
+      action.clampWhenFinished = true;
     }
 
     // 获取目标元素的位置
@@ -82,6 +102,10 @@ export const Model = (props) => {
 
     // 计算目标位置
     setScreenPosition(screenPos);
+
+    return () => {
+      mixerRef.current.stopAllAction();
+    };
   }, [gltf]);
 
   useEffect(() => {
@@ -116,96 +140,178 @@ export const Model = (props) => {
   });
 
   return (
-    <group {...props} dispose={null} ref={modelRef}>
-      <group>
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.平面.geometry}
-          material={materials.wall}
-          userData={{ name: '平面' }}
-        />
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.立方体.geometry}
-          material={materials.table}
-          position={[0, 0.545, -2]}
-          scale={[0.667, 0.5, 0.5]}
-          userData={{ name: '立方体' }}
-        >
+    <group ref={modelRef} {...props} dispose={null}>
+      <group name='Scene'>
+        <group name='Scene_Collection' userData={{ name: 'Scene Collection' }}>
           <mesh
+            name='chair'
             castShadow
             receiveShadow
-            geometry={nodes.柱体.geometry}
-            material={materials.leg}
-            position={[0, -1.821, 4]}
-            userData={{ name: '柱体' }}
+            geometry={nodes.chair.geometry}
+            material={materials.table}
+            position={[0.008, 0.399, -1.102]}
+            userData={{ name: 'chair' }}
           />
-        </mesh>
-        <group
-          position={[0, 0.975, -2.427]}
-          userData={{ name: '立方体.001' }}
-          onClick={handleFocus}
-        >
-          <mesh
-            castShadow
-            receiveShadow
-            geometry={nodes.立方体001_1.geometry}
-            material={materials.pc}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            geometry={nodes.立方体001_2.geometry}
-            material={materials.screen}
-            ref={screenRef}
-          />
-        </group>
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes['02-v2'].geometry}
-          material={materials['02-v2']}
-          position={[0.006, 1.095, -2.366]}
-          rotation={[Math.PI / 2, 0, 0]}
-          scale={[0.646, 0.424, 0.559]}
-          userData={{ name: '02-v2' }}
-        />
-        <mesh
-          castShadow
-          receiveShadow
-          geometry={nodes.立方体002.geometry}
-          material={materials.keyboard}
-          position={[-0.074, 0.612, -2.097]}
-          userData={{ name: '立方体.002' }}
-        >
-          <mesh
-            castShadow
-            receiveShadow
-            geometry={nodes.立方体003.geometry}
-            material={materials.keyboard_inner}
-            position={[0, 0.013, 0]}
-            userData={{ name: '立方体.003' }}
-          />
-        </mesh>
-        <group
-          position={[0.33, 0.602, -2.097]}
-          scale={0.796}
-          userData={{ name: '立方体.004' }}
-        >
-          <mesh
-            castShadow
-            receiveShadow
-            geometry={nodes.立方体002_1.geometry}
-            material={materials.mouse_board}
-          />
-          <mesh
-            castShadow
-            receiveShadow
-            geometry={nodes.立方体002_2.geometry}
-            material={materials.mouse_board_top}
-          />
+          <group name='Collection' userData={{ name: 'Collection' }}>
+            <mesh
+              name='平面'
+              castShadow
+              receiveShadow
+              geometry={nodes.平面.geometry}
+              material={materials.wall}
+              userData={{ name: '平面' }}
+            />
+            <mesh
+              name='table'
+              castShadow
+              receiveShadow
+              geometry={nodes.table.geometry}
+              material={materials.table}
+              position={[0, 0.545, -2]}
+              scale={[0.667, 0.5, 0.5]}
+              userData={{ name: 'table' }}
+            >
+              <mesh
+                name='柱体'
+                castShadow
+                receiveShadow
+                geometry={nodes.柱体.geometry}
+                material={materials.leg}
+                position={[-1.291, -0.59, 0.7]}
+                userData={{ name: '柱体' }}
+              />
+            </mesh>
+            <group
+              name='pc'
+              position={[0, 0.975, -2.427]}
+              userData={{ name: 'pc' }}
+              onClick={handleFocus}
+            >
+              <mesh
+                name='立方体001'
+                castShadow
+                receiveShadow
+                geometry={nodes.立方体001.geometry}
+                material={materials.pc}
+              />
+              <mesh
+                name='立方体001_1'
+                castShadow
+                receiveShadow
+                geometry={nodes.立方体001_1.geometry}
+                material={materials.screen}
+                ref={screenRef}
+              />
+            </group>
+            <mesh
+              name='02-v2'
+              castShadow
+              receiveShadow
+              geometry={nodes['02-v2'].geometry}
+              material={materials['02-v2']}
+              position={[0.006, 1.095, -2.366]}
+              rotation={[Math.PI / 2, 0, 0]}
+              scale={[0.646, 0.424, 0.559]}
+              userData={{ name: '02-v2' }}
+            />
+            <mesh
+              name='keyboard'
+              castShadow
+              receiveShadow
+              geometry={nodes.keyboard.geometry}
+              material={materials.keyboard}
+              position={[-0.074, 0.612, -2.097]}
+              userData={{ name: 'keyboard' }}
+            >
+              <mesh
+                name='立方体003'
+                castShadow
+                receiveShadow
+                geometry={nodes.立方体003.geometry}
+                material={materials.keyboard_inner}
+                position={[0, 0.013, 0]}
+                userData={{ name: '立方体.003' }}
+              />
+            </mesh>
+            <group
+              name='mouseboard'
+              position={[0.33, 0.602, -2.097]}
+              scale={0.796}
+              userData={{ name: 'mouseboard' }}
+            >
+              <mesh
+                name='立方体002'
+                castShadow
+                receiveShadow
+                geometry={nodes.立方体002.geometry}
+                material={materials.mouse_board}
+              />
+              <mesh
+                name='立方体002_1'
+                castShadow
+                receiveShadow
+                geometry={nodes.立方体002_1.geometry}
+                material={materials.mouse_board_top}
+              />
+            </group>
+          </group>
+          <group name='Body' userData={{ name: 'Body' }}>
+            <mesh
+              name='球体'
+              castShadow
+              receiveShadow
+              geometry={nodes.球体.geometry}
+              material={materials.person}
+              position={[0.058, 0.952, -1.297]}
+              userData={{ name: '球体' }}
+            />
+            <mesh
+              name='立方体006'
+              castShadow
+              receiveShadow
+              geometry={nodes.立方体006.geometry}
+              material={materials.person}
+              position={[0.058, 0.55, -1.289]}
+              userData={{ name: '立方体.006' }}
+            />
+            <mesh
+              name='立方体007'
+              castShadow
+              receiveShadow
+              geometry={nodes.立方体007.geometry}
+              material={materials.person}
+              position={[-0.074, 0.487, -1.359]}
+              userData={{ name: '立方体.007' }}
+            />
+            <mesh
+              name='立方体008'
+              castShadow
+              receiveShadow
+              geometry={nodes.立方体008.geometry}
+              material={materials.person}
+              position={[-0.019, 0.372, -1.557]}
+              rotation={[Math.PI / 2, 0, 0]}
+              userData={{ name: '立方体.008' }}
+            />
+            <mesh
+              name='立方体009'
+              castShadow
+              receiveShadow
+              geometry={nodes.立方体009.geometry}
+              material={materials.person}
+              position={[-0.019, 0.329, -1.497]}
+              userData={{ name: '立方体.009' }}
+            />
+            <mesh
+              name='立方体010'
+              castShadow
+              receiveShadow
+              geometry={nodes.立方体010.geometry}
+              material={materials.person}
+              position={[-0.019, 0.329, -1.497]}
+              userData={{ name: '立方体.010' }}
+            />
+          </group>
         </group>
       </group>
     </group>
