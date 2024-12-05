@@ -224,16 +224,19 @@ export const Model = (props) => {
                 distanceFactor={1}
                 castShadow
                 receiveShadow
-                scale={0.25}
+                scale={0.24}
                 visible={isFocus}
+                pointerEvents={isFocus ? 'all' : 'none'}
               >
                 <iframe
                   src='https://dododawn.com/'
                   style={{
-                    width: '1380px',
-                    height: '802px',
+                    width: '1440px',
+                    height: '840px',
                     overflow: 'auto',
                     borderRadius: '60px',
+                    boxSizing: 'border-box',
+                    background: '#fff',
                     transition: isFocus
                       ? 'all 0.2s 0.4s linear'
                       : 'all 0.2s linear',
