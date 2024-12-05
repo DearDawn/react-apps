@@ -4,6 +4,7 @@ import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as THREE from 'three';
 // import * as GLBModel from '../../models/room_v1.glb';
 import { useGltfLoader } from '../../hooks';
+import { Html } from '@react-three/drei';
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -216,6 +217,30 @@ export const Model = (props) => {
                 material={materials.screen}
                 ref={screenRef}
               />
+              <Html
+                position={[0, 0.114, 0.06]}
+                transform
+                center
+                distanceFactor={1}
+                castShadow
+                receiveShadow
+                scale={0.25}
+                visible={isFocus}
+              >
+                <iframe
+                  src='https://dododawn.com/'
+                  style={{
+                    width: '1380px',
+                    height: '802px',
+                    overflow: 'auto',
+                    borderRadius: '60px',
+                    transition: isFocus
+                      ? 'all 0.2s 0.4s linear'
+                      : 'all 0.2s linear',
+                    opacity: isFocus ? 1 : 0,
+                  }}
+                ></iframe>
+              </Html>
             </group>
             <mesh
               name='02-v2'
