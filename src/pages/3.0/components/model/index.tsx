@@ -49,6 +49,7 @@ export const Model = (props) => {
   const { camera } = useThree();
   const { nodes, materials } = gltf || {};
   const [isFocus, setIsFocus] = useState(false);
+  const [isFocusDelay, setIsFocusDelay] = useState(false);
   const [moving, setMoving] = useState(false);
   const [screenPosition, setScreenPosition] = useState(
     new THREE.Vector3(0, 0, 0)
@@ -122,6 +123,15 @@ export const Model = (props) => {
       mixerRef.current.stopAllAction();
     };
   }, [gltf]);
+
+  useEffect(() => {
+    setTimeout(
+      () => {
+        setIsFocusDelay(isFocus);
+      },
+      isFocus ? 500 : 0
+    );
+  }, [isFocus]);
 
   useEffect(() => {
     camera.lookAt(screenPosition);
@@ -216,34 +226,36 @@ export const Model = (props) => {
                 geometry={nodes.立方体001_1.geometry}
                 material={materials.screen}
                 ref={screenRef}
-              />
-              <Html
-                position={[0, 0.114, 0.06]}
-                transform
-                center
-                distanceFactor={1}
-                castShadow
-                receiveShadow
-                scale={0.24}
-                visible={isFocus}
-                pointerEvents={isFocus ? 'all' : 'none'}
               >
-                <iframe
-                  src='https://dododawn.com/'
-                  style={{
-                    width: '1440px',
-                    height: '840px',
-                    overflow: 'auto',
-                    borderRadius: '60px',
-                    boxSizing: 'border-box',
-                    background: '#fff',
-                    transition: isFocus
-                      ? 'all 0.2s 0.4s linear'
-                      : 'all 0.2s linear',
-                    opacity: isFocus ? 1 : 0,
-                  }}
-                ></iframe>
-              </Html>
+                <Html
+                  position={[0, 0.114, 0.07]}
+                  transform
+                  distanceFactor={1}
+                  castShadow
+                  receiveShadow
+                  scale={0.24}
+                  pointerEvents={isFocus ? 'all' : 'none'}
+                  occlude='blending'
+                  visible={isFocusDelay}
+                >
+                  <iframe
+                    src='https://dododawn.com/'
+                    style={{
+                      width: '1440px',
+                      height: '840px',
+                      overflow: 'auto',
+                      borderRadius: '60px',
+                      boxSizing: 'border-box',
+                      background: 'transparent',
+                      transition: isFocus
+                        ? 'all 0.2s 0.4s linear'
+                        : 'all 0.2s linear',
+                      opacity: isFocus ? 1 : 0,
+                    }}
+                    onPointerDown={(e) => e.stopPropagation()}
+                  ></iframe>
+                </Html>
+              </mesh>
             </group>
             <mesh
               name='02-v2'
