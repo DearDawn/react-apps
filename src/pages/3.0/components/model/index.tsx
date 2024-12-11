@@ -2,7 +2,6 @@ import { useRef, useEffect, useState } from 'react';
 import { ThreeEvent, useFrame, useThree } from '@react-three/fiber';
 import { GLTF } from 'three-stdlib';
 import * as THREE from 'three';
-// import * as GLBModel from '../../models/room_v4.glb';
 import { useGltfLoader } from '../../hooks';
 import { Html, useAnimations } from '@react-three/drei';
 
@@ -58,10 +57,10 @@ type GLTFResult = GLTF & {
 };
 
 export const Model = (props) => {
-  const gltf = useGltfLoader<GLTFResult>(
-    'https://dododawn-1300422826.cos.ap-shanghai.myqcloud.com/public%2Fmodels%2F3.0%2Froom_v4.glb'
-  );
-  // const gltf = useGltfLoader<GLTFResult>(GLBModel);
+  // const gltf = useGltfLoader<GLTFResult>(
+  //   'https://dododawn-1300422826.cos.ap-shanghai.myqcloud.com/public%2Fmodels%2F3.0%2Froom_v4.glb'
+  // );
+  const gltf = useGltfLoader<GLTFResult>('/public/models/3.0/room_v4.glb');
   const { camera } = useThree();
   const { nodes, materials, animations } = gltf || {};
 
