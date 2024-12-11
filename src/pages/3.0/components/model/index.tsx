@@ -57,23 +57,31 @@ type GLTFResult = GLTF & {
 };
 
 export const Model = (props) => {
-  // const gltf = useGltfLoader<GLTFResult>(
-  //   'https://dododawn-1300422826.cos.ap-shanghai.myqcloud.com/public%2Fmodels%2F3.0%2Froom_v4.glb'
-  // );
   const gltf = useGltfLoader<GLTFResult>('/public/models/3.0/room_v4.glb');
   const { camera } = useThree();
   const { nodes, materials, animations } = gltf || {};
 
   const [isFocus, setIsFocus] = useState(false);
+  const [isFocusPhone, setIsFocusPhone] = useState(false);
   const [moving, setMoving] = useState(false);
+  const [movingPhone, setMovingPhone] = useState(false);
+  const movingLock = moving || movingPhone;
   const [screenPosition, setScreenPosition] = useState(
     new THREE.Vector3(0, 0, 0)
   );
+  const [phonePosition, setPhonePosition] = useState(
+    new THREE.Vector3(0, 0, 0)
+  );
+  const cameraLookAtPoint = useRef(screenPosition.clone());
   const targetPosition = new THREE.Vector3()
     .copy(screenPosition)
     .add(new THREE.Vector3(0, 0, 4));
+  const targetPositionPhone = new THREE.Vector3()
+    .copy(phonePosition)
+    .add(new THREE.Vector3(0, 1, 0));
   const group = useRef<THREE.Object3D>();
-  const screenRef = useRef<THREE.Mesh>();
+  const pcRef = useRef<THREE.Mesh>();
+  const phoneRef = useRef<THREE.Mesh>();
   const mixerRef = useRef<THREE.AnimationMixer>();
   const initialCameraPos = useRef(camera.position.clone());
   const { actions } = useAnimations(animations, group);
@@ -83,7 +91,7 @@ export const Model = (props) => {
   const elapsedTime = useRef(0); // 累计时间
 
   const handleFocus = (e: ThreeEvent<MouseEvent>) => {
-    if (moving) return;
+    if (movingLock) return;
 
     e.stopPropagation();
 
@@ -102,6 +110,16 @@ export const Model = (props) => {
       },
       isFocus ? 0 : 300
     );
+  };
+
+  const handleFocusPhone = (e: ThreeEvent<MouseEvent>) => {
+    if (movingLock) return;
+
+    e.stopPropagation();
+
+    elapsedTime.current = 0;
+    setIsFocusPhone(!isFocusPhone);
+    setMovingPhone(true);
   };
 
   const handlePlayAnimation = (leave = false) => {
@@ -131,18 +149,23 @@ export const Model = (props) => {
       action.clampWhenFinished = true;
     }
 
-    // 获取目标元素的位置
-    const screenPos = screenRef.current.getWorldPosition(
+    const screenPos = pcRef.current.getWorldPosition(
       new THREE.Vector3(0, 0, 0)
     );
-
-    // 计算目标位置
     setScreenPosition(screenPos);
+
+    cameraLookAtPoint.current = screenPos.clone();
+
+    setPhonePosition(
+      phoneRef.current.getWorldPosition(new THREE.Vector3(0, 0, 0))
+    );
+
+    camera.lookAt(cameraLookAtPoint.current);
 
     return () => {
       mixerRef.current.stopAllAction();
     };
-  }, [gltf]);
+  }, [camera, gltf]);
 
   // useEffect(() => {
   //   setTimeout(
@@ -153,12 +176,49 @@ export const Model = (props) => {
   //   );
   // }, [isFocus]);
 
-  useEffect(() => {
-    camera.lookAt(screenPosition);
-  }, [camera, screenPosition]);
+  useFrame((state, delta) => {
+    if (!phoneRef.current || !movingPhone) return;
+
+    // 累计时间
+    elapsedTime.current = delta * 1000 + elapsedTime.current; // 将 delta 转换为毫秒
+    // 计算插值因子 t
+    const t = Math.min(elapsedTime.current / 1000, 1);
+
+    const targetPos = isFocusPhone
+      ? new THREE.Vector3().lerpVectors(
+          cameraLookAtPoint.current.clone(),
+          phonePosition.clone(),
+          t
+        )
+      : new THREE.Vector3().lerpVectors(
+          phonePosition.clone(),
+          cameraLookAtPoint.current.clone(),
+          t
+        );
+
+    if (t >= 1) {
+      setMovingPhone(false);
+    }
+
+    if (isFocusPhone) {
+      camera.position.lerpVectors(
+        initialCameraPos.current,
+        targetPositionPhone,
+        t
+      );
+    } else {
+      camera.position.lerpVectors(
+        targetPositionPhone,
+        initialCameraPos.current,
+        t
+      );
+    }
+
+    camera.lookAt(targetPos);
+  });
 
   useFrame((state, delta) => {
-    if (!screenRef.current || !moving) return;
+    if (!pcRef.current || !moving) return;
 
     // 累计时间
     elapsedTime.current = delta * 1000 + elapsedTime.current; // 将 delta 转换为毫秒
@@ -175,7 +235,7 @@ export const Model = (props) => {
       camera.position.lerpVectors(targetPosition, initialCameraPos.current, t);
     }
 
-    camera.lookAt(screenPosition);
+    camera.lookAt(cameraLookAtPoint.current);
   });
 
   useFrame((state, delta) => {
@@ -190,11 +250,11 @@ export const Model = (props) => {
         ref={htmlRef}
         position={[0, 0.114, 0.07]}
         calculatePosition={(el, camera, size) => {
-          if (!screenRef.current || !htmlRef.current) return [0, 0, 0];
+          if (!pcRef.current || !htmlRef.current) return [0, 0, 0];
 
           // 获取 mesh 的世界位置
           const worldPosition = new THREE.Vector3();
-          screenRef.current.getWorldPosition(worldPosition);
+          pcRef.current.getWorldPosition(worldPosition);
 
           // 将世界坐标转换为屏幕坐标
           const screenPosition = worldPosition.clone().project(camera);
@@ -292,7 +352,7 @@ export const Model = (props) => {
                 receiveShadow
                 geometry={nodes.立方体001_2.geometry}
                 material={materials.screen}
-                ref={screenRef}
+                ref={pcRef}
               >
                 {/* <HtmlComp /> */}
               </mesh>
@@ -417,6 +477,7 @@ export const Model = (props) => {
               position={[0.616, 0.6, -2.051]}
               rotation={[Math.PI, 0, Math.PI]}
               userData={{ name: '立方体.004' }}
+              onClick={handleFocusPhone}
             >
               <mesh
                 name='立方体014'
@@ -431,6 +492,7 @@ export const Model = (props) => {
                 receiveShadow
                 geometry={nodes.立方体014_1.geometry}
                 material={materials.phonescreenimage}
+                ref={phoneRef}
               />
             </group>
             <mesh
