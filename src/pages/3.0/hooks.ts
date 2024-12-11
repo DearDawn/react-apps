@@ -1,13 +1,8 @@
-import { useLoader } from '@react-three/fiber';
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { useGLTF } from '@react-three/drei';
 
-export const useGltfLoader = (inputPath: string) =>
-  useLoader(GLTFLoader, inputPath, (loader) => {
-    const dracoLoader = new DRACOLoader();
-    //解析器路径
-    dracoLoader.setDecoderPath(
-      'https://dododawn-1300422826.cos.ap-shanghai.myqcloud.com/public/files/draco/'
-    );
-    loader.setDRACOLoader(dracoLoader);
-  });
+useGLTF.setDecoderPath(
+  'https://dododawn-1300422826.cos.ap-shanghai.myqcloud.com/public/files/draco/'
+);
+
+export const useGltfLoader = <T>(inputPath: string) =>
+  useGLTF(inputPath, true) as T;

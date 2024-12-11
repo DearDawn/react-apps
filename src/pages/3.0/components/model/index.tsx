@@ -1,34 +1,44 @@
 import { useRef, useEffect, useState } from 'react';
 import { ThreeEvent, useFrame, useThree } from '@react-three/fiber';
-import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader';
+import { GLTF } from 'three-stdlib';
 import * as THREE from 'three';
-// import * as GLBModel from '../../models/room_v1.glb';
+// import * as GLBModel from '../../models/room_v4.glb';
 import { useGltfLoader } from '../../hooks';
-import { Html } from '@react-three/drei';
+import { Html, useAnimations } from '@react-three/drei';
 
 type GLTFResult = GLTF & {
   nodes: {
-    chair: THREE.Mesh;
     平面: THREE.Mesh;
     table: THREE.Mesh;
     柱体: THREE.Mesh;
-    立方体001: THREE.Mesh;
     立方体001_1: THREE.Mesh;
+    立方体001_2: THREE.Mesh;
     ['02-v2']: THREE.Mesh;
     keyboard: THREE.Mesh;
     立方体003: THREE.Mesh;
-    立方体002: THREE.Mesh;
     立方体002_1: THREE.Mesh;
+    立方体002_2: THREE.Mesh;
+    圆环: THREE.Mesh;
+    柱体001: THREE.Mesh;
+    chair: THREE.Mesh;
     球体: THREE.Mesh;
-    立方体006: THREE.Mesh;
+    立方体001: THREE.Mesh;
     立方体007: THREE.Mesh;
-    立方体008: THREE.Mesh;
-    立方体009: THREE.Mesh;
     立方体010: THREE.Mesh;
+    立方体009: THREE.Mesh;
+    立方体008: THREE.Mesh;
+    立方体006: THREE.Mesh;
+    立方体012: THREE.Mesh;
+    立方体012_1: THREE.Mesh;
+    立方体002: THREE.Mesh;
+    立方体014: THREE.Mesh;
+    立方体014_1: THREE.Mesh;
+    立方体005: THREE.Mesh;
+    骨骼: THREE.Bone;
   };
   materials: {
-    table: THREE.MeshStandardMaterial;
     wall: THREE.MeshStandardMaterial;
+    table: THREE.MeshStandardMaterial;
     leg: THREE.MeshStandardMaterial;
     pc: THREE.MeshStandardMaterial;
     screen: THREE.MeshStandardMaterial;
@@ -37,19 +47,25 @@ type GLTFResult = GLTF & {
     keyboard_inner: THREE.MeshStandardMaterial;
     mouse_board: THREE.MeshStandardMaterial;
     mouse_board_top: THREE.MeshStandardMaterial;
+    plate: THREE.MeshStandardMaterial;
     person: THREE.MeshStandardMaterial;
+    floor: THREE.MeshStandardMaterial;
+    floor_inner: THREE.MeshStandardMaterial;
+    sofa: THREE.MeshStandardMaterial;
+    phone: THREE.MeshStandardMaterial;
+    phonescreenimage: THREE.MeshStandardMaterial;
   };
 };
 
 export const Model = (props) => {
-  const gltf = useGltfLoader(
-    'https://dododawn-1300422826.cos.ap-shanghai.myqcloud.com/public%2Fmodels%2F3.0%2Froom_v1.glb'
-  ) as GLTFResult;
-  // const gltf = useGltfLoader(GLBModel) as GLTFResult;
+  const gltf = useGltfLoader<GLTFResult>(
+    'https://dododawn-1300422826.cos.ap-shanghai.myqcloud.com/public%2Fmodels%2F3.0%2Froom_v4.glb'
+  );
+  // const gltf = useGltfLoader<GLTFResult>(GLBModel);
   const { camera } = useThree();
-  const { nodes, materials } = gltf || {};
+  const { nodes, materials, animations } = gltf || {};
+
   const [isFocus, setIsFocus] = useState(false);
-  const [isFocusDelay, setIsFocusDelay] = useState(false);
   const [moving, setMoving] = useState(false);
   const [screenPosition, setScreenPosition] = useState(
     new THREE.Vector3(0, 0, 0)
@@ -57,10 +73,13 @@ export const Model = (props) => {
   const targetPosition = new THREE.Vector3()
     .copy(screenPosition)
     .add(new THREE.Vector3(0, 0, 4));
-  const modelRef = useRef<THREE.Object3D>();
+  const group = useRef<THREE.Object3D>();
   const screenRef = useRef<THREE.Mesh>();
   const mixerRef = useRef<THREE.AnimationMixer>();
   const initialCameraPos = useRef(camera.position.clone());
+  const { actions } = useAnimations(animations, group);
+  const bodyRef = useRef(document.body);
+  const htmlRef = useRef<HTMLDivElement>(null);
   const duration = 500; // 动画持续时间
   const elapsedTime = useRef(0); // 累计时间
 
@@ -87,25 +106,27 @@ export const Model = (props) => {
   };
 
   const handlePlayAnimation = (leave = false) => {
-    const action = mixerRef.current.clipAction(gltf.animations[0]);
-    action.reset();
+    actions.move.reset();
+    actions.move.setLoop(THREE.LoopOnce, 1);
+    actions.move.clampWhenFinished = true; // 设置为 true，动画播放完毕后停留在最后一帧
+
     if (leave) {
-      action.timeScale = 2; // 正放
-      action.play();
+      actions.move.setEffectiveTimeScale(2);
+      actions.move.play();
     } else {
-      action.timeScale = -2; // 倒放
-      action.time = gltf.animations[0].duration; // 倒放时重置到最后一帧
-      action.play();
+      actions.move.setEffectiveTimeScale(-2);
+      actions.move.time = gltf.animations[0].duration; // 倒放时重置到最后一帧
+      actions.move.play();
     }
   };
 
   useEffect(() => {
     // modelRef.current.rotation.y = Math.PI / 4; // 绕 Z 轴旋转 30 度
-    modelRef.current.scale.set(3, 3, 3);
-    modelRef.current.position.setY(-10);
+    group.current.scale.set(3, 3, 3);
+    group.current.position.setY(-10);
 
     if (gltf && gltf.animations.length > 0) {
-      mixerRef.current = new THREE.AnimationMixer(modelRef.current);
+      mixerRef.current = new THREE.AnimationMixer(group.current);
       const action = mixerRef.current.clipAction(gltf.animations[0]);
       action.setLoop(THREE.LoopOnce, 1);
       action.clampWhenFinished = true;
@@ -124,14 +145,14 @@ export const Model = (props) => {
     };
   }, [gltf]);
 
-  useEffect(() => {
-    setTimeout(
-      () => {
-        setIsFocusDelay(isFocus);
-      },
-      isFocus ? 500 : 0
-    );
-  }, [isFocus]);
+  // useEffect(() => {
+  //   setTimeout(
+  //     () => {
+  //       setIsFocusDelay(isFocus);
+  //     },
+  //     isFocus ? 500 : 0
+  //   );
+  // }, [isFocus]);
 
   useEffect(() => {
     camera.lookAt(screenPosition);
@@ -164,19 +185,66 @@ export const Model = (props) => {
     }
   });
 
+  const HtmlComp = () => {
+    return (
+      <Html
+        ref={htmlRef}
+        position={[0, 0.114, 0.07]}
+        calculatePosition={(el, camera, size) => {
+          if (!screenRef.current || !htmlRef.current) return [0, 0, 0];
+
+          // 获取 mesh 的世界位置
+          const worldPosition = new THREE.Vector3();
+          screenRef.current.getWorldPosition(worldPosition);
+
+          // 将世界坐标转换为屏幕坐标
+          const screenPosition = worldPosition.clone().project(camera);
+
+          // 获取视口的宽度和高度
+          const viewportWidth = size.width;
+          const viewportHeight = size.height;
+
+          // 将屏幕坐标的范围从 [-1, 1] 转换为 [0, viewportWidth] 和 [0, viewportHeight]
+          const x = ((screenPosition.x + 1) / 2) * viewportWidth;
+          const y = ((1 - screenPosition.y) / 2) * viewportHeight;
+
+          // 现在 x 和 y 的范围是 [0, viewportWidth] 和 [0, viewportHeight]，可以用来设置 HTML 元素的位置
+          // console.log(`Screen position: (${x}, ${y})`);
+
+          return [x, y];
+        }}
+        // scale={0.1}
+        style={{
+          transform: `translate(-50%, -50%) scale(0.1)`,
+        }}
+        castShadow
+        receiveShadow
+        // pointerEvents={isFocus ? 'all' : 'none'}
+        // occlude='blending'
+        // visible={isFocusDelay}
+        portal={bodyRef}
+      >
+        <iframe
+          src='https://dododawn.com/'
+          style={{
+            width: '1440px',
+            height: '840px',
+            borderRadius: '60px',
+            boxSizing: 'border-box',
+            background: 'transparent',
+            transition: isFocus ? 'all 0.2s 0.4s linear' : 'all 0.2s linear',
+            // opacity: isFocus ? 1 : 0,
+          }}
+          onPointerDown={(e) => e.stopPropagation()}
+        ></iframe>
+      </Html>
+    );
+  };
+
   return (
-    <group ref={modelRef} {...props} dispose={null}>
+    <group ref={group} {...props} dispose={null}>
       <group name='Scene'>
         <group name='Scene_Collection' userData={{ name: 'Scene Collection' }}>
-          <mesh
-            name='chair'
-            castShadow
-            receiveShadow
-            geometry={nodes.chair.geometry}
-            material={materials.table}
-            position={[0.008, 0.399, -1.102]}
-            userData={{ name: 'chair' }}
-          />
           <group name='Collection' userData={{ name: 'Collection' }}>
             {/* <mesh
               name='平面'
@@ -213,48 +281,21 @@ export const Model = (props) => {
               onClick={handleFocus}
             >
               <mesh
-                name='立方体001'
-                castShadow
-                receiveShadow
-                geometry={nodes.立方体001.geometry}
-                material={materials.pc}
-              />
-              <mesh
                 name='立方体001_1'
                 castShadow
                 receiveShadow
                 geometry={nodes.立方体001_1.geometry}
+                material={materials.pc}
+              />
+              <mesh
+                name='立方体001_2'
+                castShadow
+                receiveShadow
+                geometry={nodes.立方体001_2.geometry}
                 material={materials.screen}
                 ref={screenRef}
               >
-                <Html
-                  position={[0, 0.114, 0.07]}
-                  transform
-                  distanceFactor={1}
-                  castShadow
-                  receiveShadow
-                  scale={0.24}
-                  pointerEvents={isFocus ? 'all' : 'none'}
-                  occlude='blending'
-                  visible={isFocusDelay}
-                >
-                  <iframe
-                    src='https://dododawn.com/'
-                    style={{
-                      width: '1440px',
-                      height: '840px',
-                      overflow: 'auto',
-                      borderRadius: '60px',
-                      boxSizing: 'border-box',
-                      background: 'transparent',
-                      transition: isFocus
-                        ? 'all 0.2s 0.4s linear'
-                        : 'all 0.2s linear',
-                      opacity: isFocus ? 1 : 0,
-                    }}
-                    onPointerDown={(e) => e.stopPropagation()}
-                  ></iframe>
-                </Html>
+                {/* <HtmlComp /> */}
               </mesh>
             </group>
             <mesh
@@ -294,76 +335,113 @@ export const Model = (props) => {
               userData={{ name: 'mouseboard' }}
             >
               <mesh
-                name='立方体002'
-                castShadow
-                receiveShadow
-                geometry={nodes.立方体002.geometry}
-                material={materials.mouse_board}
-              />
-              <mesh
                 name='立方体002_1'
                 castShadow
                 receiveShadow
                 geometry={nodes.立方体002_1.geometry}
+                material={materials.mouse_board}
+              />
+              <mesh
+                name='立方体002_2'
+                castShadow
+                receiveShadow
+                geometry={nodes.立方体002_2.geometry}
                 material={materials.mouse_board_top}
               />
             </group>
+            <mesh
+              name='圆环'
+              castShadow
+              receiveShadow
+              geometry={nodes.圆环.geometry}
+              material={materials.plate}
+              position={[0.863, 1.746, -2.457]}
+              rotation={[Math.PI / 2, 0, 0]}
+              scale={0.108}
+              userData={{ name: '圆环' }}
+            />
+            <mesh
+              name='柱体001'
+              castShadow
+              receiveShadow
+              geometry={nodes.柱体001.geometry}
+              material={nodes.柱体001.material}
+              userData={{ name: '柱体.001' }}
+            />
           </group>
           <group name='Body' userData={{ name: 'Body' }}>
             <mesh
-              name='球体'
+              name='chair'
               castShadow
               receiveShadow
-              geometry={nodes.球体.geometry}
-              material={materials.person}
-              position={[0.058, 0.952, -1.297]}
-              userData={{ name: '球体' }}
-            />
+              geometry={nodes.chair.geometry}
+              material={materials.table}
+              position={[0.008, 0.399, -1.102]}
+              userData={{ name: 'chair' }}
+            >
+              <group
+                name='骨架'
+                position={[0.05, -0.043, -0.187]}
+                scale={0.365}
+                userData={{ name: '骨架' }}
+              >
+                <primitive object={nodes.骨骼} />
+              </group>
+            </mesh>
+            <group name='立方体' userData={{ name: '立方体' }}>
+              <mesh
+                name='立方体012'
+                castShadow
+                receiveShadow
+                geometry={nodes.立方体012.geometry}
+                material={materials.floor}
+              />
+              <mesh
+                name='立方体012_1'
+                castShadow
+                receiveShadow
+                geometry={nodes.立方体012_1.geometry}
+                material={materials.floor_inner}
+              />
+            </group>
             <mesh
-              name='立方体006'
+              name='立方体002'
               castShadow
               receiveShadow
-              geometry={nodes.立方体006.geometry}
-              material={materials.person}
-              position={[0.058, 0.55, -1.289]}
-              userData={{ name: '立方体.006' }}
+              geometry={nodes.立方体002.geometry}
+              material={materials.sofa}
+              position={[-2.105, 0.268, -0.468]}
+              userData={{ name: '立方体.002' }}
             />
+            <group
+              name='立方体004'
+              position={[0.616, 0.6, -2.051]}
+              rotation={[Math.PI, 0, Math.PI]}
+              userData={{ name: '立方体.004' }}
+            >
+              <mesh
+                name='立方体014'
+                castShadow
+                receiveShadow
+                geometry={nodes.立方体014.geometry}
+                material={materials.phone}
+              />
+              <mesh
+                name='立方体014_1'
+                castShadow
+                receiveShadow
+                geometry={nodes.立方体014_1.geometry}
+                material={materials.phonescreenimage}
+              />
+            </group>
             <mesh
-              name='立方体007'
+              name='立方体005'
               castShadow
               receiveShadow
-              geometry={nodes.立方体007.geometry}
-              material={materials.person}
-              position={[-0.074, 0.487, -1.359]}
-              userData={{ name: '立方体.007' }}
-            />
-            <mesh
-              name='立方体008'
-              castShadow
-              receiveShadow
-              geometry={nodes.立方体008.geometry}
-              material={materials.person}
-              position={[-0.019, 0.372, -1.557]}
-              rotation={[Math.PI / 2, 0, 0]}
-              userData={{ name: '立方体.008' }}
-            />
-            <mesh
-              name='立方体009'
-              castShadow
-              receiveShadow
-              geometry={nodes.立方体009.geometry}
-              material={materials.person}
-              position={[-0.019, 0.329, -1.497]}
-              userData={{ name: '立方体.009' }}
-            />
-            <mesh
-              name='立方体010'
-              castShadow
-              receiveShadow
-              geometry={nodes.立方体010.geometry}
-              material={materials.person}
-              position={[-0.019, 0.329, -1.497]}
-              userData={{ name: '立方体.010' }}
+              geometry={nodes.立方体005.geometry}
+              material={materials.table}
+              position={[0.863, 1.746, -2.46]}
+              userData={{ name: '立方体.005' }}
             />
           </group>
         </group>

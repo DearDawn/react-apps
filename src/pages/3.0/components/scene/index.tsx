@@ -23,7 +23,7 @@ const ThreeScene = () => {
         <CanvasWrapper>
           <Canvas
             camera={{ position: [8, -5, 2], fov: 50 }}
-            style={{ width: '100%', height: '100vh' }}
+            style={{ width: '100%', height: '100%' }}
             gl={{
               outputColorSpace: THREE.SRGBColorSpace,
               toneMapping: THREE.ACESFilmicToneMapping,
