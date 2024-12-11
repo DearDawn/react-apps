@@ -182,9 +182,10 @@ export const Model = (props) => {
     // 累计时间
     elapsedTime.current = delta * 1000 + elapsedTime.current; // 将 delta 转换为毫秒
     // 计算插值因子 t
-    const t = Math.min(elapsedTime.current / 1000, 1);
+    const t = Math.min(elapsedTime.current / 500, 1);
+    const t2 = Math.min(Math.max((elapsedTime.current - 400) / 500, 0), 1);
 
-    const targetPos = isFocusPhone
+    const lookAtTargetPos = isFocusPhone
       ? new THREE.Vector3().lerpVectors(
           cameraLookAtPoint.current.clone(),
           phonePosition.clone(),
@@ -196,25 +197,37 @@ export const Model = (props) => {
           t
         );
 
-    if (t >= 1) {
+    const moveTargetPos = isFocusPhone
+      ? new THREE.Vector3().lerpVectors(
+          {
+            x: targetPositionPhone.x,
+            y: targetPositionPhone.y + 1,
+            z: 0,
+          },
+          targetPositionPhone.clone(),
+          t2
+        )
+      : new THREE.Vector3().lerpVectors(
+          targetPositionPhone.clone(),
+          {
+            x: targetPositionPhone.x,
+            y: targetPositionPhone.y + 1,
+            z: 0,
+          },
+          t2
+        );
+
+    if (t2 >= 1) {
       setMovingPhone(false);
     }
 
     if (isFocusPhone) {
-      camera.position.lerpVectors(
-        initialCameraPos.current,
-        targetPositionPhone,
-        t
-      );
+      camera.position.lerpVectors(initialCameraPos.current, moveTargetPos, t);
     } else {
-      camera.position.lerpVectors(
-        targetPositionPhone,
-        initialCameraPos.current,
-        t
-      );
+      camera.position.lerpVectors(moveTargetPos, initialCameraPos.current, t);
     }
 
-    camera.lookAt(targetPos);
+    camera.lookAt(lookAtTargetPos);
   });
 
   useFrame((state, delta) => {
