@@ -2,6 +2,13 @@ import * as THREE from 'three';
 
 // 扩展 THREE.Vector3 的类型定义
 declare module 'three' {
+  interface Camera {
+    /** 目标看向点 */
+    lookAtPoint: THREE.Vector3;
+    /** 当前看向点 */
+    currentLookAtPoint: THREE.Vector3;
+  }
+
   interface Vector3 {
     /** 实现二次贝塞尔曲线方法 */
     quadraticBezier(

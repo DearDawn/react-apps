@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import { ThreeEvent, useFrame, useThree } from '@react-three/fiber';
 import { GLTF } from 'three-stdlib';
 import * as THREE from 'three';
-import { useGltfLoader } from '../../hooks';
+import { useFocus, useGltfLoader } from '../../hooks';
 import { Html, useAnimations } from '@react-three/drei';
 
 type GLTFResult = GLTF & {
@@ -61,21 +61,14 @@ export const Model = (props) => {
   const { camera } = useThree();
   const { nodes, materials, animations } = gltf || {};
 
-  const [isFocus, setIsFocus] = useState(false);
   const [isFocusPhone, setIsFocusPhone] = useState(false);
-  const [moving, setMoving] = useState(false);
   const [movingPhone, setMovingPhone] = useState(false);
-  const movingLock = moving || movingPhone;
   const [screenPosition, setScreenPosition] = useState(
     new THREE.Vector3(0, 0, 0)
   );
   const [phonePosition, setPhonePosition] = useState(
     new THREE.Vector3(0, 0, 0)
   );
-  const cameraLookAtPoint = useRef(screenPosition.clone());
-  const targetPosition = new THREE.Vector3()
-    .copy(screenPosition)
-    .add(new THREE.Vector3(0, 0, 4));
   const targetPositionPhone = new THREE.Vector3()
     .copy(phonePosition)
     .add(new THREE.Vector3(0, 1, 0));
@@ -90,6 +83,14 @@ export const Model = (props) => {
   const duration = 500; // 动画持续时间
   const elapsedTime = useRef(0); // 累计时间
 
+  const { startFocus, endFocus, isFocus, moving } = useFocus({
+    camera,
+    target: screenPosition,
+    offset: new THREE.Vector3(0, 0, 4),
+    duration,
+  });
+  const movingLock = moving || movingPhone;
+
   const handleFocus = (e: ThreeEvent<MouseEvent>) => {
     if (movingLock) return;
 
@@ -102,14 +103,11 @@ export const Model = (props) => {
       isFocus ? 100 : 0
     );
 
-    setTimeout(
-      () => {
-        setIsFocus((_isFocus) => !_isFocus);
-        elapsedTime.current = 0;
-        setMoving(true);
-      },
-      isFocus ? 0 : 300
-    );
+    if (isFocus) {
+      endFocus();
+    } else {
+      startFocus();
+    }
   };
 
   const handleFocusPhone = (e: ThreeEvent<MouseEvent>) => {
@@ -154,13 +152,12 @@ export const Model = (props) => {
     );
     setScreenPosition(screenPos);
 
-    cameraLookAtPoint.current = screenPos.clone();
-
     setPhonePosition(
       phoneRef.current.getWorldPosition(new THREE.Vector3(0, 0, 0))
     );
 
-    camera.lookAt(cameraLookAtPoint.current);
+    camera.lookAtPoint = screenPos.clone();
+    camera.lookAt(camera.lookAtPoint);
 
     return () => {
       mixerRef.current.stopAllAction();
@@ -182,17 +179,17 @@ export const Model = (props) => {
     // 累计时间
     elapsedTime.current = delta * 1000 + elapsedTime.current; // 将 delta 转换为毫秒
     // 计算插值因子 t
-    const t = Math.min(elapsedTime.current / 1000, 1);
+    const t = Math.min(elapsedTime.current / 800, 1);
 
     const lookAtTargetPos = isFocusPhone
       ? new THREE.Vector3().lerpVectors(
-          cameraLookAtPoint.current.clone(),
+          camera.lookAtPoint.clone(),
           phonePosition.clone(),
           t
         )
       : new THREE.Vector3().lerpVectors(
           phonePosition.clone(),
-          cameraLookAtPoint.current.clone(),
+          camera.lookAtPoint.clone(),
           t
         );
 
@@ -225,27 +222,6 @@ export const Model = (props) => {
     }
 
     camera.lookAt(lookAtTargetPos);
-  });
-
-  useFrame((state, delta) => {
-    if (!pcRef.current || !moving) return;
-
-    // 累计时间
-    elapsedTime.current = delta * 1000 + elapsedTime.current; // 将 delta 转换为毫秒
-    // 计算插值因子 t
-    const t = Math.min(elapsedTime.current / duration, 1);
-
-    if (t >= 1) {
-      setMoving(false);
-    }
-
-    if (isFocus) {
-      camera.position.lerpVectors(initialCameraPos.current, targetPosition, t);
-    } else {
-      camera.position.lerpVectors(targetPosition, initialCameraPos.current, t);
-    }
-
-    camera.lookAt(cameraLookAtPoint.current);
   });
 
   useFrame((state, delta) => {
