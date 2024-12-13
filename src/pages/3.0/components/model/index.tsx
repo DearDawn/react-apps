@@ -19,6 +19,8 @@ type GLTFResult = GLTF & {
     立方体002_2: THREE.Mesh;
     圆环: THREE.Mesh;
     柱体001: THREE.Mesh;
+    立方体022: THREE.Mesh;
+    立方体022_1: THREE.Mesh;
     chair: THREE.Mesh;
     球体: THREE.Mesh;
     立方体001: THREE.Mesh;
@@ -27,13 +29,21 @@ type GLTFResult = GLTF & {
     立方体009: THREE.Mesh;
     立方体008: THREE.Mesh;
     立方体006: THREE.Mesh;
-    立方体012: THREE.Mesh;
     立方体012_1: THREE.Mesh;
+    立方体012_2: THREE.Mesh;
     立方体002: THREE.Mesh;
-    立方体014: THREE.Mesh;
     立方体014_1: THREE.Mesh;
+    立方体014_2: THREE.Mesh;
     立方体005: THREE.Mesh;
+    球体001: THREE.Mesh;
+    立方体016: THREE.Mesh;
+    立方体012: THREE.Mesh;
+    立方体015: THREE.Mesh;
+    立方体014: THREE.Mesh;
+    立方体013: THREE.Mesh;
+    立方体011: THREE.Mesh;
     骨骼: THREE.Bone;
+    骨骼_1: THREE.Bone;
   };
   materials: {
     wall: THREE.MeshStandardMaterial;
@@ -47,6 +57,8 @@ type GLTFResult = GLTF & {
     mouse_board: THREE.MeshStandardMaterial;
     mouse_board_top: THREE.MeshStandardMaterial;
     plate: THREE.MeshStandardMaterial;
+    ipad: THREE.MeshStandardMaterial;
+    ipadscreen: THREE.MeshStandardMaterial;
     person: THREE.MeshStandardMaterial;
     floor: THREE.MeshStandardMaterial;
     floor_inner: THREE.MeshStandardMaterial;
@@ -56,20 +68,20 @@ type GLTFResult = GLTF & {
   };
 };
 
+type ActionName = 'move' | 'stand' | '骨架.001动作';
+
 export const Model = (props) => {
-  const gltf = useGltfLoader<GLTFResult>('/public/models/3.0/room_v4.glb');
+  const gltf = useGltfLoader<GLTFResult>('/public/models/3.0/room_v5.glb');
   const { camera } = useThree();
   const { nodes, materials, animations } = gltf || {};
 
-  const [screenPosition, setScreenPosition] = useState(
-    new THREE.Vector3(0, 0, 0)
-  );
-  const [phonePosition, setPhonePosition] = useState(
-    new THREE.Vector3(0, 0, 0)
-  );
+  const [screenPosition, setScreenPosition] = useState(new THREE.Vector3());
+  const [phonePosition, setPhonePosition] = useState(new THREE.Vector3());
+  const [padPosition, setPadPosition] = useState(new THREE.Vector3());
   const group = useRef<THREE.Object3D>();
-  const pcRef = useRef<THREE.Mesh>();
-  const phoneRef = useRef<THREE.Mesh>();
+  const pcRef = useRef<THREE.Group>();
+  const phoneRef = useRef<THREE.Group>();
+  const padRef = useRef<THREE.Group>();
   const mixerRef = useRef<THREE.AnimationMixer>();
   const { actions } = useAnimations(animations, group);
   const bodyRef = useRef(document.body);
@@ -100,7 +112,22 @@ export const Model = (props) => {
     ],
     duration: 800,
   });
-  const movingLock = moving || movingPhone;
+
+  const {
+    startFocus: startFocusPad,
+    endFocus: endFocusPad,
+    isFocus: isFocusPad,
+    moving: movingPad,
+  } = useFocus({
+    camera,
+    target: padPosition,
+    offset: new THREE.Vector3(0, 4, 4),
+    duration: 800,
+  });
+
+  console.log('[dodo] ', 'padPosition', padPosition);
+
+  const movingLock = moving || movingPhone || movingPad;
 
   const handleFocus = (e: ThreeEvent<MouseEvent>) => {
     if (movingLock) return;
@@ -125,6 +152,18 @@ export const Model = (props) => {
       endFocusPhone();
     } else {
       startFocusPhone();
+    }
+  };
+
+  const handleFocusPad = (e: ThreeEvent<MouseEvent>) => {
+    if (movingLock) return;
+
+    e.stopPropagation();
+
+    if (isFocusPad) {
+      endFocusPad();
+    } else {
+      startFocusPad();
     }
   };
 
@@ -155,22 +194,19 @@ export const Model = (props) => {
       action.clampWhenFinished = true;
     }
 
-    const screenPos = pcRef.current.getWorldPosition(
-      new THREE.Vector3(0, 0, 0)
-    );
+    const screenPos = pcRef.current.getWorldPosition(new THREE.Vector3());
     setScreenPosition(screenPos);
+    setPhonePosition(phoneRef.current.getWorldPosition(new THREE.Vector3()));
+    setPadPosition(padRef.current.getWorldPosition(new THREE.Vector3()));
 
-    setPhonePosition(
-      phoneRef.current.getWorldPosition(new THREE.Vector3(0, 0, 0))
-    );
-
+    actions['骨架.001动作'].play();
     camera.lookAtPoint = screenPos.clone();
     camera.lookAt(camera.lookAtPoint);
 
     return () => {
       mixerRef.current.stopAllAction();
     };
-  }, [camera, gltf]);
+  }, [actions, camera, gltf]);
 
   // useEffect(() => {
   //   setTimeout(
@@ -281,6 +317,7 @@ export const Model = (props) => {
               position={[0, 0.975, -2.427]}
               userData={{ name: 'pc' }}
               onClick={handleFocus}
+              ref={pcRef}
             >
               <mesh
                 name='立方体001_1'
@@ -295,7 +332,6 @@ export const Model = (props) => {
                 receiveShadow
                 geometry={nodes.立方体001_2.geometry}
                 material={materials.screen}
-                ref={pcRef}
               >
                 {/* <HtmlComp /> */}
               </mesh>
@@ -370,6 +406,28 @@ export const Model = (props) => {
               material={nodes.柱体001.material}
               userData={{ name: '柱体.001' }}
             />
+            <group
+              name='立方体017'
+              position={[-0.055, -0.12, 0]}
+              userData={{ name: '立方体.017' }}
+              ref={padRef}
+              onClick={handleFocusPad}
+            >
+              <mesh
+                name='立方体022'
+                castShadow
+                receiveShadow
+                geometry={nodes.立方体022.geometry}
+                material={materials.ipad}
+              />
+              <mesh
+                name='立方体022_1'
+                castShadow
+                receiveShadow
+                geometry={nodes.立方体022_1.geometry}
+                material={materials.ipadscreen}
+              />
+            </group>
           </group>
           <group name='Body' userData={{ name: 'Body' }}>
             <mesh
@@ -392,17 +450,17 @@ export const Model = (props) => {
             </mesh>
             <group name='立方体' userData={{ name: '立方体' }}>
               <mesh
-                name='立方体012'
-                castShadow
-                receiveShadow
-                geometry={nodes.立方体012.geometry}
-                material={materials.floor}
-              />
-              <mesh
                 name='立方体012_1'
                 castShadow
                 receiveShadow
                 geometry={nodes.立方体012_1.geometry}
+                material={materials.floor}
+              />
+              <mesh
+                name='立方体012_2'
+                castShadow
+                receiveShadow
+                geometry={nodes.立方体012_2.geometry}
                 material={materials.floor_inner}
               />
             </group>
@@ -421,21 +479,21 @@ export const Model = (props) => {
               rotation={[Math.PI, 0, Math.PI]}
               userData={{ name: '立方体.004' }}
               onClick={handleFocusPhone}
+              ref={phoneRef}
             >
-              <mesh
-                name='立方体014'
-                castShadow
-                receiveShadow
-                geometry={nodes.立方体014.geometry}
-                material={materials.phone}
-              />
               <mesh
                 name='立方体014_1'
                 castShadow
                 receiveShadow
                 geometry={nodes.立方体014_1.geometry}
+                material={materials.phone}
+              />
+              <mesh
+                name='立方体014_2'
+                castShadow
+                receiveShadow
+                geometry={nodes.立方体014_2.geometry}
                 material={materials.phonescreenimage}
-                ref={phoneRef}
               />
             </group>
             <mesh
@@ -447,6 +505,15 @@ export const Model = (props) => {
               position={[0.863, 1.746, -2.46]}
               userData={{ name: '立方体.005' }}
             />
+            <group
+              name='骨架001'
+              position={[-1.819, 0.182, -1.042]}
+              rotation={[0, -Math.PI / 2, 0]}
+              scale={0.365}
+              userData={{ name: '骨架.001' }}
+            >
+              <primitive object={nodes.骨骼_1} />
+            </group>
           </group>
         </group>
       </group>
