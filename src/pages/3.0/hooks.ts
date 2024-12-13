@@ -14,12 +14,14 @@ export const useFocus = ({
   camera,
   target = new THREE.Vector3(),
   targetRef,
+  midPoints = [],
   offset = new THREE.Vector3(0, 1, 0),
   duration = 1000,
 }: {
   camera: Camera;
   target?: THREE.Vector3;
   targetRef?: React.MutableRefObject<THREE.Mesh>;
+  midPoints?: THREE.Vector3Like[];
   offset?: THREE.Vector3;
   duration?: number;
 }) => {
@@ -41,7 +43,6 @@ export const useFocus = ({
     setMoving(true);
   };
 
-  console.log('[dodo] render', targetPos, camera.lookAtPoint);
   useFrame((_, delta) => {
     if (!moving) return;
 
@@ -55,13 +56,35 @@ export const useFocus = ({
       setMoving(false);
     }
 
+    const lookAtTargetPos = isFocus
+      ? new THREE.Vector3().lerpVectors(
+          camera.lookAtPoint.clone(),
+          targetPos.clone(),
+          t
+        )
+      : new THREE.Vector3().lerpVectors(
+          targetPos.clone(),
+          camera.lookAtPoint.clone(),
+          t
+        );
+
+    const from = initialCameraPos.current;
+    const to = targetViewPos;
+
     if (isFocus) {
-      camera.position.lerpVectors(initialCameraPos.current, targetViewPos, t);
-      camera.lookAt(targetPos);
+      if (midPoints.length === 1) {
+        camera.position.quadraticBezier(from, midPoints[0], to, t);
+      } else {
+        camera.position.lerpVectors(from, to, t);
+      }
     } else {
-      camera.position.lerpVectors(targetViewPos, initialCameraPos.current, t);
-      camera.lookAt(camera.lookAtPoint);
+      if (midPoints.length === 1) {
+        camera.position.quadraticBezier(to, midPoints[0], from, t);
+      }
+      camera.position.lerpVectors(to, from, t);
     }
+
+    camera.lookAt(lookAtTargetPos);
   });
 
   return { startFocus, endFocus, isFocus, moving };
