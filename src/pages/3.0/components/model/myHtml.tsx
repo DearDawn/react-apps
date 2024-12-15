@@ -7,6 +7,7 @@ export const MyHtml = ({
   visible,
   widthScale = 1,
   heightScale = 1,
+  onClose, // 新增 onClose prop
 }) => {
   const bodyRef = useRef(document.body);
   const { startCalc } = useScreenPosition({
@@ -32,6 +33,22 @@ export const MyHtml = ({
     }
   }, [startCalc, visible]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (visible) {
+        const htmlElement = document.querySelector('iframe');
+        if (htmlElement && !htmlElement.contains(event.target)) {
+          onClose?.();
+        }
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [visible, onClose]);
+
   return (
     <Html
       style={{
@@ -39,6 +56,7 @@ export const MyHtml = ({
         pointerEvents: visible ? 'auto' : 'none',
         background: 'transparent',
       }}
+      onClick={(e) => e.stopPropagation()}
       castShadow
       receiveShadow
       // occlude='blending'

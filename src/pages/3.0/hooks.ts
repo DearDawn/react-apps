@@ -26,7 +26,7 @@ export const useFocus = ({
   midPoints?: THREE.Vector3Like[];
   offset?: THREE.Vector3;
   duration?: number;
-  onStart?: () => void;
+  onStart?: (isFocus: boolean) => void;
   onEnd?: (isFocus: boolean) => void;
 }) => {
   const [isFocus, setIsFocus] = useState(false);
@@ -44,13 +44,14 @@ export const useFocus = ({
     setIsFocus(true);
     setMoving(true);
     setInited(true);
-    onStart?.();
+    onStart?.(true);
   };
 
   const endFocus = () => {
     setIsFocus(false);
     setMoving(true);
     setInited(true);
+    onStart?.(false);
   };
 
   useEffect(() => {

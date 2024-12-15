@@ -23,20 +23,20 @@ export const Model = (props) => {
   const mixerRef = useRef<THREE.AnimationMixer>();
   const { actions } = useAnimations(animations, group);
 
-  const { startFocus, endFocus, isFocus, isDelayFocus, moving } = useFocus({
+  const { startFocus, endFocus, isDelayFocus, moving } = useFocus({
     camera,
     target: screenPosition,
     offset: new THREE.Vector3(0, 0, 4),
     duration: 500,
-    onStart: () => {
+    onStart: (_isFocus) => {
       htmlTargetRef.current = pcRef.current;
+      setTimeout(() => handlePlayAnimation(_isFocus), _isFocus ? 0 : 100);
     },
   });
 
   const {
     startFocus: startFocusPhone,
     endFocus: endFocusPhone,
-    isFocus: isFocusPhone,
     isDelayFocus: isDelayFocusPhone,
     moving: movingPhone,
   } = useFocus({
@@ -59,7 +59,6 @@ export const Model = (props) => {
   const {
     startFocus: startFocusPad,
     endFocus: endFocusPad,
-    isFocus: isFocusPad,
     isDelayFocus: isDelayFocusPad,
     moving: movingPad,
   } = useFocus({
@@ -86,13 +85,7 @@ export const Model = (props) => {
 
     e.stopPropagation();
 
-    setTimeout(() => handlePlayAnimation(!isFocus), isFocus ? 100 : 0);
-
-    if (isFocus) {
-      endFocus();
-    } else {
-      startFocus();
-    }
+    startFocus();
   };
 
   const handleFocusPhone = (e: ThreeEvent<MouseEvent>) => {
@@ -100,11 +93,7 @@ export const Model = (props) => {
 
     e.stopPropagation();
 
-    if (isFocusPhone) {
-      endFocusPhone();
-    } else {
-      startFocusPhone();
-    }
+    startFocusPhone();
   };
 
   const handleFocusPad = (e: ThreeEvent<MouseEvent>) => {
@@ -112,11 +101,7 @@ export const Model = (props) => {
 
     e.stopPropagation();
 
-    if (isFocusPad) {
-      endFocusPad();
-    } else {
-      startFocusPad();
-    }
+    startFocusPad();
   };
 
   const handlePlayAnimation = (leave = false) => {
@@ -242,7 +227,11 @@ export const Model = (props) => {
               userData={{ name: '02-v2' }}
               ref={pcRef}
             >
-              <MyHtml targetRef={pcRef} visible={isDelayFocus} />
+              <MyHtml
+                targetRef={pcRef}
+                visible={isDelayFocus}
+                onClose={endFocus}
+              />
             </mesh>
             <mesh
               name='keyboard'
@@ -328,6 +317,7 @@ export const Model = (props) => {
                 <MyHtml
                   targetRef={padRef}
                   visible={isDelayFocusPad}
+                  onClose={endFocusPad}
                   widthScale={0.6}
                   heightScale={0.8}
                 />
@@ -400,7 +390,11 @@ export const Model = (props) => {
                 geometry={nodes.立方体014_2.geometry}
                 material={materials.phonescreenimage}
               >
-                <MyHtml targetRef={phoneRef} visible={isDelayFocusPhone} />
+                <MyHtml
+                  targetRef={phoneRef}
+                  visible={isDelayFocusPhone}
+                  onClose={endFocusPhone}
+                />
               </mesh>
             </group>
             <mesh
