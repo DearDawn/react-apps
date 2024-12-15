@@ -1,0 +1,67 @@
+import { GLTF } from 'three-stdlib';
+import * as THREE from 'three';
+
+export type GLTFResult = GLTF & {
+  nodes: {
+    平面: THREE.Mesh;
+    table: THREE.Mesh;
+    柱体: THREE.Mesh;
+    立方体001_1: THREE.Mesh;
+    立方体001_2: THREE.Mesh;
+    ['02-v2']: THREE.Mesh;
+    keyboard: THREE.Mesh;
+    立方体003: THREE.Mesh;
+    立方体002_1: THREE.Mesh;
+    立方体002_2: THREE.Mesh;
+    圆环: THREE.Mesh;
+    柱体001: THREE.Mesh;
+    立方体022: THREE.Mesh;
+    立方体022_1: THREE.Mesh;
+    chair: THREE.Mesh;
+    球体: THREE.Mesh;
+    立方体001: THREE.Mesh;
+    立方体007: THREE.Mesh;
+    立方体010: THREE.Mesh;
+    立方体009: THREE.Mesh;
+    立方体008: THREE.Mesh;
+    立方体006: THREE.Mesh;
+    立方体012_1: THREE.Mesh;
+    立方体012_2: THREE.Mesh;
+    立方体002: THREE.Mesh;
+    立方体014_1: THREE.Mesh;
+    立方体014_2: THREE.Mesh;
+    立方体005: THREE.Mesh;
+    球体001: THREE.Mesh;
+    立方体016: THREE.Mesh;
+    立方体012: THREE.Mesh;
+    立方体015: THREE.Mesh;
+    立方体014: THREE.Mesh;
+    立方体013: THREE.Mesh;
+    立方体011: THREE.Mesh;
+    骨骼: THREE.Bone;
+    骨骼_1: THREE.Bone;
+  };
+  materials: {
+    wall: THREE.MeshStandardMaterial;
+    table: THREE.MeshStandardMaterial;
+    leg: THREE.MeshStandardMaterial;
+    pc: THREE.MeshStandardMaterial;
+    screen: THREE.MeshStandardMaterial;
+    ['02-v2']: THREE.MeshStandardMaterial;
+    keyboard: THREE.MeshStandardMaterial;
+    keyboard_inner: THREE.MeshStandardMaterial;
+    mouse_board: THREE.MeshStandardMaterial;
+    mouse_board_top: THREE.MeshStandardMaterial;
+    plate: THREE.MeshStandardMaterial;
+    ipad: THREE.MeshStandardMaterial;
+    ipadscreen: THREE.MeshStandardMaterial;
+    person: THREE.MeshStandardMaterial;
+    floor: THREE.MeshStandardMaterial;
+    floor_inner: THREE.MeshStandardMaterial;
+    sofa: THREE.MeshStandardMaterial;
+    phone: THREE.MeshStandardMaterial;
+    phonescreenimage: THREE.MeshStandardMaterial;
+  };
+};
+
+export type ActionName = 'move' | 'stand' | '骨架.001动作';

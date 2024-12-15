@@ -1,74 +1,11 @@
 import { useRef, useEffect, useState } from 'react';
 import { ThreeEvent, useFrame, useThree } from '@react-three/fiber';
-import { GLTF } from 'three-stdlib';
 import * as THREE from 'three';
-import { useFocus, useGltfLoader, useScreenPosition } from '../../hooks';
-import { Html, useAnimations } from '@react-three/drei';
-
-type GLTFResult = GLTF & {
-  nodes: {
-    平面: THREE.Mesh;
-    table: THREE.Mesh;
-    柱体: THREE.Mesh;
-    立方体001_1: THREE.Mesh;
-    立方体001_2: THREE.Mesh;
-    ['02-v2']: THREE.Mesh;
-    keyboard: THREE.Mesh;
-    立方体003: THREE.Mesh;
-    立方体002_1: THREE.Mesh;
-    立方体002_2: THREE.Mesh;
-    圆环: THREE.Mesh;
-    柱体001: THREE.Mesh;
-    立方体022: THREE.Mesh;
-    立方体022_1: THREE.Mesh;
-    chair: THREE.Mesh;
-    球体: THREE.Mesh;
-    立方体001: THREE.Mesh;
-    立方体007: THREE.Mesh;
-    立方体010: THREE.Mesh;
-    立方体009: THREE.Mesh;
-    立方体008: THREE.Mesh;
-    立方体006: THREE.Mesh;
-    立方体012_1: THREE.Mesh;
-    立方体012_2: THREE.Mesh;
-    立方体002: THREE.Mesh;
-    立方体014_1: THREE.Mesh;
-    立方体014_2: THREE.Mesh;
-    立方体005: THREE.Mesh;
-    球体001: THREE.Mesh;
-    立方体016: THREE.Mesh;
-    立方体012: THREE.Mesh;
-    立方体015: THREE.Mesh;
-    立方体014: THREE.Mesh;
-    立方体013: THREE.Mesh;
-    立方体011: THREE.Mesh;
-    骨骼: THREE.Bone;
-    骨骼_1: THREE.Bone;
-  };
-  materials: {
-    wall: THREE.MeshStandardMaterial;
-    table: THREE.MeshStandardMaterial;
-    leg: THREE.MeshStandardMaterial;
-    pc: THREE.MeshStandardMaterial;
-    screen: THREE.MeshStandardMaterial;
-    ['02-v2']: THREE.MeshStandardMaterial;
-    keyboard: THREE.MeshStandardMaterial;
-    keyboard_inner: THREE.MeshStandardMaterial;
-    mouse_board: THREE.MeshStandardMaterial;
-    mouse_board_top: THREE.MeshStandardMaterial;
-    plate: THREE.MeshStandardMaterial;
-    ipad: THREE.MeshStandardMaterial;
-    ipadscreen: THREE.MeshStandardMaterial;
-    person: THREE.MeshStandardMaterial;
-    floor: THREE.MeshStandardMaterial;
-    floor_inner: THREE.MeshStandardMaterial;
-    sofa: THREE.MeshStandardMaterial;
-    phone: THREE.MeshStandardMaterial;
-    phonescreenimage: THREE.MeshStandardMaterial;
-  };
-};
-
-type ActionName = 'move' | 'stand' | '骨架.001动作';
+import { useFocus, useGltfLoader } from '../../hooks';
+import { useAnimations } from '@react-three/drei';
+import DebugBoundingBox from './debugBox';
+import { MyHtml } from './myHtml';
+import { GLTFResult } from './type';
 
 export const Model = (props) => {
   const gltf = useGltfLoader<GLTFResult>('/public/models/3.0/room_v5.glb');
@@ -80,25 +17,19 @@ export const Model = (props) => {
   const [padPosition, setPadPosition] = useState(new THREE.Vector3());
   const group = useRef<THREE.Object3D>();
   const pcRef = useRef<THREE.Mesh>();
+  const htmlTargetRef = useRef<THREE.Mesh | THREE.Group>();
   const phoneRef = useRef<THREE.Group>();
   const padRef = useRef<THREE.Group>();
   const mixerRef = useRef<THREE.AnimationMixer>();
   const { actions } = useAnimations(animations, group);
-  const bodyRef = useRef(document.body);
-  const htmlRef = useRef<HTMLDivElement>(null);
-  const { startCalc } = useScreenPosition(camera);
-  const [screenSize, setScreenSize] = useState([1, 1]);
 
-  const { startFocus, endFocus, isFocus, moving } = useFocus({
+  const { startFocus, endFocus, isFocus, isDelayFocus, moving } = useFocus({
     camera,
     target: screenPosition,
     offset: new THREE.Vector3(0, 0, 4),
     duration: 500,
-    onEnd: (isFocus) => {
-      if (isFocus) {
-        const { screenWidth, screenHeight } = startCalc(pcRef.current);
-        setScreenSize([screenWidth, screenHeight]);
-      }
+    onStart: () => {
+      htmlTargetRef.current = pcRef.current;
     },
   });
 
@@ -106,6 +37,7 @@ export const Model = (props) => {
     startFocus: startFocusPhone,
     endFocus: endFocusPhone,
     isFocus: isFocusPhone,
+    isDelayFocus: isDelayFocusPhone,
     moving: movingPhone,
   } = useFocus({
     camera,
@@ -119,12 +51,16 @@ export const Model = (props) => {
       },
     ],
     duration: 800,
+    onStart: () => {
+      htmlTargetRef.current = phoneRef.current;
+    },
   });
 
   const {
     startFocus: startFocusPad,
     endFocus: endFocusPad,
     isFocus: isFocusPad,
+    isDelayFocus: isDelayFocusPad,
     moving: movingPad,
   } = useFocus({
     camera,
@@ -138,6 +74,9 @@ export const Model = (props) => {
       },
     ],
     duration: 1000,
+    onStart: () => {
+      htmlTargetRef.current = padRef.current;
+    },
   });
 
   const movingLock = moving || movingPhone || movingPad;
@@ -236,40 +175,9 @@ export const Model = (props) => {
     }
   });
 
-  const HtmlComp = () => {
-    return (
-      <Html
-        ref={htmlRef}
-        style={{
-          transform: `translate(-50%, -50%) scale(${screenSize[0] / 1440})`,
-        }}
-        castShadow
-        receiveShadow
-        // pointerEvents={isFocus ? 'all' : 'none'}
-        pointerEvents='none'
-        occlude='blending'
-        visible={isFocus}
-        portal={bodyRef}
-      >
-        <iframe
-          src='https://dododawn.com/'
-          style={{
-            width: '1440px',
-            height: `${(screenSize[1] / screenSize[0]) * 1440}px`,
-            borderRadius: '60px',
-            boxSizing: 'border-box',
-            background: 'transparent',
-            transition: isFocus ? 'all 0.2s 0.4s linear' : 'all 0.2s linear',
-            opacity: isFocus ? 1 : 0,
-          }}
-          onPointerDown={(e) => e.stopPropagation()}
-        ></iframe>
-      </Html>
-    );
-  };
-
   return (
     <group ref={group} {...props} dispose={null}>
+      <DebugBoundingBox targetRef={padRef} />
       <group name='Scene'>
         <group name='Scene_Collection' userData={{ name: 'Scene Collection' }}>
           <group name='Collection' userData={{ name: 'Collection' }}>
@@ -320,10 +228,7 @@ export const Model = (props) => {
                 receiveShadow
                 geometry={nodes.立方体001_2.geometry}
                 material={materials.screen}
-                ref={pcRef}
-              >
-                <HtmlComp />
-              </mesh>
+              />
             </group>
             <mesh
               name='02-v2'
@@ -333,9 +238,12 @@ export const Model = (props) => {
               material={materials['02-v2']}
               position={[0.006, 1.095, -2.366]}
               rotation={[Math.PI / 2, 0, 0]}
-              scale={[0.646, 0.424, 0.559]}
+              scale={[0.646 * 0.96, 0.424 * 0.9, 0.559 * 0.88]}
               userData={{ name: '02-v2' }}
-            />
+              ref={pcRef}
+            >
+              <MyHtml targetRef={pcRef} visible={isDelayFocus} />
+            </mesh>
             <mesh
               name='keyboard'
               castShadow
@@ -400,8 +308,8 @@ export const Model = (props) => {
               name='立方体017'
               position={[-1.945, 0.513, -0.693]}
               userData={{ name: '立方体.017' }}
-              ref={padRef}
               onClick={handleFocusPad}
+              ref={padRef}
             >
               <mesh
                 name='立方体022'
@@ -416,7 +324,14 @@ export const Model = (props) => {
                 receiveShadow
                 geometry={nodes.立方体022_1.geometry}
                 material={materials.ipadscreen}
-              />
+              >
+                <MyHtml
+                  targetRef={padRef}
+                  visible={isDelayFocusPad}
+                  widthScale={0.6}
+                  heightScale={0.8}
+                />
+              </mesh>
             </group>
           </group>
           <group name='Body' userData={{ name: 'Body' }}>
@@ -484,7 +399,9 @@ export const Model = (props) => {
                 receiveShadow
                 geometry={nodes.立方体014_2.geometry}
                 material={materials.phonescreenimage}
-              />
+              >
+                <MyHtml targetRef={phoneRef} visible={isDelayFocusPhone} />
+              </mesh>
             </group>
             <mesh
               name='立方体005'
