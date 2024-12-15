@@ -36,7 +36,7 @@ export const MyHtml = ({
     <Html
       style={{
         transform: `translate(-50%, -50%) scale(${screenSize[0] / HTML_WIDTH})`,
-        pointerEvents: 'none',
+        pointerEvents: visible ? 'auto' : 'none',
         background: 'transparent',
       }}
       castShadow
@@ -53,7 +53,6 @@ export const MyHtml = ({
           borderRadius: '60px',
           boxSizing: 'border-box',
           background: 'transparent',
-          pointerEvents: 'none',
           transition: visible
             ? 'opacity 0.2s 0.4s linear'
             : 'opacity 0s linear',
