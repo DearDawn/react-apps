@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import { ThreeEvent, useFrame, useThree } from '@react-three/fiber';
 import { GLTF } from 'three-stdlib';
 import * as THREE from 'three';
-import { useFocus, useGltfLoader } from '../../hooks';
+import { useFocus, useGltfLoader, useScreenPosition } from '../../hooks';
 import { Html, useAnimations } from '@react-three/drei';
 
 type GLTFResult = GLTF & {
@@ -79,19 +79,27 @@ export const Model = (props) => {
   const [phonePosition, setPhonePosition] = useState(new THREE.Vector3());
   const [padPosition, setPadPosition] = useState(new THREE.Vector3());
   const group = useRef<THREE.Object3D>();
-  const pcRef = useRef<THREE.Group>();
+  const pcRef = useRef<THREE.Mesh>();
   const phoneRef = useRef<THREE.Group>();
   const padRef = useRef<THREE.Group>();
   const mixerRef = useRef<THREE.AnimationMixer>();
   const { actions } = useAnimations(animations, group);
   const bodyRef = useRef(document.body);
   const htmlRef = useRef<HTMLDivElement>(null);
+  const { startCalc } = useScreenPosition(camera);
+  const [screenSize, setScreenSize] = useState([1, 1]);
 
   const { startFocus, endFocus, isFocus, moving } = useFocus({
     camera,
     target: screenPosition,
     offset: new THREE.Vector3(0, 0, 4),
     duration: 500,
+    onEnd: (isFocus) => {
+      if (isFocus) {
+        const { screenWidth, screenHeight } = startCalc(pcRef.current);
+        setScreenSize([screenWidth, screenHeight]);
+      }
+    },
   });
 
   const {
@@ -121,11 +129,16 @@ export const Model = (props) => {
   } = useFocus({
     camera,
     target: padPosition,
-    offset: new THREE.Vector3(0, 4, 4),
-    duration: 800,
+    offset: new THREE.Vector3(0, 0.3, -0.5),
+    midPoints: [
+      {
+        x: padPosition.x + 5,
+        y: padPosition.y + 5,
+        z: padPosition.z - 5,
+      },
+    ],
+    duration: 1000,
   });
-
-  console.log('[dodo] ', 'padPosition', padPosition);
 
   const movingLock = moving || movingPhone || movingPad;
 
@@ -227,51 +240,27 @@ export const Model = (props) => {
     return (
       <Html
         ref={htmlRef}
-        position={[0, 0.114, 0.07]}
-        calculatePosition={(el, camera, size) => {
-          if (!pcRef.current || !htmlRef.current) return [0, 0, 0];
-
-          // 获取 mesh 的世界位置
-          const worldPosition = new THREE.Vector3();
-          pcRef.current.getWorldPosition(worldPosition);
-
-          // 将世界坐标转换为屏幕坐标
-          const screenPosition = worldPosition.clone().project(camera);
-
-          // 获取视口的宽度和高度
-          const viewportWidth = size.width;
-          const viewportHeight = size.height;
-
-          // 将屏幕坐标的范围从 [-1, 1] 转换为 [0, viewportWidth] 和 [0, viewportHeight]
-          const x = ((screenPosition.x + 1) / 2) * viewportWidth;
-          const y = ((1 - screenPosition.y) / 2) * viewportHeight;
-
-          // 现在 x 和 y 的范围是 [0, viewportWidth] 和 [0, viewportHeight]，可以用来设置 HTML 元素的位置
-          // console.log(`Screen position: (${x}, ${y})`);
-
-          return [x, y];
-        }}
-        // scale={0.1}
         style={{
-          transform: `translate(-50%, -50%) scale(0.1)`,
+          transform: `translate(-50%, -50%) scale(${screenSize[0] / 1440})`,
         }}
         castShadow
         receiveShadow
         // pointerEvents={isFocus ? 'all' : 'none'}
-        // occlude='blending'
-        // visible={isFocusDelay}
+        pointerEvents='none'
+        occlude='blending'
+        visible={isFocus}
         portal={bodyRef}
       >
         <iframe
           src='https://dododawn.com/'
           style={{
             width: '1440px',
-            height: '840px',
+            height: `${(screenSize[1] / screenSize[0]) * 1440}px`,
             borderRadius: '60px',
             boxSizing: 'border-box',
             background: 'transparent',
             transition: isFocus ? 'all 0.2s 0.4s linear' : 'all 0.2s linear',
-            // opacity: isFocus ? 1 : 0,
+            opacity: isFocus ? 1 : 0,
           }}
           onPointerDown={(e) => e.stopPropagation()}
         ></iframe>
@@ -317,7 +306,6 @@ export const Model = (props) => {
               position={[0, 0.975, -2.427]}
               userData={{ name: 'pc' }}
               onClick={handleFocus}
-              ref={pcRef}
             >
               <mesh
                 name='立方体001_1'
@@ -332,8 +320,9 @@ export const Model = (props) => {
                 receiveShadow
                 geometry={nodes.立方体001_2.geometry}
                 material={materials.screen}
+                ref={pcRef}
               >
-                {/* <HtmlComp /> */}
+                <HtmlComp />
               </mesh>
             </group>
             <mesh
@@ -404,11 +393,12 @@ export const Model = (props) => {
               receiveShadow
               geometry={nodes.柱体001.geometry}
               material={nodes.柱体001.material}
+              position={[0.863, 1.275, -2.471]}
               userData={{ name: '柱体.001' }}
             />
             <group
               name='立方体017'
-              position={[-0.055, -0.12, 0]}
+              position={[-1.945, 0.513, -0.693]}
               userData={{ name: '立方体.017' }}
               ref={padRef}
               onClick={handleFocusPad}

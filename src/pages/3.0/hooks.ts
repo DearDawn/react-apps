@@ -1,6 +1,6 @@
 import { useGLTF } from '@react-three/drei';
 import { Camera, useFrame } from '@react-three/fiber';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
 useGLTF.setDecoderPath(
@@ -17,6 +17,7 @@ export const useFocus = ({
   midPoints = [],
   offset = new THREE.Vector3(0, 1, 0),
   duration = 1000,
+  onEnd,
 }: {
   camera: Camera;
   target?: THREE.Vector3;
@@ -24,10 +25,13 @@ export const useFocus = ({
   midPoints?: THREE.Vector3Like[];
   offset?: THREE.Vector3;
   duration?: number;
+  onEnd?: (isFocus: boolean) => void;
 }) => {
   const [isFocus, setIsFocus] = useState(false);
   const [moving, setMoving] = useState(false);
+  const [inited, setInited] = useState(false);
   const elapsedTime = useRef(0);
+  const onEndRef = useRef(onEnd);
   const initialCameraPos = useRef(camera.position.clone());
   const targetPos =
     targetRef?.current?.getWorldPosition(new THREE.Vector3(0, 0, 0)) || target;
@@ -36,12 +40,20 @@ export const useFocus = ({
   const startFocus = () => {
     setIsFocus(true);
     setMoving(true);
+    setInited(true);
   };
 
   const endFocus = () => {
     setIsFocus(false);
     setMoving(true);
+    setInited(true);
   };
+
+  useEffect(() => {
+    if (!moving && inited) {
+      onEndRef.current?.(isFocus);
+    }
+  }, [inited, isFocus, moving, onEndRef]);
 
   useFrame((_, delta) => {
     if (!moving) return;
@@ -88,4 +100,61 @@ export const useFocus = ({
   });
 
   return { startFocus, endFocus, isFocus, moving };
+};
+
+export const useScreenPosition = (camera) => {
+  const startCalc = (target) => {
+    // 获取对象的边界框
+    const box = new THREE.Box3().setFromObject(target);
+
+    // 获取边界框的中心点和大小
+    const center = new THREE.Vector3();
+    const size = new THREE.Vector3();
+    box.getCenter(center);
+    box.getSize(size);
+
+    // 获取边界框的 8 个顶点
+    const vertices = [
+      new THREE.Vector3(box.min.x, box.min.y, box.min.z),
+      new THREE.Vector3(box.min.x, box.min.y, box.max.z),
+      new THREE.Vector3(box.min.x, box.max.y, box.min.z),
+      new THREE.Vector3(box.min.x, box.max.y, box.max.z),
+      new THREE.Vector3(box.max.x, box.min.y, box.min.z),
+      new THREE.Vector3(box.max.x, box.min.y, box.max.z),
+      new THREE.Vector3(box.max.x, box.max.y, box.min.z),
+      new THREE.Vector3(box.max.x, box.max.y, box.max.z),
+    ];
+
+    // 将顶点投影到屏幕坐标
+    const screenVertices = vertices.map((vertex) => {
+      const projected = vertex.project(camera);
+      return {
+        x: ((projected.x + 1) / 2) * window.innerWidth,
+        y: (-(projected.y - 1) / 2) * window.innerHeight,
+      };
+    });
+
+    // 计算屏幕上的最小和最大坐标
+    const screenMin = { x: Infinity, y: Infinity };
+    const screenMax = { x: -Infinity, y: -Infinity };
+
+    screenVertices.forEach((vertex) => {
+      screenMin.x = Math.min(screenMin.x, vertex.x);
+      screenMin.y = Math.min(screenMin.y, vertex.y);
+      screenMax.x = Math.max(screenMax.x, vertex.x);
+      screenMax.y = Math.max(screenMax.y, vertex.y);
+    });
+
+    console.log('[dodo] ', 'screenVertices', screenVertices);
+
+    // 计算屏幕上的宽度和高度
+    const screenWidth = screenMax.x - screenMin.x;
+    const screenHeight = screenMax.y - screenMin.y;
+
+    console.log(`屏幕宽度: ${screenWidth}, 屏幕高度: ${screenHeight}`);
+
+    return { screenWidth, screenHeight };
+  };
+
+  return { startCalc };
 };
