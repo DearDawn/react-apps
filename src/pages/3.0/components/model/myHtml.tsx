@@ -10,6 +10,7 @@ export const MyHtml = ({
   onClose, // 新增 onClose prop
 }) => {
   const bodyRef = useRef(document.body);
+  const htmlDomRef = useRef<HTMLDivElement>(null);
   const { startCalc } = useScreenPosition({
     meshRef: targetRef,
     widthScale,
@@ -21,11 +22,11 @@ export const MyHtml = ({
   const HTML_WIDTH = isVertical ? 375 : 1440;
 
   useEffect(() => {
-    if (visible) {
-      const { screenWidth, screenHeight } = startCalc();
-      setScreenSize([screenWidth, screenHeight]);
-
+    if (visible && htmlDomRef.current) {
       setTimeout(() => {
+        const { screenWidth, screenHeight, x, y } = startCalc();
+        setScreenSize([screenWidth, screenHeight]);
+        htmlDomRef.current.parentElement.style.transform = `translate3d(${x}px, ${y}px, 0px) scale(1)`;
         setSelfVisible(true);
       }, 100);
     } else {
@@ -51,8 +52,9 @@ export const MyHtml = ({
 
   return (
     <Html
+      ref={htmlDomRef}
       style={{
-        transform: `translate(-50%, -50%) scale(${screenSize[0] / HTML_WIDTH})`,
+        transform: `translate(-50%, -50%) scale(${screenSize[0] / HTML_WIDTH}`,
         pointerEvents: visible ? 'auto' : 'none',
         background: 'transparent',
       }}
@@ -69,6 +71,7 @@ export const MyHtml = ({
           width: `${HTML_WIDTH}px`,
           height: `${(screenSize[1] / screenSize[0]) * HTML_WIDTH}px`,
           borderRadius: '60px',
+          display: 'block',
           boxSizing: 'border-box',
           background: 'transparent',
           transition: visible

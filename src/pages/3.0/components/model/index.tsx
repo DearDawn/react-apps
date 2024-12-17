@@ -19,7 +19,7 @@ export const Model = (props) => {
   const [padPosition, setPadPosition] = useState(new THREE.Vector3());
   const group = useRef<THREE.Object3D>();
   const pcRef = useRef<THREE.Mesh>();
-  const phoneRef = useRef<THREE.Group>();
+  const phoneRef = useRef<THREE.Mesh>();
   const calendarRef = useRef<THREE.Mesh>();
   const chairRef = useRef<THREE.Mesh>();
   const padRef = useRef<THREE.Group>();
@@ -143,7 +143,7 @@ export const Model = (props) => {
 
   return (
     <group ref={group} {...props} dispose={null}>
-      <DebugBoundingBox targetRef={padRef} />
+      <DebugBoundingBox targetRef={pcRef} />
       <group name='Scene'>
         <group name='Scene_Collection' userData={{ name: 'Scene Collection' }}>
           <group name='Collection' userData={{ name: 'Collection' }}>
@@ -194,6 +194,7 @@ export const Model = (props) => {
                 receiveShadow
                 geometry={nodes.立方体001_2.geometry}
                 material={materials.screen}
+                ref={pcRef}
               />
             </group>
             <mesh
@@ -204,7 +205,6 @@ export const Model = (props) => {
               material={materials['02-v2']}
               position={[0.006, 1.095, -2.366]}
               userData={{ name: '02-v2' }}
-              ref={pcRef}
             >
               <MyHtml
                 targetRef={pcRef}
@@ -415,7 +415,6 @@ export const Model = (props) => {
               rotation={[Math.PI, 0, Math.PI]}
               userData={{ name: '立方体.004' }}
               onClick={toggleFocusPhone}
-              ref={phoneRef}
             >
               <mesh
                 name='立方体014_1'
@@ -430,6 +429,7 @@ export const Model = (props) => {
                 receiveShadow
                 geometry={nodes.立方体014_2.geometry}
                 material={materials.phonescreenimage}
+                ref={phoneRef}
               >
                 <MyHtml
                   targetRef={phoneRef}
