@@ -1,5 +1,5 @@
 import { useGLTF } from '@react-three/drei';
-import { Camera, useFrame, useThree } from '@react-three/fiber';
+import { Camera, ThreeEvent, useFrame, useThree } from '@react-three/fiber';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
@@ -16,6 +16,7 @@ export const useFocus = ({
   targetRef,
   midPoints = [],
   offset = new THREE.Vector3(0, 1, 0),
+  focusLockRef,
   duration = 1000,
   onStart,
   onEnd,
@@ -25,6 +26,7 @@ export const useFocus = ({
   targetRef?: React.MutableRefObject<THREE.Mesh>;
   midPoints?: THREE.Vector3Like[];
   offset?: THREE.Vector3;
+  focusLockRef?: React.MutableRefObject<string>;
   duration?: number;
   onStart?: (isFocus: boolean) => void;
   onEnd?: (isFocus: boolean) => void;
@@ -39,20 +41,39 @@ export const useFocus = ({
   const targetPos =
     targetRef?.current?.getWorldPosition(new THREE.Vector3(0, 0, 0)) || target;
   const targetViewPos = targetPos.clone().add(offset);
+  const targetId = targetPos.toArray().join(',');
 
-  const startFocus = () => {
+  const startFocus = useCallback(() => {
+    focusLockRef.current = targetId;
     setIsFocus(true);
     setMoving(true);
     setInited(true);
     onStart?.(true);
-  };
+  }, [focusLockRef, onStart, targetId]);
 
-  const endFocus = () => {
+  const endFocus = useCallback(() => {
     setIsFocus(false);
     setMoving(true);
     setInited(true);
     onStart?.(false);
-  };
+  }, [onStart]);
+
+  const toggleFocus = useCallback(
+    (e?: ThreeEvent<MouseEvent>) => {
+      if (e) {
+        e.stopPropagation();
+      }
+
+      if (focusLockRef.current && focusLockRef.current !== targetId) return;
+
+      if (isFocus) {
+        endFocus();
+      } else {
+        startFocus();
+      }
+    },
+    [endFocus, focusLockRef, isFocus, startFocus, targetId]
+  );
 
   useEffect(() => {
     if (isFocus) {
@@ -60,13 +81,17 @@ export const useFocus = ({
     } else {
       setIsDelayFocus(false);
     }
-  }, [duration, isFocus]);
+  }, [duration, focusLockRef, isFocus]);
 
   useEffect(() => {
     if (!moving && inited) {
       onEndRef.current?.(isFocus);
+
+      if (!isFocus) {
+        focusLockRef.current = '';
+      }
     }
-  }, [inited, isFocus, moving, onEndRef]);
+  }, [focusLockRef, inited, isFocus, moving, onEndRef]);
 
   useFrame((_, delta) => {
     if (!moving) return;
@@ -112,7 +137,7 @@ export const useFocus = ({
     camera.lookAt(lookAtTargetPos);
   });
 
-  return { startFocus, endFocus, isFocus, isDelayFocus, moving };
+  return { startFocus, endFocus, toggleFocus, isFocus, isDelayFocus, moving };
 };
 
 export const useScreenPosition = ({

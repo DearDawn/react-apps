@@ -17,6 +17,11 @@ export type GLTFResult = GLTF & {
     柱体001: THREE.Mesh;
     立方体022: THREE.Mesh;
     立方体022_1: THREE.Mesh;
+    立方体018: THREE.Mesh;
+    立方体019: THREE.Mesh;
+    文本: THREE.Mesh;
+    平面001: THREE.Mesh;
+    立方体020: THREE.Mesh;
     chair: THREE.Mesh;
     球体: THREE.Mesh;
     立方体001: THREE.Mesh;
@@ -28,9 +33,6 @@ export type GLTFResult = GLTF & {
     立方体012_1: THREE.Mesh;
     立方体012_2: THREE.Mesh;
     立方体002: THREE.Mesh;
-    立方体014_1: THREE.Mesh;
-    立方体014_2: THREE.Mesh;
-    立方体005: THREE.Mesh;
     球体001: THREE.Mesh;
     立方体016: THREE.Mesh;
     立方体012: THREE.Mesh;
@@ -38,6 +40,9 @@ export type GLTFResult = GLTF & {
     立方体014: THREE.Mesh;
     立方体013: THREE.Mesh;
     立方体011: THREE.Mesh;
+    立方体014_1: THREE.Mesh;
+    立方体014_2: THREE.Mesh;
+    立方体005: THREE.Mesh;
     骨骼: THREE.Bone;
     骨骼_1: THREE.Bone;
   };
@@ -55,6 +60,10 @@ export type GLTFResult = GLTF & {
     plate: THREE.MeshStandardMaterial;
     ipad: THREE.MeshStandardMaterial;
     ipadscreen: THREE.MeshStandardMaterial;
+    booklet: THREE.MeshStandardMaterial;
+    calendar: THREE.MeshStandardMaterial;
+    材质: THREE.MeshStandardMaterial;
+    ['材质.001']: THREE.MeshStandardMaterial;
     person: THREE.MeshStandardMaterial;
     floor: THREE.MeshStandardMaterial;
     floor_inner: THREE.MeshStandardMaterial;

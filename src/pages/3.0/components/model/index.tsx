@@ -1,5 +1,5 @@
-import { useRef, useEffect, useState } from 'react';
-import { ThreeEvent, useFrame, useThree } from '@react-three/fiber';
+import { useRef, useEffect, useState, useCallback } from 'react';
+import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useFocus, useGltfLoader } from '../../hooks';
 import { useAnimations } from '@react-three/drei';
@@ -8,101 +8,74 @@ import { MyHtml } from './myHtml';
 import { GLTFResult } from './type';
 
 export const Model = (props) => {
-  const gltf = useGltfLoader<GLTFResult>('/public/models/3.0/room_v5.glb');
+  const gltf = useGltfLoader<GLTFResult>('/public/models/3.0/room_v9.glb');
   const { camera } = useThree();
   const { nodes, materials, animations } = gltf || {};
 
   const [screenPosition, setScreenPosition] = useState(new THREE.Vector3());
   const [phonePosition, setPhonePosition] = useState(new THREE.Vector3());
+  const [calendarPosition, setCalendarPosition] = useState(new THREE.Vector3());
   const [padPosition, setPadPosition] = useState(new THREE.Vector3());
   const group = useRef<THREE.Object3D>();
   const pcRef = useRef<THREE.Mesh>();
-  const htmlTargetRef = useRef<THREE.Mesh | THREE.Group>();
   const phoneRef = useRef<THREE.Group>();
+  const calendarRef = useRef<THREE.Mesh>();
+  const chairRef = useRef<THREE.Mesh>();
   const padRef = useRef<THREE.Group>();
+  const focusLockRef = useRef('');
   const mixerRef = useRef<THREE.AnimationMixer>();
   const { actions } = useAnimations(animations, group);
 
-  const { startFocus, endFocus, isDelayFocus, moving } = useFocus({
+  const { toggleFocus, endFocus, isDelayFocus } = useFocus({
     camera,
     target: screenPosition,
     offset: new THREE.Vector3(0, 0, 4),
     duration: 500,
+    focusLockRef,
     onStart: (_isFocus) => {
-      htmlTargetRef.current = pcRef.current;
       setTimeout(() => handlePlayAnimation(_isFocus), _isFocus ? 0 : 100);
     },
   });
 
-  const {
-    startFocus: startFocusPhone,
-    endFocus: endFocusPhone,
-    isDelayFocus: isDelayFocusPhone,
-    moving: movingPhone,
-  } = useFocus({
+  const { toggleFocus: toggleFocusPhone, isDelayFocus: isDelayFocusPhone } =
+    useFocus({
+      camera,
+      target: phonePosition,
+      offset: new THREE.Vector3(0, 1, 0),
+      focusLockRef,
+      midPoints: [
+        {
+          x: phonePosition.x,
+          y: phonePosition.y + 3,
+          z: 0,
+        },
+      ],
+      duration: 800,
+    });
+
+  const { toggleFocus: toggleFocusCalendar } = useFocus({
     camera,
-    target: phonePosition,
-    offset: new THREE.Vector3(0, 1, 0),
-    midPoints: [
-      {
-        x: phonePosition.x,
-        y: phonePosition.y + 3,
-        z: 0,
-      },
-    ],
+    target: calendarPosition,
+    offset: new THREE.Vector3(2, 0, 0),
+    focusLockRef,
     duration: 800,
-    onStart: () => {
-      htmlTargetRef.current = phoneRef.current;
-    },
   });
 
-  const {
-    startFocus: startFocusPad,
-    endFocus: endFocusPad,
-    isDelayFocus: isDelayFocusPad,
-    moving: movingPad,
-  } = useFocus({
-    camera,
-    target: padPosition,
-    offset: new THREE.Vector3(0, 0.3, -0.5),
-    midPoints: [
-      {
-        x: padPosition.x + 5,
-        y: padPosition.y + 5,
-        z: padPosition.z - 5,
-      },
-    ],
-    duration: 1000,
-    onStart: () => {
-      htmlTargetRef.current = padRef.current;
-    },
-  });
-
-  const movingLock = moving || movingPhone || movingPad;
-
-  const handleFocus = (e: ThreeEvent<MouseEvent>) => {
-    if (movingLock) return;
-
-    e.stopPropagation();
-
-    startFocus();
-  };
-
-  const handleFocusPhone = (e: ThreeEvent<MouseEvent>) => {
-    if (movingLock) return;
-
-    e.stopPropagation();
-
-    startFocusPhone();
-  };
-
-  const handleFocusPad = (e: ThreeEvent<MouseEvent>) => {
-    if (movingLock) return;
-
-    e.stopPropagation();
-
-    startFocusPad();
-  };
+  const { toggleFocus: toggleFocusPad, isDelayFocus: isDelayFocusPad } =
+    useFocus({
+      camera,
+      target: padPosition,
+      focusLockRef,
+      offset: new THREE.Vector3(0, 0.3, -0.5),
+      midPoints: [
+        {
+          x: padPosition.x + 5,
+          y: padPosition.y + 5,
+          z: padPosition.z - 5,
+        },
+      ],
+      duration: 1000,
+    });
 
   const handlePlayAnimation = (leave = false) => {
     actions.move.reset();
@@ -119,11 +92,7 @@ export const Model = (props) => {
     }
   };
 
-  useEffect(() => {
-    // modelRef.current.rotation.y = Math.PI / 4; // 绕 Z 轴旋转 30 度
-    group.current.scale.set(3, 3, 3);
-    group.current.position.setY(-10);
-
+  const handlePosObject = useCallback(() => {
     if (gltf && gltf.animations.length > 0) {
       mixerRef.current = new THREE.AnimationMixer(group.current);
       const action = mixerRef.current.clipAction(gltf.animations[0]);
@@ -131,28 +100,38 @@ export const Model = (props) => {
       action.clampWhenFinished = true;
     }
 
+    const lookAtPos = chairRef.current.getWorldPosition(new THREE.Vector3());
     const screenPos = pcRef.current.getWorldPosition(new THREE.Vector3());
     setScreenPosition(screenPos);
     setPhonePosition(phoneRef.current.getWorldPosition(new THREE.Vector3()));
+    setCalendarPosition(
+      calendarRef.current.getWorldPosition(new THREE.Vector3())
+    );
     setPadPosition(padRef.current.getWorldPosition(new THREE.Vector3()));
 
     actions['骨架.001动作'].play();
-    camera.lookAtPoint = screenPos.clone();
+    camera.lookAtPoint = lookAtPos.clone().add(new THREE.Vector3(0, 2.5, 0));
     camera.lookAt(camera.lookAtPoint);
-
-    return () => {
-      mixerRef.current.stopAllAction();
-    };
   }, [actions, camera, gltf]);
 
-  // useEffect(() => {
-  //   setTimeout(
-  //     () => {
-  //       setIsFocusDelay(isFocus);
-  //     },
-  //     isFocus ? 500 : 0
-  //   );
-  // }, [isFocus]);
+  const handleResize = useCallback(() => {
+    const aspectRatio = window.innerWidth / window.innerHeight;
+    const scale = Math.min(3 * aspectRatio, 3);
+
+    group.current.scale.set(scale, scale, scale);
+    group.current.position.set(0, -10, 0);
+    handlePosObject();
+  }, [handlePosObject]);
+
+  useEffect(() => {
+    window.addEventListener('resize', handleResize);
+    handleResize();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      mixerRef.current.stopAllAction();
+    };
+  }, [handleResize]);
 
   useFrame((state, delta) => {
     if (mixerRef.current) {
@@ -198,7 +177,7 @@ export const Model = (props) => {
               name='pc'
               position={[0, 0.975, -2.427]}
               userData={{ name: 'pc' }}
-              onClick={handleFocus}
+              onClick={toggleFocus}
             >
               <mesh
                 name='立方体001_1'
@@ -222,8 +201,6 @@ export const Model = (props) => {
               geometry={nodes['02-v2'].geometry}
               material={materials['02-v2']}
               position={[0.006, 1.095, -2.366]}
-              rotation={[Math.PI / 2, 0, 0]}
-              scale={[0.646 * 0.96, 0.424 * 0.9, 0.559 * 0.88]}
               userData={{ name: '02-v2' }}
               ref={pcRef}
             >
@@ -295,9 +272,9 @@ export const Model = (props) => {
             />
             <group
               name='立方体017'
-              position={[-1.945, 0.513, -0.693]}
+              position={[-1.945, 0.513, -0.16]}
               userData={{ name: '立方体.017' }}
-              onClick={handleFocusPad}
+              onClick={toggleFocusPad}
               ref={padRef}
             >
               <mesh
@@ -317,12 +294,63 @@ export const Model = (props) => {
                 <MyHtml
                   targetRef={padRef}
                   visible={isDelayFocusPad}
-                  onClose={endFocusPad}
+                  onClose={toggleFocusPad}
                   widthScale={0.6}
                   heightScale={0.8}
                 />
               </mesh>
             </group>
+            <mesh
+              name='立方体018'
+              castShadow
+              receiveShadow
+              geometry={nodes.立方体018.geometry}
+              material={materials.booklet}
+              position={[-2.03, 1.046, -2.029]}
+              userData={{ name: '立方体.018' }}
+            />
+            <mesh
+              name='立方体019'
+              castShadow
+              receiveShadow
+              geometry={nodes.立方体019.geometry}
+              material={materials.calendar}
+              position={[-1.267, 1.582, -2.267]}
+              userData={{ name: '立方体.019' }}
+              onClick={toggleFocusCalendar}
+              ref={calendarRef}
+            />
+            <mesh
+              name='文本'
+              castShadow
+              receiveShadow
+              geometry={nodes.文本.geometry}
+              material={materials.材质}
+              position={[-1.264, 1.761, -2.284]}
+              rotation={[Math.PI / 2, 0, -Math.PI / 2]}
+              scale={0.086}
+              userData={{ name: '文本' }}
+            />
+            <mesh
+              name='平面001'
+              castShadow
+              receiveShadow
+              geometry={nodes.平面001.geometry}
+              material={nodes.平面001.material}
+              position={[0, 0.545, -2]}
+              scale={0.32}
+              userData={{ name: '平面.001' }}
+            />
+            <mesh
+              name='立方体020'
+              castShadow
+              receiveShadow
+              geometry={nodes.立方体020.geometry}
+              material={materials['材质.001']}
+              position={[-2.258, 1.68, -1.137]}
+              scale={[0.098, 0.145, 0.024]}
+              userData={{ name: '立方体.020' }}
+            />
           </group>
           <group name='Body' userData={{ name: 'Body' }}>
             <mesh
@@ -333,6 +361,7 @@ export const Model = (props) => {
               material={materials.table}
               position={[0.008, 0.399, -1.102]}
               userData={{ name: 'chair' }}
+              ref={chairRef}
             >
               <group
                 name='骨架'
@@ -365,15 +394,25 @@ export const Model = (props) => {
               receiveShadow
               geometry={nodes.立方体002.geometry}
               material={materials.sofa}
-              position={[-2.105, 0.268, -0.468]}
+              position={[-2.105, 0.268, 0.066]}
               userData={{ name: '立方体.002' }}
-            />
+            >
+              <group
+                name='骨架001'
+                position={[0.286, -0.086, -0.574]}
+                rotation={[0, -Math.PI / 2, 0]}
+                scale={0.365}
+                userData={{ name: '骨架.001' }}
+              >
+                <primitive object={nodes.骨骼_1} />
+              </group>
+            </mesh>
             <group
               name='立方体004'
               position={[0.616, 0.6, -2.051]}
               rotation={[Math.PI, 0, Math.PI]}
               userData={{ name: '立方体.004' }}
-              onClick={handleFocusPhone}
+              onClick={toggleFocusPhone}
               ref={phoneRef}
             >
               <mesh
@@ -393,7 +432,7 @@ export const Model = (props) => {
                 <MyHtml
                   targetRef={phoneRef}
                   visible={isDelayFocusPhone}
-                  onClose={endFocusPhone}
+                  onClose={toggleFocusPhone}
                 />
               </mesh>
             </group>
@@ -406,15 +445,6 @@ export const Model = (props) => {
               position={[0.863, 1.746, -2.46]}
               userData={{ name: '立方体.005' }}
             />
-            <group
-              name='骨架001'
-              position={[-1.819, 0.182, -1.042]}
-              rotation={[0, -Math.PI / 2, 0]}
-              scale={0.365}
-              userData={{ name: '骨架.001' }}
-            >
-              <primitive object={nodes.骨骼_1} />
-            </group>
           </group>
         </group>
       </group>

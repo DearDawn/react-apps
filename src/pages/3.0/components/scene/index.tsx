@@ -22,6 +22,7 @@ const ThreeScene = () => {
       <GameContext.Provider value={{ setEnableOrbitControls }}>
         <CanvasWrapper>
           <Canvas
+            resize={{ debounce: 500 }}
             camera={{ position: [8, -5, 2], fov: 50 }}
             style={{ width: '100%', height: '100%' }}
             gl={{
