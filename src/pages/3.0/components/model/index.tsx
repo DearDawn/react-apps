@@ -11,6 +11,7 @@ export const Model = (props) => {
   const gltf = useGltfLoader<GLTFResult>('/public/models/3.0/room_v9.glb');
   const { camera } = useThree();
   const { nodes, materials, animations } = gltf || {};
+  const [scaleRatio, setScaleRatio] = useState(1);
 
   const [screenPosition, setScreenPosition] = useState(new THREE.Vector3());
   const [phonePosition, setPhonePosition] = useState(new THREE.Vector3());
@@ -41,7 +42,7 @@ export const Model = (props) => {
     useFocus({
       camera,
       target: phonePosition,
-      offset: new THREE.Vector3(0, 1, 0),
+      offset: new THREE.Vector3(0, 1 * scaleRatio, 0),
       focusLockRef,
       midPoints: [
         {
@@ -56,7 +57,7 @@ export const Model = (props) => {
   const { toggleFocus: toggleFocusCalendar } = useFocus({
     camera,
     target: calendarPosition,
-    offset: new THREE.Vector3(2, 0, 0),
+    offset: new THREE.Vector3(3 * scaleRatio, 0, 0),
     focusLockRef,
     duration: 800,
   });
@@ -115,8 +116,9 @@ export const Model = (props) => {
   }, [actions, camera, gltf]);
 
   const handleResize = useCallback(() => {
-    const aspectRatio = window.innerWidth / window.innerHeight;
-    const scale = Math.min(3 * aspectRatio, 3);
+    const aspectRatio = Math.min(window.innerWidth / window.innerHeight, 1);
+    const scale = 3 * aspectRatio;
+    setScaleRatio(aspectRatio);
 
     group.current.scale.set(scale, scale, scale);
     group.current.position.set(0, -10, 0);
@@ -274,7 +276,6 @@ export const Model = (props) => {
               name='立方体017'
               position={[-1.945, 0.513, -0.16]}
               userData={{ name: '立方体.017' }}
-              onClick={toggleFocusPad}
               ref={padRef}
             >
               <mesh
@@ -403,6 +404,7 @@ export const Model = (props) => {
                 rotation={[0, -Math.PI / 2, 0]}
                 scale={0.365}
                 userData={{ name: '骨架.001' }}
+                onClick={toggleFocusPad}
               >
                 <primitive object={nodes.骨骼_1} />
               </group>

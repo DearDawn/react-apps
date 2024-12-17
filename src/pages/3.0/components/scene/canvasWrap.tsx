@@ -29,7 +29,6 @@ const CanvasWrapper: FC<Props> = ({ children }) => {
       window.removeEventListener('resize', measureCanvasSize);
     };
   }, []);
-  console.log('[dodo] ', 'canvasWidth', width, height);
 
   return (
     <div style={{ height, width }} ref={canvasRef}>
