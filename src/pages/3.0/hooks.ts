@@ -1,7 +1,9 @@
 import { useGLTF } from '@react-three/drei';
 import { Camera, ThreeEvent, useFrame, useThree } from '@react-three/fiber';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { GameContext } from './components/scene';
+import { notice } from 'sweet-me';
 
 useGLTF.setDecoderPath(
   'https://dododawn-1300422826.cos.ap-shanghai.myqcloud.com/public/files/draco/'
@@ -14,23 +16,26 @@ export const useFocus = ({
   camera,
   target = new THREE.Vector3(),
   targetRef,
-  midPoints = [],
+  midPoints: propsMidPoints,
+  midPointsOffset = [],
   offset = new THREE.Vector3(0, 1, 0),
   focusLockRef,
-  duration = 1000,
+  duration = 800,
   onStart,
   onEnd,
 }: {
   camera: Camera;
   target?: THREE.Vector3;
-  targetRef?: React.MutableRefObject<THREE.Mesh>;
+  targetRef?: React.MutableRefObject<THREE.Mesh | THREE.Group>;
   midPoints?: THREE.Vector3Like[];
+  midPointsOffset?: THREE.Vector3Like[];
   offset?: THREE.Vector3;
   focusLockRef?: React.MutableRefObject<string>;
   duration?: number;
   onStart?: (isFocus: boolean) => void;
   onEnd?: (isFocus: boolean) => void;
 }) => {
+  const { sceneReady } = useContext(GameContext);
   const [isFocus, setIsFocus] = useState(false);
   const [isDelayFocus, setIsDelayFocus] = useState(false);
   const [moving, setMoving] = useState(false);
@@ -39,8 +44,20 @@ export const useFocus = ({
   const onEndRef = useRef(onEnd);
   const initialCameraPos = useRef(camera.position.clone());
   const currentCameraPos = useRef(camera.position.clone());
-  const targetPos =
-    targetRef?.current?.getWorldPosition(new THREE.Vector3(0, 0, 0)) || target;
+  const [targetPos, setTargetPos] = useState(
+    targetRef?.current?.getWorldPosition(new THREE.Vector3(0, 0, 0)) || target
+  );
+  const midPoints =
+    propsMidPoints ||
+    midPointsOffset.map((offset) => {
+      const pos = new THREE.Vector3(
+        Number.isFinite(offset.x) ? targetPos.x + offset.x : 0,
+        Number.isFinite(offset.y) ? targetPos.y + offset.y : 0,
+        Number.isFinite(offset.z) ? targetPos.z + offset.z : 0
+      );
+      return pos;
+    });
+
   const targetViewPos = targetPos.clone().add(offset);
   const targetId = targetPos.toArray().join(',');
 
@@ -50,7 +67,8 @@ export const useFocus = ({
     setMoving(true);
     setInitd(true);
     onStart?.(true);
-  }, [focusLockRef, onStart, targetId]);
+    notice.info(targetRef.current.name, duration);
+  }, [duration, focusLockRef, onStart, targetId, targetRef]);
 
   const endFocus = useCallback(() => {
     setIsFocus(false);
@@ -83,6 +101,14 @@ export const useFocus = ({
       setIsDelayFocus(false);
     }
   }, [duration, focusLockRef, isFocus]);
+
+  useEffect(() => {
+    if (targetRef?.current || target) {
+      setTargetPos(
+        targetRef.current.getWorldPosition(new THREE.Vector3(0, 0, 0)) || target
+      );
+    }
+  }, [target, targetRef, sceneReady]);
 
   useEffect(() => {
     if (!moving && initd) {

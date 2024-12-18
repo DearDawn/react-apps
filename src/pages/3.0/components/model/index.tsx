@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useState, useCallback, useContext } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useFocus, useGltfLoader } from '../../hooks';
@@ -6,30 +6,31 @@ import { useAnimations } from '@react-three/drei';
 import DebugBoundingBox from './debugBox';
 import { MyHtml } from './myHtml';
 import { GLTFResult } from './type';
+import { GameContext } from '../scene';
 
 export const Model = (props) => {
-  const gltf = useGltfLoader<GLTFResult>('/public/models/3.0/room_v9.glb');
+  const gltf = useGltfLoader<GLTFResult>('/public/models/3.0/room_v11.glb');
   const { camera } = useThree();
+  const { setSceneReady } = useContext(GameContext);
   const { nodes, materials, animations } = gltf || {};
   const [scaleRatio, setScaleRatio] = useState(1);
 
-  const [screenPosition, setScreenPosition] = useState(new THREE.Vector3());
-  const [phonePosition, setPhonePosition] = useState(new THREE.Vector3());
-  const [calendarPosition, setCalendarPosition] = useState(new THREE.Vector3());
-  const [padPosition, setPadPosition] = useState(new THREE.Vector3());
   const group = useRef<THREE.Object3D>();
   const pcRef = useRef<THREE.Mesh>();
   const phoneRef = useRef<THREE.Mesh>();
   const calendarRef = useRef<THREE.Mesh>();
   const chairRef = useRef<THREE.Mesh>();
   const padRef = useRef<THREE.Group>();
+  const bookRef = useRef<THREE.Mesh>();
+  const figureRef = useRef<THREE.Mesh>();
+  const boardRef = useRef<THREE.Mesh>();
   const focusLockRef = useRef('');
   const mixerRef = useRef<THREE.AnimationMixer>();
   const { actions } = useAnimations(animations, group);
 
   const { toggleFocus, endFocus, isDelayFocus } = useFocus({
     camera,
-    target: screenPosition,
+    targetRef: pcRef,
     offset: new THREE.Vector3(0, 0, 4),
     duration: 500,
     focusLockRef,
@@ -41,22 +42,15 @@ export const Model = (props) => {
   const { toggleFocus: toggleFocusPhone, isDelayFocus: isDelayFocusPhone } =
     useFocus({
       camera,
-      target: phonePosition,
+      targetRef: phoneRef,
       offset: new THREE.Vector3(0, 1 * scaleRatio, 0),
       focusLockRef,
-      midPoints: [
-        {
-          x: phonePosition.x,
-          y: phonePosition.y + 3,
-          z: 0,
-        },
-      ],
-      duration: 800,
+      midPointsOffset: [{ x: 0, y: 3, z: Number.NEGATIVE_INFINITY }],
     });
 
   const { toggleFocus: toggleFocusCalendar } = useFocus({
     camera,
-    target: calendarPosition,
+    targetRef: calendarRef,
     offset: new THREE.Vector3(3 * scaleRatio, 0, 0),
     focusLockRef,
     duration: 500,
@@ -65,18 +59,32 @@ export const Model = (props) => {
   const { toggleFocus: toggleFocusPad, isDelayFocus: isDelayFocusPad } =
     useFocus({
       camera,
-      target: padPosition,
+      targetRef: padRef,
       focusLockRef,
       offset: new THREE.Vector3(0, 0.3, -0.5),
-      midPoints: [
-        {
-          x: padPosition.x + 5,
-          y: padPosition.y + 5,
-          z: padPosition.z - 5,
-        },
-      ],
-      duration: 800,
+      midPoints: [{ x: 5, y: 5, z: -5 }],
     });
+
+  const { toggleFocus: toggleFocusBook } = useFocus({
+    camera,
+    targetRef: bookRef,
+    focusLockRef,
+    offset: new THREE.Vector3(0, 0, 6 * scaleRatio),
+  });
+
+  const { toggleFocus: toggleFocusFigure } = useFocus({
+    camera,
+    targetRef: figureRef,
+    focusLockRef,
+    offset: new THREE.Vector3(6 * scaleRatio, 0, 0),
+  });
+
+  const { toggleFocus: toggleFocusBoard } = useFocus({
+    camera,
+    targetRef: boardRef,
+    focusLockRef,
+    offset: new THREE.Vector3(4, 0, 0),
+  });
 
   const handlePlayAnimation = (leave = false) => {
     actions.move.reset();
@@ -101,20 +109,15 @@ export const Model = (props) => {
       action.clampWhenFinished = true;
     }
 
-    const lookAtPos = chairRef.current.getWorldPosition(new THREE.Vector3());
-    const screenPos = pcRef.current.getWorldPosition(new THREE.Vector3());
-    setScreenPosition(screenPos);
-    setPhonePosition(phoneRef.current.getWorldPosition(new THREE.Vector3()));
-    setCalendarPosition(
-      calendarRef.current.getWorldPosition(new THREE.Vector3())
-    );
-    setPadPosition(padRef.current.getWorldPosition(new THREE.Vector3()));
-
     actions['骨架.001动作'].play();
+
+    const lookAtPos = chairRef.current.getWorldPosition(new THREE.Vector3());
     camera.lookAtPoint = lookAtPos.clone().add(new THREE.Vector3(0, 2.5, 0));
     camera.currentLookAtPoint = camera.lookAtPoint.clone();
     camera.lookAt(camera.lookAtPoint);
-  }, [actions, camera, gltf]);
+
+    setSceneReady((_cnt) => _cnt + 1);
+  }, [actions, camera, gltf, setSceneReady]);
 
   const handleResize = useCallback(() => {
     const aspectRatio = Math.min(window.innerWidth / window.innerHeight, 1);
@@ -178,7 +181,7 @@ export const Model = (props) => {
             </mesh>
             <group
               name='pc'
-              position={[0, 0.975, -2.427]}
+              position={[0, 1.056, -2.377]}
               userData={{ name: 'pc' }}
               onClick={toggleFocus}
             >
@@ -204,7 +207,8 @@ export const Model = (props) => {
               receiveShadow
               geometry={nodes['02-v2'].geometry}
               material={materials['02-v2']}
-              position={[0.006, 1.095, -2.366]}
+              position={[0, 1.089, -2.377]}
+              scale={0.964}
               userData={{ name: '02-v2' }}
             >
               <MyHtml
@@ -280,17 +284,17 @@ export const Model = (props) => {
               ref={padRef}
             >
               <mesh
-                name='立方体022'
-                castShadow
-                receiveShadow
-                geometry={nodes.立方体022.geometry}
-                material={materials.ipad}
-              />
-              <mesh
                 name='立方体022_1'
                 castShadow
                 receiveShadow
                 geometry={nodes.立方体022_1.geometry}
+                material={materials.ipad}
+              />
+              <mesh
+                name='立方体022_2'
+                castShadow
+                receiveShadow
+                geometry={nodes.立方体022_2.geometry}
                 material={materials.ipadscreen}
               >
                 <MyHtml
@@ -349,9 +353,87 @@ export const Model = (props) => {
               receiveShadow
               geometry={nodes.立方体020.geometry}
               material={materials['材质.001']}
-              position={[-2.258, 1.68, -1.137]}
-              scale={[0.098, 0.145, 0.024]}
+              position={[-1.357, 1.68, -2.35]}
               userData={{ name: '立方体.020' }}
+              ref={bookRef}
+              onClick={toggleFocusBook}
+            />
+            <mesh
+              name='立方体021'
+              castShadow
+              receiveShadow
+              geometry={nodes.立方体021.geometry}
+              material={materials['材质.002']}
+              position={[-2.287, 1.661, -1.239]}
+              userData={{ name: '立方体.021' }}
+              ref={figureRef}
+              onClick={toggleFocusFigure}
+            />
+            <group
+              name='立方体022'
+              position={[-2.47, 1.385, 0.08]}
+              userData={{ name: '立方体.022' }}
+            >
+              <mesh
+                name='立方体027'
+                castShadow
+                receiveShadow
+                geometry={nodes.立方体027.geometry}
+                material={materials.booklet}
+              />
+              <mesh
+                name='立方体027_1'
+                castShadow
+                receiveShadow
+                geometry={nodes.立方体027_1.geometry}
+                material={materials.board}
+                ref={boardRef}
+                onClick={toggleFocusBoard}
+              />
+            </group>
+            <mesh
+              name='平面002'
+              castShadow
+              receiveShadow
+              geometry={nodes.平面002.geometry}
+              material={materials['材质.004']}
+              position={[-2.442, 1.61, 0.498]}
+              rotation={[0, 0, -Math.PI / 2]}
+              scale={0.096}
+              userData={{ name: '平面.002' }}
+            />
+            <mesh
+              name='平面003'
+              castShadow
+              receiveShadow
+              geometry={nodes.平面003.geometry}
+              material={materials['材质.004']}
+              position={[-2.442, 1.462, 0.241]}
+              rotation={[0, 0, -Math.PI / 2]}
+              scale={0.096}
+              userData={{ name: '平面.003' }}
+            />
+            <mesh
+              name='平面004'
+              castShadow
+              receiveShadow
+              geometry={nodes.平面004.geometry}
+              material={materials['材质.004']}
+              position={[-2.442, 1.572, -0.03]}
+              rotation={[0, 0, -Math.PI / 2]}
+              scale={0.096}
+              userData={{ name: '平面.004' }}
+            />
+            <mesh
+              name='平面005'
+              castShadow
+              receiveShadow
+              geometry={nodes.平面005.geometry}
+              material={materials['材质.004']}
+              position={[-2.442, 1.308, -0.216]}
+              rotation={[0, 0, -Math.PI / 2]}
+              scale={0.096}
+              userData={{ name: '平面.005' }}
             />
           </group>
           <group name='Body' userData={{ name: 'Body' }}>

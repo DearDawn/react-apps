@@ -9,17 +9,22 @@ const store = createXRStore();
 
 export const GameContext = createContext<{
   setEnableOrbitControls: React.Dispatch<React.SetStateAction<boolean>>;
+  setSceneReady: React.Dispatch<React.SetStateAction<number>>;
+  sceneReady: number;
 }>(null);
 
 const ThreeScene = () => {
   const [enableOrbitControls, setEnableOrbitControls] = useState(true);
+  const [sceneReady, setSceneReady] = useState(0);
   console.log('[dodo] ', 'enableOrbitControls', enableOrbitControls);
 
   return (
     <>
       {/* <button onClick={() => store.enterVR()}>Enter VR</button>
       <button onClick={() => store.enterAR()}>Enter AR</button> */}
-      <GameContext.Provider value={{ setEnableOrbitControls }}>
+      <GameContext.Provider
+        value={{ setEnableOrbitControls, sceneReady, setSceneReady }}
+      >
         <CanvasWrapper>
           <Canvas
             resize={{ debounce: 500 }}
