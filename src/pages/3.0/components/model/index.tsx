@@ -59,7 +59,7 @@ export const Model = (props) => {
     target: calendarPosition,
     offset: new THREE.Vector3(3 * scaleRatio, 0, 0),
     focusLockRef,
-    duration: 800,
+    duration: 500,
   });
 
   const { toggleFocus: toggleFocusPad, isDelayFocus: isDelayFocusPad } =
@@ -75,7 +75,7 @@ export const Model = (props) => {
           z: padPosition.z - 5,
         },
       ],
-      duration: 1000,
+      duration: 800,
     });
 
   const handlePlayAnimation = (leave = false) => {
@@ -112,6 +112,7 @@ export const Model = (props) => {
 
     actions['骨架.001动作'].play();
     camera.lookAtPoint = lookAtPos.clone().add(new THREE.Vector3(0, 2.5, 0));
+    camera.currentLookAtPoint = camera.lookAtPoint.clone();
     camera.lookAt(camera.lookAtPoint);
   }, [actions, camera, gltf]);
 

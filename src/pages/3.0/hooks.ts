@@ -34,10 +34,11 @@ export const useFocus = ({
   const [isFocus, setIsFocus] = useState(false);
   const [isDelayFocus, setIsDelayFocus] = useState(false);
   const [moving, setMoving] = useState(false);
-  const [inited, setInited] = useState(false);
+  const [initd, setInitd] = useState(false);
   const elapsedTime = useRef(0);
   const onEndRef = useRef(onEnd);
   const initialCameraPos = useRef(camera.position.clone());
+  const currentCameraPos = useRef(camera.position.clone());
   const targetPos =
     targetRef?.current?.getWorldPosition(new THREE.Vector3(0, 0, 0)) || target;
   const targetViewPos = targetPos.clone().add(offset);
@@ -47,14 +48,14 @@ export const useFocus = ({
     focusLockRef.current = targetId;
     setIsFocus(true);
     setMoving(true);
-    setInited(true);
+    setInitd(true);
     onStart?.(true);
   }, [focusLockRef, onStart, targetId]);
 
   const endFocus = useCallback(() => {
     setIsFocus(false);
     setMoving(true);
-    setInited(true);
+    setInitd(true);
     onStart?.(false);
   }, [onStart]);
 
@@ -64,7 +65,7 @@ export const useFocus = ({
         e.stopPropagation();
       }
 
-      if (focusLockRef.current && focusLockRef.current !== targetId) return;
+      currentCameraPos.current = camera.position.clone();
 
       if (isFocus) {
         endFocus();
@@ -72,7 +73,7 @@ export const useFocus = ({
         startFocus();
       }
     },
-    [endFocus, focusLockRef, isFocus, startFocus, targetId]
+    [camera.position, endFocus, isFocus, startFocus]
   );
 
   useEffect(() => {
@@ -84,17 +85,19 @@ export const useFocus = ({
   }, [duration, focusLockRef, isFocus]);
 
   useEffect(() => {
-    if (!moving && inited) {
+    if (!moving && initd) {
       onEndRef.current?.(isFocus);
 
       if (!isFocus) {
-        focusLockRef.current = '';
+        if (focusLockRef.current === targetId) {
+          focusLockRef.current = '';
+        }
       }
     }
-  }, [focusLockRef, inited, isFocus, moving, onEndRef]);
+  }, [focusLockRef, initd, isFocus, moving, onEndRef, targetId]);
 
   useFrame((_, delta) => {
-    if (!moving) return;
+    if (!moving || focusLockRef.current !== targetId) return;
 
     // 累计时间
     elapsedTime.current = delta * 1000 + elapsedTime.current; // 将 delta 转换为毫秒
@@ -108,7 +111,7 @@ export const useFocus = ({
 
     const lookAtTargetPos = isFocus
       ? new THREE.Vector3().lerpVectors(
-          camera.lookAtPoint.clone(),
+          camera.currentLookAtPoint.clone(),
           targetPos.clone(),
           t
         )
@@ -118,20 +121,29 @@ export const useFocus = ({
           t
         );
 
+    if (t >= 1) {
+      camera.currentLookAtPoint = lookAtTargetPos.clone();
+    }
+
     const from = initialCameraPos.current;
+    const current = currentCameraPos.current;
     const to = targetViewPos;
+    const firstFocus = currentCameraPos.current.equals(
+      initialCameraPos.current
+    );
 
     if (isFocus) {
-      if (midPoints.length === 1) {
-        camera.position.quadraticBezier(from, midPoints[0], to, t);
+      if (midPoints.length === 1 && firstFocus) {
+        camera.position.quadraticBezier(current, midPoints[0], to, t);
       } else {
-        camera.position.lerpVectors(from, to, t);
+        camera.position.lerpVectors(current, to, t);
       }
     } else {
       if (midPoints.length === 1) {
         camera.position.quadraticBezier(to, midPoints[0], from, t);
+      } else {
+        camera.position.lerpVectors(to, from, t);
       }
-      camera.position.lerpVectors(to, from, t);
     }
 
     camera.lookAt(lookAtTargetPos);
@@ -162,8 +174,6 @@ export const useScreenPosition = ({
       // 将 NDC 坐标转换为屏幕坐标
       const x = (screenPosition.x * 0.5 + 0.5) * size.width;
       const y = (screenPosition.y * -0.5 + 0.5) * size.height;
-
-      console.log('Bounding box screen position:', x, y);
 
       // 获取包围盒的 8 个顶点
       const min = boundingBox.min;
@@ -197,8 +207,6 @@ export const useScreenPosition = ({
       // 计算包围盒在屏幕上的宽度和高度
       const screenWidth = (maxX - minX) * widthScale;
       const screenHeight = (maxY - minY) * heightScale;
-
-      console.log('Bounding box screen size:', screenWidth, screenHeight);
 
       return { x, y, screenWidth, screenHeight };
     }
