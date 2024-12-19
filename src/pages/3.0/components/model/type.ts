@@ -14,7 +14,7 @@ export type GLTFResult = GLTF & {
     触控板_1: THREE.Mesh;
     触控板_2: THREE.Mesh;
     键盘: THREE.Mesh;
-    _键帽: THREE.Mesh;
+    _键帽001: THREE.Mesh;
     平板_1: THREE.Mesh;
     平板_2: THREE.Mesh;
     柜子: THREE.Mesh;

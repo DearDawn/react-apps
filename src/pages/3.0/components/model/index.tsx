@@ -9,7 +9,7 @@ import { GLTFResult } from './type';
 import { GameContext } from '../scene';
 
 export const Model = (props) => {
-  const gltf = useGltfLoader<GLTFResult>('/public/models/3.0/room_v14.glb');
+  const gltf = useGltfLoader<GLTFResult>('/public/models/3.0/room_v19.glb');
   const { camera } = useThree();
   const { setSceneReady } = useContext(GameContext);
   const { nodes, materials, animations } = gltf || {};
@@ -188,7 +188,7 @@ export const Model = (props) => {
                     targetRef={phoneRef}
                     visible={isDelayFocusPhone}
                     onClose={toggleFocusPhone}
-                  />
+                />
                 </mesh>
               </group>
               <mesh
@@ -236,7 +236,7 @@ export const Model = (props) => {
                     targetRef={pcRef}
                     visible={isDelayFocus}
                     onClose={endFocus}
-                  />
+                />
                 </mesh>
               </group>
               <group
@@ -271,13 +271,13 @@ export const Model = (props) => {
                 userData={{ name: '键盘' }}
               >
                 <mesh
-                  name='_键帽'
+                  name='_键帽001'
                   castShadow
                   receiveShadow
-                  geometry={nodes._键帽.geometry}
+                  geometry={nodes._键帽001.geometry}
                   material={materials.键帽}
-                  position={[0, 0.013, 0]}
-                  userData={{ name: ' 键帽' }}
+                  position={[-0.238, 0.011, -0.061]}
+                  userData={{ name: ' 键帽.001' }}
                 />
               </mesh>
             </mesh>
@@ -307,7 +307,7 @@ export const Model = (props) => {
                   onClose={toggleFocusPad}
                   widthScale={0.6}
                   heightScale={0.8}
-                />
+              />
               </mesh>
             </group>
             <mesh
