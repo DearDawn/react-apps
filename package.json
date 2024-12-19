@@ -1,7 +1,7 @@
 {
   "name": "react-apps",
   "version": "1.0.12",
-  "description": "React 多页应用模板",
+  "description": "React 多页应用模板-小糖的react项目合集",
   "scripts": {
     "prestart": "node prebuild.js",
     "start": "npm run clean && parcel src/pages/*/index.html -p 7777",
