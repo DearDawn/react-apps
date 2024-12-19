@@ -57,7 +57,7 @@ export const Model = (props) => {
       camera,
       targetRef: padRef,
       offset: new THREE.Vector3(0, 0.3, -0.5),
-      midPoints: [{ x: 5, y: 5, z: -5 }],
+      midPointsOffset: [{ x: 5, y: 5, z: -5 }],
     });
 
   const { toggleFocus: toggleFocusBook } = useFocus({
