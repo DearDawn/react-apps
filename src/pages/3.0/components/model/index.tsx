@@ -9,7 +9,7 @@ import { GLTFResult } from './type';
 import { GameContext } from '../scene';
 
 export const Model = (props) => {
-  const gltf = useGltfLoader<GLTFResult>('/public/models/3.0/room_v11.glb');
+  const gltf = useGltfLoader<GLTFResult>('/public/models/3.0/room_v14.glb');
   const { camera } = useThree();
   const { setSceneReady } = useContext(GameContext);
   const { nodes, materials, animations } = gltf || {};
@@ -144,150 +144,162 @@ export const Model = (props) => {
         <group name='Scene_Collection' userData={{ name: 'Scene Collection' }}>
           <group name='Collection' userData={{ name: 'Collection' }}>
             {/* <mesh
-              name='平面'
+              name='墙体'
               castShadow
               receiveShadow
-              geometry={nodes.平面.geometry}
-              material={materials.wall}
-              userData={{ name: '平面' }}
+              geometry={nodes.墙体.geometry}
+              material={materials.墙体}
+              userData={{ name: '墙体' }}
             /> */}
             <mesh
-              name='table'
+              name='书桌'
               castShadow
               receiveShadow
-              geometry={nodes.table.geometry}
-              material={materials.table}
+              geometry={nodes.书桌.geometry}
+              material={materials.书桌}
               position={[0, 0.545, -2]}
               scale={[0.667, 0.5, 0.5]}
-              userData={{ name: 'table' }}
+              userData={{ name: '书桌' }}
             >
+              <group
+                name='手机'
+                position={[0.924, 0.111, -0.101]}
+                rotation={[Math.PI, 0, Math.PI]}
+                scale={[1.5, 2, 2]}
+                userData={{ name: '手机' }}
+                onClick={toggleFocusPhone}
+              >
+                <mesh
+                  name='手机_1'
+                  castShadow
+                  receiveShadow
+                  geometry={nodes.手机_1.geometry}
+                  material={materials.手机}
+                />
+                <mesh
+                  name='手机_2'
+                  castShadow
+                  receiveShadow
+                  geometry={nodes.手机_2.geometry}
+                  material={materials.手机屏保}
+                  ref={phoneRef}
+                >
+                  <MyHtml
+                    targetRef={phoneRef}
+                    visible={isDelayFocusPhone}
+                    onClose={toggleFocusPhone}
+                  />
+                </mesh>
+              </group>
               <mesh
-                name='柱体'
+                name='桌腿'
                 castShadow
                 receiveShadow
-                geometry={nodes.柱体.geometry}
-                material={materials.leg}
+                geometry={nodes.桌腿.geometry}
+                material={materials.桌腿}
                 position={[-1.291, -0.59, 0.7]}
-                userData={{ name: '柱体' }}
+                userData={{ name: '桌腿' }}
               />
+              <group
+                name='电脑'
+                position={[0, 1.023, -0.754]}
+                scale={[1.5, 2, 2]}
+                userData={{ name: '电脑' }}
+                onClick={toggleFocus}
+              >
+                <mesh
+                  name='电脑_1'
+                  castShadow
+                  receiveShadow
+                  geometry={nodes.电脑_1.geometry}
+                  material={materials.电脑}
+                />
+                <mesh
+                  name='电脑_2'
+                  castShadow
+                  receiveShadow
+                  geometry={nodes.电脑_2.geometry}
+                  material={materials.电脑屏幕}
+                  ref={pcRef}
+                />
+                <mesh
+                  name='电脑屏幕'
+                  castShadow
+                  receiveShadow
+                  geometry={nodes.电脑屏幕.geometry}
+                  material={materials.电脑屏保}
+                  position={[0, 0.032, 0]}
+                  scale={0.964}
+                  userData={{ name: '电脑屏幕' }}
+                >
+                  <MyHtml
+                    targetRef={pcRef}
+                    visible={isDelayFocus}
+                    onClose={endFocus}
+                  />
+                </mesh>
+              </group>
+              <group
+                name='触控板'
+                position={[0.496, 0.114, -0.194]}
+                scale={[1.195, 1.593, 1.593]}
+                userData={{ name: '触控板' }}
+              >
+                <mesh
+                  name='触控板_1'
+                  castShadow
+                  receiveShadow
+                  geometry={nodes.触控板_1.geometry}
+                  material={materials.触控板}
+                />
+                <mesh
+                  name='触控板_2'
+                  castShadow
+                  receiveShadow
+                  geometry={nodes.触控板_2.geometry}
+                  material={materials.触控板玻璃}
+                />
+              </group>
+              <mesh
+                name='键盘'
+                castShadow
+                receiveShadow
+                geometry={nodes.键盘.geometry}
+                material={materials.键盘}
+                position={[-0.111, 0.134, -0.194]}
+                scale={[1.5, 2, 2]}
+                userData={{ name: '键盘' }}
+              >
+                <mesh
+                  name='_键帽'
+                  castShadow
+                  receiveShadow
+                  geometry={nodes._键帽.geometry}
+                  material={materials.键帽}
+                  position={[0, 0.013, 0]}
+                  userData={{ name: ' 键帽' }}
+                />
+              </mesh>
             </mesh>
             <group
-              name='pc'
-              position={[0, 1.056, -2.377]}
-              userData={{ name: 'pc' }}
-              onClick={toggleFocus}
-            >
-              <mesh
-                name='立方体001_1'
-                castShadow
-                receiveShadow
-                geometry={nodes.立方体001_1.geometry}
-                material={materials.pc}
-              />
-              <mesh
-                name='立方体001_2'
-                castShadow
-                receiveShadow
-                geometry={nodes.立方体001_2.geometry}
-                material={materials.screen}
-                ref={pcRef}
-              />
-            </group>
-            <mesh
-              name='02-v2'
-              castShadow
-              receiveShadow
-              geometry={nodes['02-v2'].geometry}
-              material={materials['02-v2']}
-              position={[0, 1.089, -2.377]}
-              scale={0.964}
-              userData={{ name: '02-v2' }}
-            >
-              <MyHtml
-                targetRef={pcRef}
-                visible={isDelayFocus}
-                onClose={endFocus}
-              />
-            </mesh>
-            <mesh
-              name='keyboard'
-              castShadow
-              receiveShadow
-              geometry={nodes.keyboard.geometry}
-              material={materials.keyboard}
-              position={[-0.074, 0.612, -2.097]}
-              userData={{ name: 'keyboard' }}
-            >
-              <mesh
-                name='立方体003'
-                castShadow
-                receiveShadow
-                geometry={nodes.立方体003.geometry}
-                material={materials.keyboard_inner}
-                position={[0, 0.013, 0]}
-                userData={{ name: '立方体.003' }}
-              />
-            </mesh>
-            <group
-              name='mouseboard'
-              position={[0.33, 0.602, -2.097]}
-              scale={0.796}
-              userData={{ name: 'mouseboard' }}
-            >
-              <mesh
-                name='立方体002_1'
-                castShadow
-                receiveShadow
-                geometry={nodes.立方体002_1.geometry}
-                material={materials.mouse_board}
-              />
-              <mesh
-                name='立方体002_2'
-                castShadow
-                receiveShadow
-                geometry={nodes.立方体002_2.geometry}
-                material={materials.mouse_board_top}
-              />
-            </group>
-            <mesh
-              name='圆环'
-              castShadow
-              receiveShadow
-              geometry={nodes.圆环.geometry}
-              material={materials.plate}
-              position={[0.863, 1.746, -2.457]}
-              rotation={[Math.PI / 2, 0, 0]}
-              scale={0.108}
-              userData={{ name: '圆环' }}
-            />
-            <mesh
-              name='柱体001'
-              castShadow
-              receiveShadow
-              geometry={nodes.柱体001.geometry}
-              material={nodes.柱体001.material}
-              position={[0.863, 1.275, -2.471]}
-              userData={{ name: '柱体.001' }}
-            />
-            <group
-              name='立方体017'
+              name='平板'
               position={[-1.945, 0.513, -0.16]}
-              userData={{ name: '立方体.017' }}
+              userData={{ name: '平板' }}
               ref={padRef}
             >
               <mesh
-                name='立方体022_1'
+                name='平板_1'
                 castShadow
                 receiveShadow
-                geometry={nodes.立方体022_1.geometry}
-                material={materials.ipad}
+                geometry={nodes.平板_1.geometry}
+                material={materials.平板}
               />
               <mesh
-                name='立方体022_2'
+                name='平板_2'
                 castShadow
                 receiveShadow
-                geometry={nodes.立方体022_2.geometry}
-                material={materials.ipadscreen}
+                geometry={nodes.平板_2.geometry}
+                material={materials.平板屏幕}
               >
                 <MyHtml
                   targetRef={padRef}
@@ -299,144 +311,182 @@ export const Model = (props) => {
               </mesh>
             </group>
             <mesh
-              name='立方体018'
+              name='柜子'
               castShadow
               receiveShadow
-              geometry={nodes.立方体018.geometry}
-              material={materials.booklet}
+              geometry={nodes.柜子.geometry}
+              material={materials.柜子}
               position={[-2.03, 1.046, -2.029]}
-              userData={{ name: '立方体.018' }}
-            />
-            <mesh
-              name='立方体019'
-              castShadow
-              receiveShadow
-              geometry={nodes.立方体019.geometry}
-              material={materials.calendar}
-              position={[-1.267, 1.582, -2.267]}
-              userData={{ name: '立方体.019' }}
-              onClick={toggleFocusCalendar}
-              ref={calendarRef}
-            />
-            <mesh
-              name='文本'
-              castShadow
-              receiveShadow
-              geometry={nodes.文本.geometry}
-              material={materials.材质}
-              position={[-1.264, 1.761, -2.284]}
-              rotation={[Math.PI / 2, 0, -Math.PI / 2]}
-              scale={0.086}
-              userData={{ name: '文本' }}
-            />
-            <mesh
-              name='平面001'
-              castShadow
-              receiveShadow
-              geometry={nodes.平面001.geometry}
-              material={nodes.平面001.material}
-              position={[0, 0.545, -2]}
-              scale={0.32}
-              userData={{ name: '平面.001' }}
-            />
-            <mesh
-              name='立方体020'
-              castShadow
-              receiveShadow
-              geometry={nodes.立方体020.geometry}
-              material={materials['材质.001']}
-              position={[-1.357, 1.68, -2.35]}
-              userData={{ name: '立方体.020' }}
-              ref={bookRef}
-              onClick={toggleFocusBook}
-            />
-            <mesh
-              name='立方体021'
-              castShadow
-              receiveShadow
-              geometry={nodes.立方体021.geometry}
-              material={materials['材质.002']}
-              position={[-2.287, 1.661, -1.239]}
-              userData={{ name: '立方体.021' }}
-              ref={figureRef}
-              onClick={toggleFocusFigure}
-            />
-            <group
-              name='立方体022'
-              position={[-2.47, 1.385, 0.08]}
-              userData={{ name: '立方体.022' }}
+              userData={{ name: '柜子' }}
             >
               <mesh
-                name='立方体027'
+                name='书架'
                 castShadow
                 receiveShadow
-                geometry={nodes.立方体027.geometry}
-                material={materials.booklet}
+                geometry={nodes.书架.geometry}
+                material={materials.书架}
+                position={[0.674, 0.634, -0.321]}
+                userData={{ name: '书架' }}
+                ref={bookRef}
+                onClick={toggleFocusBook}
               />
               <mesh
-                name='立方体027_1'
+                name='手办'
                 castShadow
                 receiveShadow
-                geometry={nodes.立方体027_1.geometry}
-                material={materials.board}
+                geometry={nodes.手办.geometry}
+                material={materials.手办}
+                position={[-0.257, 0.615, 0.79]}
+                userData={{ name: '手办' }}
+                ref={figureRef}
+                onClick={toggleFocusFigure}
+              />
+              <mesh
+                name='日历'
+                castShadow
+                receiveShadow
+                geometry={nodes.日历.geometry}
+                material={materials.日历}
+                position={[0.764, 0.536, -0.238]}
+                userData={{ name: '日历' }}
+                onClick={toggleFocusCalendar}
+                ref={calendarRef}
+              >
+                <mesh
+                  name='文本'
+                  castShadow
+                  receiveShadow
+                  geometry={nodes.文本.geometry}
+                  material={materials.标题}
+                  position={[0.002, 0.179, -0.017]}
+                  rotation={[Math.PI / 2, 0, -Math.PI / 2]}
+                  scale={0.086}
+                  userData={{ name: '文本' }}
+                />
+              </mesh>
+            </mesh>
+            <group
+              name='留言板'
+              position={[-2.47, 1.385, 0.08]}
+              userData={{ name: '留言板' }}
+            >
+              <mesh
+                name='_留言板'
+                castShadow
+                receiveShadow
+                geometry={nodes._留言板.geometry}
+                material={materials.柜子}
+              />
+              <mesh
+                name='_留言板_1'
+                castShadow
+                receiveShadow
+                geometry={nodes._留言板_1.geometry}
+                material={materials.留言板}
                 ref={boardRef}
                 onClick={toggleFocusBoard}
               />
+              <mesh
+                name='贴纸'
+                castShadow
+                receiveShadow
+                geometry={nodes.贴纸.geometry}
+                material={materials.便利贴}
+                position={[0.029, 0.224, 0.417]}
+                rotation={[0, 0, -Math.PI / 2]}
+                scale={0.096}
+                userData={{ name: '贴纸' }}
+              />
+              <mesh
+                name='贴纸001'
+                castShadow
+                receiveShadow
+                geometry={nodes.贴纸001.geometry}
+                material={materials.便利贴}
+                position={[0.029, 0.077, 0.161]}
+                rotation={[0, 0, -Math.PI / 2]}
+                scale={0.096}
+                userData={{ name: '贴纸.001' }}
+              />
+              <mesh
+                name='贴纸002'
+                castShadow
+                receiveShadow
+                geometry={nodes.贴纸002.geometry}
+                material={materials.便利贴}
+                position={[0.029, 0.186, -0.111]}
+                rotation={[0, 0, -Math.PI / 2]}
+                scale={0.096}
+                userData={{ name: '贴纸.002' }}
+              />
+              <mesh
+                name='贴纸003'
+                castShadow
+                receiveShadow
+                geometry={nodes.贴纸003.geometry}
+                material={materials.便利贴}
+                position={[0.029, -0.077, -0.297]}
+                rotation={[0, 0, -Math.PI / 2]}
+                scale={0.096}
+                userData={{ name: '贴纸.003' }}
+              />
             </group>
             <mesh
-              name='平面002'
+              name='CD机'
               castShadow
               receiveShadow
-              geometry={nodes.平面002.geometry}
-              material={materials['材质.004']}
-              position={[-2.442, 1.61, 0.498]}
-              rotation={[0, 0, -Math.PI / 2]}
-              scale={0.096}
-              userData={{ name: '平面.002' }}
-            />
-            <mesh
-              name='平面003'
-              castShadow
-              receiveShadow
-              geometry={nodes.平面003.geometry}
-              material={materials['材质.004']}
-              position={[-2.442, 1.462, 0.241]}
-              rotation={[0, 0, -Math.PI / 2]}
-              scale={0.096}
-              userData={{ name: '平面.003' }}
-            />
-            <mesh
-              name='平面004'
-              castShadow
-              receiveShadow
-              geometry={nodes.平面004.geometry}
-              material={materials['材质.004']}
-              position={[-2.442, 1.572, -0.03]}
-              rotation={[0, 0, -Math.PI / 2]}
-              scale={0.096}
-              userData={{ name: '平面.004' }}
-            />
-            <mesh
-              name='平面005'
-              castShadow
-              receiveShadow
-              geometry={nodes.平面005.geometry}
-              material={materials['材质.004']}
-              position={[-2.442, 1.308, -0.216]}
-              rotation={[0, 0, -Math.PI / 2]}
-              scale={0.096}
-              userData={{ name: '平面.005' }}
-            />
+              geometry={nodes.CD机.geometry}
+              material={materials.书桌}
+              position={[0.863, 1.746, -2.46]}
+              userData={{ name: 'CD机' }}
+            >
+              <mesh
+                name='CD拉绳'
+                castShadow
+                receiveShadow
+                geometry={nodes.CD拉绳.geometry}
+                material={materials.书桌}
+                position={[0, -0.471, -0.011]}
+                userData={{ name: 'CD拉绳' }}
+              />
+              <mesh
+                name='唱片'
+                castShadow
+                receiveShadow
+                geometry={nodes.唱片.geometry}
+                material={materials.唱片}
+                position={[0, 0, 0.003]}
+                rotation={[Math.PI / 2, 0, 0]}
+                scale={0.108}
+                userData={{ name: '唱片' }}
+              />
+            </mesh>
+            <group name='地毯' userData={{ name: '地毯' }}>
+              <mesh
+                name='地毯_1'
+                castShadow
+                receiveShadow
+                geometry={nodes.地毯_1.geometry}
+                material={materials.地毯白}
+              />
+              <mesh
+                name='地毯_2'
+                castShadow
+                receiveShadow
+                geometry={nodes.地毯_2.geometry}
+                material={materials.地毯黄}
+              />
+            </group>
           </group>
           <group name='Body' userData={{ name: 'Body' }}>
             <mesh
-              name='chair'
+              name='椅子'
               castShadow
               receiveShadow
-              geometry={nodes.chair.geometry}
-              material={materials.table}
+              geometry={nodes.椅子.geometry}
+              material={materials.书桌}
               position={[0.008, 0.399, -1.102]}
-              userData={{ name: 'chair' }}
+              userData={{ name: '椅子' }}
               ref={chairRef}
             >
               <group
@@ -448,30 +498,14 @@ export const Model = (props) => {
                 <primitive object={nodes.骨骼} />
               </group>
             </mesh>
-            <group name='立方体' userData={{ name: '立方体' }}>
-              <mesh
-                name='立方体012_1'
-                castShadow
-                receiveShadow
-                geometry={nodes.立方体012_1.geometry}
-                material={materials.floor}
-              />
-              <mesh
-                name='立方体012_2'
-                castShadow
-                receiveShadow
-                geometry={nodes.立方体012_2.geometry}
-                material={materials.floor_inner}
-              />
-            </group>
             <mesh
-              name='立方体002'
+              name='沙发'
               castShadow
               receiveShadow
-              geometry={nodes.立方体002.geometry}
-              material={materials.sofa}
+              geometry={nodes.沙发.geometry}
+              material={materials.沙发}
               position={[-2.105, 0.268, 0.066]}
-              userData={{ name: '立方体.002' }}
+              userData={{ name: '沙发' }}
             >
               <group
                 name='骨架001'
@@ -484,44 +518,6 @@ export const Model = (props) => {
                 <primitive object={nodes.骨骼_1} />
               </group>
             </mesh>
-            <group
-              name='立方体004'
-              position={[0.616, 0.6, -2.051]}
-              rotation={[Math.PI, 0, Math.PI]}
-              userData={{ name: '立方体.004' }}
-              onClick={toggleFocusPhone}
-            >
-              <mesh
-                name='立方体014_1'
-                castShadow
-                receiveShadow
-                geometry={nodes.立方体014_1.geometry}
-                material={materials.phone}
-              />
-              <mesh
-                name='立方体014_2'
-                castShadow
-                receiveShadow
-                geometry={nodes.立方体014_2.geometry}
-                material={materials.phonescreenimage}
-                ref={phoneRef}
-              >
-                <MyHtml
-                  targetRef={phoneRef}
-                  visible={isDelayFocusPhone}
-                  onClose={toggleFocusPhone}
-                />
-              </mesh>
-            </group>
-            <mesh
-              name='立方体005'
-              castShadow
-              receiveShadow
-              geometry={nodes.立方体005.geometry}
-              material={materials.table}
-              position={[0.863, 1.746, -2.46]}
-              userData={{ name: '立方体.005' }}
-            />
           </group>
         </group>
       </group>
