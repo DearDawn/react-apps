@@ -14,12 +14,10 @@ export const useGltfLoader = <T>(inputPath: string) =>
 
 export const useFocus = ({
   camera,
-  target = new THREE.Vector3(),
   targetRef,
   midPoints: propsMidPoints,
   midPointsOffset = [],
   offset = new THREE.Vector3(0, 1, 0),
-  focusLockRef,
   duration = 800,
   onStart,
   onEnd,
@@ -30,12 +28,12 @@ export const useFocus = ({
   midPoints?: THREE.Vector3Like[];
   midPointsOffset?: THREE.Vector3Like[];
   offset?: THREE.Vector3;
-  focusLockRef?: React.MutableRefObject<string>;
   duration?: number;
   onStart?: (isFocus: boolean) => void;
   onEnd?: (isFocus: boolean) => void;
 }) => {
-  const { sceneReady } = useContext(GameContext);
+  const { sceneReady, currentFocus, currentFocusRef, changeCurrentFocus } =
+    useContext(GameContext);
   const [isFocus, setIsFocus] = useState(false);
   const [isDelayFocus, setIsDelayFocus] = useState(false);
   const [moving, setMoving] = useState(false);
@@ -45,7 +43,8 @@ export const useFocus = ({
   const initialCameraPos = useRef(camera.position.clone());
   const currentCameraPos = useRef(camera.position.clone());
   const [targetPos, setTargetPos] = useState(
-    targetRef?.current?.getWorldPosition(new THREE.Vector3(0, 0, 0)) || target
+    targetRef?.current?.getWorldPosition(new THREE.Vector3(0, 0, 0)) ||
+      new THREE.Vector3(0, 0, 0)
   );
   const midPoints =
     propsMidPoints ||
@@ -62,20 +61,27 @@ export const useFocus = ({
   const targetId = targetPos.toArray().join(',');
 
   const startFocus = useCallback(() => {
-    focusLockRef.current = targetId;
+    changeCurrentFocus(targetId);
     setIsFocus(true);
     setMoving(true);
     setInitd(true);
     onStart?.(true);
     notice.info(targetRef.current.name, duration);
-  }, [duration, focusLockRef, onStart, targetId, targetRef]);
+  }, [duration, onStart, changeCurrentFocus, targetId, targetRef]);
 
-  const endFocus = useCallback(() => {
-    setIsFocus(false);
-    setMoving(true);
-    setInitd(true);
-    onStart?.(false);
-  }, [onStart]);
+  const endFocus = useCallback(
+    (negative?: boolean) => {
+      if (!negative && currentFocusRef.current !== targetId) {
+        return;
+      }
+
+      setIsFocus(false);
+      setMoving(!negative);
+      setInitd(true);
+      onStart?.(false);
+    },
+    [currentFocusRef, onStart, targetId]
+  );
 
   const toggleFocus = useCallback(
     (e?: ThreeEvent<MouseEvent>) => {
@@ -83,7 +89,7 @@ export const useFocus = ({
         e.stopPropagation();
       }
 
-      currentCameraPos.current = camera.position.clone();
+      if (moving) return;
 
       if (isFocus) {
         endFocus();
@@ -91,7 +97,7 @@ export const useFocus = ({
         startFocus();
       }
     },
-    [camera.position, endFocus, isFocus, startFocus]
+    [endFocus, isFocus, moving, startFocus]
   );
 
   useEffect(() => {
@@ -100,40 +106,37 @@ export const useFocus = ({
     } else {
       setIsDelayFocus(false);
     }
-  }, [duration, focusLockRef, isFocus]);
+    currentCameraPos.current = camera.position.clone();
+  }, [camera.position, duration, isFocus, targetId]);
 
   useEffect(() => {
-    if (targetRef?.current || target) {
+    if (targetRef?.current) {
       setTargetPos(
-        targetRef.current.getWorldPosition(new THREE.Vector3(0, 0, 0)) || target
+        targetRef.current.getWorldPosition(new THREE.Vector3(0, 0, 0)) ||
+          new THREE.Vector3(0, 0, 0)
       );
     }
-  }, [target, targetRef, sceneReady]);
+  }, [targetRef, sceneReady]);
 
   useEffect(() => {
     if (!moving && initd) {
       onEndRef.current?.(isFocus);
-
-      if (!isFocus) {
-        if (focusLockRef.current === targetId) {
-          focusLockRef.current = '';
-        }
-      }
     }
-  }, [focusLockRef, initd, isFocus, moving, onEndRef, targetId]);
+  }, [initd, isFocus, moving, onEndRef]);
+
+  useEffect(() => {
+    if (isFocus && currentFocus && currentFocus !== targetId) {
+      endFocus(true);
+    }
+  }, [currentFocus, endFocus, isFocus, targetId]);
 
   useFrame((_, delta) => {
-    if (!moving || focusLockRef.current !== targetId) return;
+    if (!moving || currentFocus !== targetId) return;
 
     // 累计时间
     elapsedTime.current = delta * 1000 + elapsedTime.current; // 将 delta 转换为毫秒
     // 计算插值因子 t
     const t = Math.min(elapsedTime.current / duration, 1);
-
-    if (t >= 1) {
-      elapsedTime.current = 0;
-      setMoving(false);
-    }
 
     const lookAtTargetPos = isFocus
       ? new THREE.Vector3().lerpVectors(
@@ -146,10 +149,6 @@ export const useFocus = ({
           camera.lookAtPoint.clone(),
           t
         );
-
-    if (t >= 1) {
-      camera.currentLookAtPoint = lookAtTargetPos.clone();
-    }
 
     const from = initialCameraPos.current;
     const current = currentCameraPos.current;
@@ -166,9 +165,19 @@ export const useFocus = ({
       }
     } else {
       if (midPoints.length === 1) {
-        camera.position.quadraticBezier(to, midPoints[0], from, t);
+        camera.position.quadraticBezier(current, midPoints[0], from, t);
       } else {
-        camera.position.lerpVectors(to, from, t);
+        camera.position.lerpVectors(current, from, t);
+      }
+    }
+
+    if (t >= 1) {
+      elapsedTime.current = 0;
+      camera.currentLookAtPoint = lookAtTargetPos.clone();
+      setMoving(false);
+
+      if (!isFocus) {
+        changeCurrentFocus('');
       }
     }
 

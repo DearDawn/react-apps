@@ -24,7 +24,6 @@ export const Model = (props) => {
   const bookRef = useRef<THREE.Mesh>();
   const figureRef = useRef<THREE.Mesh>();
   const boardRef = useRef<THREE.Mesh>();
-  const focusLockRef = useRef('');
   const mixerRef = useRef<THREE.AnimationMixer>();
   const { actions } = useAnimations(animations, group);
 
@@ -33,7 +32,6 @@ export const Model = (props) => {
     targetRef: pcRef,
     offset: new THREE.Vector3(0, 0, 4),
     duration: 500,
-    focusLockRef,
     onStart: (_isFocus) => {
       setTimeout(() => handlePlayAnimation(_isFocus), _isFocus ? 0 : 100);
     },
@@ -44,7 +42,6 @@ export const Model = (props) => {
       camera,
       targetRef: phoneRef,
       offset: new THREE.Vector3(0, 1 * scaleRatio, 0),
-      focusLockRef,
       midPointsOffset: [{ x: 0, y: 3, z: Number.NEGATIVE_INFINITY }],
     });
 
@@ -52,7 +49,6 @@ export const Model = (props) => {
     camera,
     targetRef: calendarRef,
     offset: new THREE.Vector3(3 * scaleRatio, 0, 0),
-    focusLockRef,
     duration: 500,
   });
 
@@ -60,7 +56,6 @@ export const Model = (props) => {
     useFocus({
       camera,
       targetRef: padRef,
-      focusLockRef,
       offset: new THREE.Vector3(0, 0.3, -0.5),
       midPoints: [{ x: 5, y: 5, z: -5 }],
     });
@@ -68,21 +63,18 @@ export const Model = (props) => {
   const { toggleFocus: toggleFocusBook } = useFocus({
     camera,
     targetRef: bookRef,
-    focusLockRef,
     offset: new THREE.Vector3(0, 0, 6 * scaleRatio),
   });
 
   const { toggleFocus: toggleFocusFigure } = useFocus({
     camera,
     targetRef: figureRef,
-    focusLockRef,
     offset: new THREE.Vector3(6 * scaleRatio, 0, 0),
   });
 
   const { toggleFocus: toggleFocusBoard } = useFocus({
     camera,
     targetRef: boardRef,
-    focusLockRef,
     offset: new THREE.Vector3(4, 0, 0),
   });
 

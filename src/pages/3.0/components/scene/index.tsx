@@ -1,4 +1,4 @@
-import React, { useState, createContext } from 'react';
+import React, { useState, createContext, useRef, useCallback } from 'react';
 import { Canvas } from '@react-three/fiber';
 // import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
@@ -11,19 +11,37 @@ export const GameContext = createContext<{
   setEnableOrbitControls: React.Dispatch<React.SetStateAction<boolean>>;
   setSceneReady: React.Dispatch<React.SetStateAction<number>>;
   sceneReady: number;
+  enableOrbitControls: boolean;
+  currentFocus: string;
+  currentFocusRef: React.MutableRefObject<string>;
+  changeCurrentFocus: (focus: string) => void;
 }>(null);
 
 const ThreeScene = () => {
   const [enableOrbitControls, setEnableOrbitControls] = useState(true);
   const [sceneReady, setSceneReady] = useState(0);
-  console.log('[dodo] ', 'enableOrbitControls', enableOrbitControls);
+  const [currentFocus, setCurrentFocus] = useState('');
+  const currentFocusRef = useRef('');
+
+  const changeCurrentFocus = useCallback((focus: string) => {
+    setCurrentFocus(focus);
+    currentFocusRef.current = focus;
+  }, []);
 
   return (
     <>
       {/* <button onClick={() => store.enterVR()}>Enter VR</button>
       <button onClick={() => store.enterAR()}>Enter AR</button> */}
       <GameContext.Provider
-        value={{ setEnableOrbitControls, sceneReady, setSceneReady }}
+        value={{
+          setEnableOrbitControls,
+          sceneReady,
+          enableOrbitControls,
+          currentFocusRef,
+          setSceneReady,
+          currentFocus,
+          changeCurrentFocus,
+        }}
       >
         <CanvasWrapper>
           <Canvas
