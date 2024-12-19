@@ -7,6 +7,7 @@ export const MyHtml = ({
   visible,
   widthScale = 1,
   heightScale = 1,
+  src = 'https://dododawn.com/',
   onClose, // 新增 onClose prop
 }) => {
   const bodyRef = useRef(document.body);
@@ -66,7 +67,7 @@ export const MyHtml = ({
       portal={bodyRef}
     >
       <iframe
-        src='https://dododawn.com/'
+        src={src}
         style={{
           width: `${HTML_WIDTH}px`,
           height: `${(screenSize[1] / screenSize[0]) * HTML_WIDTH}px`,

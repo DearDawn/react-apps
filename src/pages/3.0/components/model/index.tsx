@@ -52,13 +52,12 @@ export const Model = (props) => {
     duration: 500,
   });
 
-  const { toggleFocus: toggleFocusPad, isDelayFocus: isDelayFocusPad } =
-    useFocus({
-      camera,
-      targetRef: padRef,
-      offset: new THREE.Vector3(0, 0.3, -0.5),
-      midPointsOffset: [{ x: 5, y: 5, z: -5 }],
-    });
+  const { toggleFocus: toggleFocusPad } = useFocus({
+    camera,
+    targetRef: padRef,
+    offset: new THREE.Vector3(0, 0.3, -0.5),
+    midPointsOffset: [{ x: 5, y: 5, z: -5 }],
+  });
 
   const { toggleFocus: toggleFocusBook } = useFocus({
     camera,
@@ -188,7 +187,8 @@ export const Model = (props) => {
                     targetRef={phoneRef}
                     visible={isDelayFocusPhone}
                     onClose={toggleFocusPhone}
-                />
+                    src='https://dododawn.com/react-apps/'
+                  />
                 </mesh>
               </group>
               <mesh
@@ -236,7 +236,7 @@ export const Model = (props) => {
                     targetRef={pcRef}
                     visible={isDelayFocus}
                     onClose={endFocus}
-                />
+                  />
                 </mesh>
               </group>
               <group
@@ -300,15 +300,7 @@ export const Model = (props) => {
                 receiveShadow
                 geometry={nodes.平板_2.geometry}
                 material={materials.平板屏幕}
-              >
-                <MyHtml
-                  targetRef={padRef}
-                  visible={isDelayFocusPad}
-                  onClose={toggleFocusPad}
-                  widthScale={0.6}
-                  heightScale={0.8}
               />
-              </mesh>
             </group>
             <mesh
               name='柜子'
