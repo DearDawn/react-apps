@@ -71,11 +71,12 @@ export const Model = (props) => {
     offset: new THREE.Vector3(6 * scaleRatio, 0, 0),
   });
 
-  const { toggleFocus: toggleFocusBoard } = useFocus({
-    camera,
-    targetRef: boardRef,
-    offset: new THREE.Vector3(4, 0, 0),
-  });
+  const { toggleFocus: toggleFocusBoard, isDelayFocus: isDelayFocusBoard } =
+    useFocus({
+      camera,
+      targetRef: boardRef,
+      offset: new THREE.Vector3(4, 0, 0),
+    });
 
   const handlePlayAnimation = (leave = false) => {
     actions.move.reset();
@@ -377,7 +378,15 @@ export const Model = (props) => {
                 material={materials.留言板}
                 ref={boardRef}
                 onClick={toggleFocusBoard}
-              />
+              >
+                <MyHtml
+                  targetRef={boardRef}
+                  visible={isDelayFocusBoard}
+                  onClose={toggleFocusBoard}
+                  borderRadius='0'
+                  src='https://dododawn.com/message2/'
+                />
+              </mesh>
               <mesh
                 name='贴纸'
                 castShadow

@@ -7,6 +7,7 @@ export const MyHtml = ({
   visible,
   widthScale = 1,
   heightScale = 1,
+  borderRadius = '60px',
   src = 'https://dododawn.com/',
   onClose, // 新增 onClose prop
 }) => {
@@ -71,7 +72,7 @@ export const MyHtml = ({
         style={{
           width: `${HTML_WIDTH}px`,
           height: `${(screenSize[1] / screenSize[0]) * HTML_WIDTH}px`,
-          borderRadius: '60px',
+          borderRadius,
           display: 'block',
           boxSizing: 'border-box',
           background: 'transparent',
