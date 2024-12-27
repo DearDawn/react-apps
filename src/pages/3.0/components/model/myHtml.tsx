@@ -7,6 +7,7 @@ export const MyHtml = ({
   visible,
   widthScale = 1,
   heightScale = 1,
+  delayLoad = 1500,
   borderRadius = '60px',
   src = 'https://dododawn.com/',
   onClose, // 新增 onClose prop
@@ -20,6 +21,7 @@ export const MyHtml = ({
   });
   const [screenSize, setScreenSize] = useState([1, 1]);
   const [selfVisible, setSelfVisible] = useState(false);
+  const [load, setLoad] = useState(false);
   const isVertical = screenSize[0] < screenSize[1];
   const HTML_WIDTH = isVertical ? 375 : 1440;
 
@@ -35,6 +37,16 @@ export const MyHtml = ({
       setSelfVisible(false);
     }
   }, [startCalc, visible]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoad(true);
+    }, delayLoad);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [delayLoad]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -67,22 +79,24 @@ export const MyHtml = ({
       visible
       portal={bodyRef}
     >
-      <iframe
-        src={src}
-        style={{
-          width: `${HTML_WIDTH}px`,
-          height: `${(screenSize[1] / screenSize[0]) * HTML_WIDTH}px`,
-          borderRadius,
-          display: 'block',
-          boxSizing: 'border-box',
-          background: 'transparent',
-          transition: visible
-            ? 'opacity 0.2s 0.4s linear'
-            : 'opacity 0s linear',
-          opacity: selfVisible ? 1 : 0,
-        }}
-        onPointerDown={(e) => e.stopPropagation()}
-      ></iframe>
+      {load && (
+        <iframe
+          src={src}
+          style={{
+            width: `${HTML_WIDTH}px`,
+            height: `${(screenSize[1] / screenSize[0]) * HTML_WIDTH}px`,
+            borderRadius,
+            display: 'block',
+            boxSizing: 'border-box',
+            background: 'transparent',
+            transition: visible
+              ? 'opacity 0.2s 0.4s linear'
+              : 'opacity 0s linear',
+            opacity: selfVisible ? 1 : 0,
+          }}
+          onPointerDown={(e) => e.stopPropagation()}
+        ></iframe>
+      )}
     </Html>
   );
 };

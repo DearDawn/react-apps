@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { createXRStore, XR } from '@react-three/xr';
 import { Model } from '../model';
 import { CanvasWrapper } from './canvasWrap';
+import { Light } from '../model/light';
 const store = createXRStore();
 
 export const GameContext = createContext<{
@@ -48,6 +49,7 @@ const ThreeScene = () => {
             resize={{ debounce: 500 }}
             camera={{ position: [8, -5, 2], fov: 50 }}
             style={{ width: '100%', height: '100%' }}
+            shadows
             gl={{
               outputColorSpace: THREE.SRGBColorSpace,
               toneMapping: THREE.ACESFilmicToneMapping,
@@ -55,8 +57,7 @@ const ThreeScene = () => {
             }}
           >
             <XR store={store}>
-              <ambientLight intensity={2} color={0xffffff} />
-              <directionalLight position={[0, 10, 0]} intensity={2} />
+              <Light />
               {/* <OrbitControls
               enableDamping
               dampingFactor={0.05}
