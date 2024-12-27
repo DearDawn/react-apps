@@ -14,6 +14,10 @@ function generateRandomColor() {
 const PageItem = ({ onClick, item, parent }) => {
   const fromRef = React.useRef<HTMLDivElement>();
 
+  const handleOpen = () => {
+    window.open(item.href, '_blank');
+  };
+
   return (
     <>
       <div className={styles.block} onClick={onClick} ref={fromRef}>
@@ -31,6 +35,15 @@ const PageItem = ({ onClick, item, parent }) => {
             <iframe className={styles.iframe} src={item.href} />
             <div className={styles.closeWrap} onClick={onClose}>
               <Icon type={ICON.close} />
+            </div>
+            <div
+              className={styles.openWrap}
+              onClick={() => {
+                handleOpen();
+                onClose();
+              }}
+            >
+              <Icon type={ICON.magicBar} />
             </div>
           </div>
         )}

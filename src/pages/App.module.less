@@ -37,7 +37,8 @@
       height: 100%;
     }
 
-    .closeWrap {
+    .closeWrap,
+    .openWrap {
       .dfx();
       position: absolute;
       top: 0;
@@ -63,6 +64,10 @@
       &:active:not(:visited) {
         transform: scale(0.95);
       }
+    }
+
+    .openWrap {
+      left: 40px;
     }
   }
 
