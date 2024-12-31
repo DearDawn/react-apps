@@ -19,3 +19,25 @@ body {
   height: 100%;
   overflow: hidden;
 }
+
+@media (any-hover: hover) {
+
+  &,
+  * {
+    &::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+      /* 滑块颜色 */
+      border-radius: 4px;
+      /* 滑块圆角 */
+    }
+  }
+}

@@ -1,0 +1,17 @@
+@import url('/src/assets/mixin.less');
+
+
+.messageItem {
+  margin-bottom: 10px;
+  position: relative;
+  overflow: visible;
+  transition: transform 0.2s linear, opacity 0.2s linear;
+  transform-origin: top left;
+
+  @media (any-hover: hover) {
+    &:hover {
+      transform: scale(1.02);
+      opacity: 0.9;
+    }
+  }
+}

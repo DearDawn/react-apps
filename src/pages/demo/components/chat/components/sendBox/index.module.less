@@ -1,0 +1,48 @@
+@import url('/src/assets/mixin.less');
+
+
+.footer {
+  flex: none;
+  padding: 10px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: stretch;
+  box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2);
+  width: 100%;
+  gap: 10px;
+  padding-bottom: 30px;
+  padding-bottom: env(safe-area-inset-bottom, 30px);
+  padding-bottom: max(env(safe-area-inset-bottom, 30px), 30px);
+  flex-wrap: wrap;
+  background-color: #fff;
+
+  .fileList {
+    flex: 1 0 100%;
+  }
+
+  .inputWrap {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .inputFile {
+    height: fit-content;
+
+    .inputFileBtn {
+      width: 40px;
+      height: 40px;
+      min-width: 0;
+      padding: 0;
+    }
+  }
+
+  .input {
+    flex: 1;
+    max-height: 200px;
+  }
+
+  .submit {
+    flex: none;
+    font-size: 16px;
+  }
+}

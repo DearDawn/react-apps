@@ -1,0 +1,43 @@
+@import url('/src/assets/mixin.less');
+
+.contentWrap {
+  padding: 10px;
+  box-sizing: border-box;
+  flex: 1;
+  width: 100%;
+  overflow: auto;
+  overflow-x: hidden;
+  font-size: 16px;
+
+  .holder {
+    height: 10px;
+    width: 100%;
+  }
+}
+
+.rocketBottom {
+  position: absolute;
+  right: 30px;
+  bottom: 200px;
+  border-radius: 50%;
+  border: #879ceb 1px solid;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  min-width: 0;
+  opacity: 0;
+  transition: all 0.1s linear;
+  cursor: pointer;
+  pointer-events: none;
+
+  &.visible {
+    pointer-events: all;
+    opacity: 1;
+  }
+
+  :global {
+    i {
+      transform: rotate(135deg);
+    }
+  }
+}

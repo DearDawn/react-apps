@@ -1,0 +1,27 @@
+@import url('/src/assets/mixin.less');
+
+.card {
+  position: relative;
+  .dfx();
+  gap: 10px;
+  flex-wrap: wrap;
+  overflow: auto;
+  min-width: 250px;
+  height: 100%;
+}
+
+.content {
+  min-height: 50vh;
+  min-width: 50vw;
+  height: 100%;
+  max-width: 400px;
+  max-width: min(400px, 80vw);
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+:global(.dodo-modal-content) {
+  padding: 0;
+}

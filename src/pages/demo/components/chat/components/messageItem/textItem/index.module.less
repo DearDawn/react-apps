@@ -1,0 +1,40 @@
+@import url('/src/assets/mixin.less');
+
+
+.textItem {
+  background-color: skyblue;
+  border-radius: 8px;
+  padding: 5px 10px;
+  width: fit-content;
+  position: relative;
+
+  min-width: 100px;
+  max-width: calc(100% - 50px);
+  box-sizing: border-box;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
+.copyIcon {
+  position: absolute;
+  right: -40px;
+  top: 3px;
+  opacity: 0.4;
+  transition: opacity 0.1s linear;
+  transition-delay: 0.3s;
+  cursor: pointer;
+
+  @media (any-hover: hover) {
+    transition-delay: 0s;
+
+    &:hover {
+      transition-delay: 0.1s;
+      opacity: 1;
+    }
+  }
+
+  &:active:not(:visited) {
+    transition-delay: 0s;
+    opacity: 1;
+  }
+}

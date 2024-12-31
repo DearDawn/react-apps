@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client';
 
 export const socket = io(
-  `${location.protocol}//${location.hostname}:7020/share`,
+  `${location.protocol}//${location.hostname}:7020/fddm`,
   {
     transports: ['websocket'],
     rememberUpgrade: true,

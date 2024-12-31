@@ -18,26 +18,31 @@ export const ImageCompress: FC<
 > = (props) => {
   const { onClose, imgFile, imgUrl } = props || {};
   const [initUrl] = useState(imgUrl || URL.createObjectURL(imgFile));
+  const isPngImg = imgFile?.type === 'image/png';
   const [resUrl, setResUrl] = useState(initUrl);
   const [resFile, setResFile] = useState(imgFile);
+  const [size, setSize] = useState([0, 0]);
   const [loading, startLoading, endLoading] = useBoolean(false);
-  const defaultScale = 50;
-  const defaultQuality = 50;
+  const defaultScale = 70;
+  const defaultQuality = isPngImg ? 100 : 70;
   const [scale, setScale] = useState(defaultScale);
   const [quality, setQuality] = useState(defaultQuality);
-  const [keepOpacity, setKeepOpacity] = useState(false);
+  const [noCompress, setNoCompress] = useState(false);
   const timer = useRef(null);
+  const imageWrapRef = useRef<HTMLDivElement>(null);
 
   const compress = useCallback(
-    (scaleRatio, qualityRatio) => {
+    (scaleRatio = defaultScale, qualityRatio = defaultQuality) => {
       startLoading();
       timer.current = setTimeout(() => {
         compressImage({
           imgUrl: initUrl,
           outputFileName: imgFile.name || imgUrl,
           scaleRatio: scaleRatio / 100,
-          quality: keepOpacity ? 1 : qualityRatio / 100,
-          targetType: keepOpacity ? 'png' : 'jpeg',
+          quality: isPngImg ? 1 : qualityRatio / 100,
+          targetType: isPngImg
+            ? 'png'
+            : (imgFile?.type?.slice(6) as any) || 'jpeg',
         })
           .then((res) => {
             setResUrl(res.url);
@@ -46,7 +51,7 @@ export const ImageCompress: FC<
           .finally(endLoading);
       }, 500);
     },
-    [endLoading, imgFile, imgUrl, initUrl, keepOpacity, startLoading]
+    [defaultQuality, endLoading, imgFile, imgUrl, initUrl, isPngImg, startLoading]
   );
 
   const handleQualityChange = useCallback((value) => {
@@ -57,9 +62,19 @@ export const ImageCompress: FC<
     setScale(value);
   }, []);
 
-  const handleSwitchChange = useCallback((value) => {
-    setKeepOpacity(value);
-  }, []);
+  const handleSwitchChange = useCallback(
+    (value) => {
+      setNoCompress(value);
+      if (value) {
+        setScale(100);
+        setQuality(100);
+      } else {
+        setScale(defaultScale);
+        setQuality(defaultQuality);
+      }
+    },
+    [defaultQuality]
+  );
 
   const handleSubmit = useCallback(() => {
     onClose?.({ file: resFile, url: resUrl });
@@ -68,6 +83,14 @@ export const ImageCompress: FC<
   const handleClose = useCallback(() => {
     onClose?.();
   }, [onClose]);
+
+  const onImageLoad = useCallback(() => {
+    if (imageWrapRef.current) {
+      const { clientWidth, clientHeight } = imageWrapRef.current;
+      imageWrapRef.current.style.width = `${clientWidth}px`;
+      imageWrapRef.current.style.height = `${clientHeight}px`;
+    }
+  }, []);
 
   useEffect(() => {
     compress(scale, quality);
@@ -78,57 +101,60 @@ export const ImageCompress: FC<
     };
   }, [compress, endLoading, quality, scale]);
 
+  useEffect(() => {
+    const img = new window.Image();
+
+    img.src = URL.createObjectURL(resFile);
+    img.onload = () => {
+      URL.revokeObjectURL(img.src); // 释放内存
+      setSize([img.width, img.height]);
+    };
+  }, [resFile, resUrl]);
+
   return (
     <div className={styles.card}>
-      <div className={styles.imageWrap}>
-        <Image
-          className={styles.codeImg}
-          src={resUrl}
-        />
+      <div className={styles.imageWrap} ref={imageWrapRef}>
+        <Image className={styles.codeImg} src={resUrl} onLoad={onImageLoad} />
       </div>
-      <Space padding='10px'>
-        <div>压缩比：{Number(resFile?.size / imgFile?.size).toFixed(2)}</div>
+      <Space padding='10px' className={styles.desc}>
+        <div>压缩比: {Number(resFile?.size / imgFile?.size).toFixed(2)}</div>
+        <div>{`尺寸: ${size[0]} x ${size[1]} `}</div>
         <div>
-          图片大小：{convertFileSize(resFile?.size || imgFile?.size || 0)}
+          {`大小: ${convertFileSize(resFile?.size || imgFile?.size || 0)}`}
         </div>
       </Space>
-      <Space
-        className={styles.sliderWrap}
-        padding='10px'
-      >
-        压缩:
-        <Slider
-          className={styles.slider}
-          min={10}
-          max={100}
-          step={5}
-          value={keepOpacity ? 100 : quality}
-          disabled={keepOpacity}
-          onValueChange={handleQualityChange}
-        />
-      </Space>
-      <Space
-        className={styles.sliderWrap}
-        padding='10px'
-      >
-        缩放:
-        <Slider
-          className={styles.slider}
-          min={10}
-          max={100}
-          step={5}
-          defaultValue={defaultScale}
-          onValueChange={handleScaleChange}
-        />
-      </Space>
+
       <Space>
-        保留透明度: <Switch onValueChange={handleSwitchChange} />
+        原图: <Switch onValueChange={handleSwitchChange} checked={noCompress} />
       </Space>
-      <Space
-        className={styles.sliderWrap}
-        padding='10px 0 0'
-        isColumn
-      >
+      {!isPngImg && !noCompress && (
+        <Space className={styles.sliderWrap} padding='10px'>
+          质量:
+          <Slider
+            className={styles.slider}
+            min={10}
+            max={100}
+            step={5}
+            defaultValue={defaultQuality}
+            onValueChange={handleQualityChange}
+          />
+        </Space>
+      )}
+      {!noCompress && (
+        <Space className={styles.sliderWrap} padding='10px'>
+          缩放:
+          <Slider
+            className={styles.slider}
+            min={10}
+            max={100}
+            step={5}
+            defaultValue={defaultScale}
+            onValueChange={handleScaleChange}
+          />
+        </Space>
+      )}
+
+      <Space className={styles.sliderWrap} padding='10px 0 0' isColumn>
         <Button
           status='success'
           size='long'
@@ -137,10 +163,7 @@ export const ImageCompress: FC<
         >
           发送
         </Button>
-        <Button
-          size='long'
-          onClick={handleClose}
-        >
+        <Button size='long' onClick={handleClose}>
           关闭
         </Button>
       </Space>

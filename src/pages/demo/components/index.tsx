@@ -1,5 +1,6 @@
 import { Bubble } from './bubble';
 import { Chart } from './chart';
+import { Chat } from './chat';
 import { Login } from './login';
 import { Lottery } from './lottery';
 import { Moon } from './moon';
@@ -9,6 +10,7 @@ import { Scale } from './scale';
 import { TodoList } from './todo-list';
 
 export default {
+  Chat,
   Bubble,
   Notice,
   TodoList,
