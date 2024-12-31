@@ -10,7 +10,6 @@ import { Scale } from './scale';
 import { TodoList } from './todo-list';
 
 export default {
-  Chat,
   Bubble,
   Notice,
   TodoList,
@@ -21,4 +20,5 @@ export default {
   Moon,
   Poker,
   Login,
+  Chat,
 };
