@@ -22,7 +22,7 @@ import { copyTextToClipboard } from '@/utils/text';
 import { initWxSDK } from '@/utils/wx';
 import { action } from '@/utils/action';
 import { Rank } from '../components/rank';
-import { UploadAvatar } from '../components/uploadAvatar';
+import { UploadAvatar } from '../../../components/uploadAvatar';
 
 const STORAGE_DURATION_KEY = 'pet_game_duration';
 

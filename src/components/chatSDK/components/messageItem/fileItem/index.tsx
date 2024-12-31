@@ -3,11 +3,7 @@ import * as styles from './index.module.less';
 import { convertFileSize, ICON, Icon, Image, toast } from 'sweet-me';
 import clsx from 'clsx';
 import { copyImgToClipboard } from '@/utils/text';
-import {
-  downloadFile,
-  FileT,
-  ImgT,
-} from '../../../../../../../components/chatSDK';
+import { downloadFile, FileT, getFileFromUrl, ImgT } from '../../..';
 import { ChatContext } from '@/components/chatSDK/context';
 
 interface IProps {
@@ -20,8 +16,9 @@ interface IProps {
 export const FileItem = (props: IProps) => {
   const { info, className, enableCopy, enableDownload } = props;
   const { fileMap, progressMap, getFileInfo } = useContext(ChatContext);
-  const { fileID, fileName, type } = info || {};
+  const { fileID, fileName, type, url: sourceUrl } = info || {};
   const [url, setUrl] = useState('');
+  const [downloadUrl, setDownloadUrl] = useState('');
   const [file, setFile] = useState<File>();
   const [imgReady, setImgReady] = useState(type !== 'img');
   const loading = !url || !file || !imgReady;
@@ -50,16 +47,34 @@ export const FileItem = (props: IProps) => {
       return;
     }
 
-    downloadFile(url, fileName);
-  }, [fileName, loading, url]);
+    downloadFile(downloadUrl, fileName);
+  }, [fileName, loading, downloadUrl]);
 
   useEffect(() => {
-    if (!loading) return;
+    if (!loading || sourceUrl) return;
     getFileInfo(fileID);
-  }, [fileID, getFileInfo, loading]);
+  }, [fileID, getFileInfo, sourceUrl, loading]);
 
   useEffect(() => {
-    if (fileMap.has(fileID)) {
+    if (sourceUrl) {
+      setUrl(sourceUrl);
+
+      if (type === 'img') {
+        const image = new window.Image();
+        image.onload = () => {
+          setImgReady(true);
+        };
+        image.src = sourceUrl;
+
+        getFileFromUrl(sourceUrl, fileName).then((file) => {
+          setFile(file);
+        });
+      }
+    }
+  }, [type, sourceUrl, fileName]);
+
+  useEffect(() => {
+    if (!sourceUrl && fileMap.has(fileID)) {
       const blob = fileMap.get(fileID);
       const file = new File([blob], fileName, { type: blob.type });
       const fileUrl = URL.createObjectURL(file);
@@ -74,7 +89,14 @@ export const FileItem = (props: IProps) => {
         image.src = fileUrl;
       }
     }
-  }, [fileMap, fileName, fileID, type]);
+  }, [fileMap, fileName, fileID, type, sourceUrl]);
+
+  useEffect(() => {
+    if (file) {
+      const fileUrl = URL.createObjectURL(file);
+      setDownloadUrl(fileUrl);
+    }
+  }, [file]);
 
   if (type === 'img') {
     return (
@@ -86,7 +108,7 @@ export const FileItem = (props: IProps) => {
         ) : (
           <Image imgRef={imgRef} src={url} alt={fileName} />
         )}
-        {(enableCopy || enableDownload) && (
+        {(enableCopy || !enableDownload) && (
           <Icon
             className={styles.copyIcon}
             type={ICON.copy}
@@ -94,7 +116,7 @@ export const FileItem = (props: IProps) => {
             onClick={handleCopyImage}
           />
         )}
-        {enableDownload && (
+        {!enableDownload && (
           <Icon
             className={styles.saveIcon}
             type={ICON.download}

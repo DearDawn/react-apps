@@ -3,9 +3,11 @@ import {
   compressImage,
   convertFileSize,
   Image,
+  showModal,
   Slider,
   Space,
   Switch,
+  toast,
   useBoolean,
 } from 'sweet-me';
 import * as styles from './index.module.less';
@@ -13,10 +15,12 @@ import { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 export const ImageCompress: FC<
   {
+    uploader?: (file: File) => Promise<string>;
+    maxSize?: number;
     onClose?: (data?: { file: File; url: string }) => void;
   } & ({ imgUrl: string; imgFile?: File } | { imgUrl?: string; imgFile: File })
 > = (props) => {
-  const { onClose, imgFile, imgUrl } = props || {};
+  const { onClose, imgFile, imgUrl, uploader, maxSize } = props || {};
   const [initUrl] = useState(imgUrl || URL.createObjectURL(imgFile));
   const isPngImg = imgFile?.type === 'image/png';
   const [resUrl, setResUrl] = useState(initUrl);
@@ -51,7 +55,15 @@ export const ImageCompress: FC<
           .finally(endLoading);
       }, 500);
     },
-    [defaultQuality, endLoading, imgFile, imgUrl, initUrl, isPngImg, startLoading]
+    [
+      defaultQuality,
+      endLoading,
+      imgFile,
+      imgUrl,
+      initUrl,
+      isPngImg,
+      startLoading,
+    ]
   );
 
   const handleQualityChange = useCallback((value) => {
@@ -76,9 +88,20 @@ export const ImageCompress: FC<
     [defaultQuality]
   );
 
-  const handleSubmit = useCallback(() => {
-    onClose?.({ file: resFile, url: resUrl });
-  }, [onClose, resFile, resUrl]);
+  const handleSubmit = useCallback(async () => {
+    if (maxSize && resFile.size >= maxSize) {
+      toast(`文件过大，最大 ${convertFileSize(maxSize)}`);
+      return;
+    }
+
+    if (uploader) {
+      uploader(resFile).then((res) => {
+        onClose?.({ file: resFile, url: res });
+      });
+    } else {
+      onClose?.({ file: resFile, url: resUrl });
+    }
+  }, [maxSize, onClose, resFile, resUrl, uploader]);
 
   const handleClose = useCallback(() => {
     onClose?.();
@@ -168,5 +191,39 @@ export const ImageCompress: FC<
         </Button>
       </Space>
     </div>
+  );
+};
+
+export const showImageCompress = (props: {
+  imgFile: File;
+  maxSize?: number;
+  uploader?: (file: File) => Promise<string>;
+  onClose?: (data?: { file: File; url: string }) => void | Promise<void>;
+  modalProps?: Parameters<typeof showModal>[1];
+}) => {
+  const {
+    onClose: _onClose,
+    uploader,
+    maxSize,
+    imgFile,
+    modalProps,
+  } = props || {};
+
+  return showModal(
+    ({ onClose }) => (
+      <ImageCompress
+        imgFile={imgFile}
+        uploader={uploader}
+        maxSize={maxSize}
+        onClose={async (res) => {
+          await _onClose(res);
+          onClose();
+        }}
+      />
+    ),
+    {
+      maskClosable: false,
+      ...modalProps,
+    }
   );
 };

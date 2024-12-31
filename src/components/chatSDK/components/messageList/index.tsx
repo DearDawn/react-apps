@@ -4,7 +4,7 @@ import { ChatContext } from '@/components/chatSDK/context';
 import { MessageItem } from '../messageItem';
 import clsx from 'clsx';
 import { Button, Icon, ICON } from 'sweet-me';
-import { useAutoScrollToBottom, useShowBackToBottom } from '../../hooks';
+import { useAutoScrollToBottom, useShowBackToBottom } from '../../../../pages/demo/components/chat/hooks';
 
 interface IProps {
   enableCopy?: boolean;

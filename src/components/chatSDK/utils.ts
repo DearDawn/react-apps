@@ -1,5 +1,9 @@
-import { FILE_CHUNK_SIZE, IFileType, ServerFileRes, ServerTextRes } from "./constants";
-
+import {
+  FILE_CHUNK_SIZE,
+  IFileType,
+  ServerFileRes,
+  ServerTextRes,
+} from './constants';
 
 export const formatText = (textData: ServerTextRes): IFileType => {
   const { data, id } = textData || {};
@@ -10,14 +14,15 @@ export const formatText = (textData: ServerTextRes): IFileType => {
 
 export const formatFile = (fileData: ServerFileRes): IFileType => {
   const { data, id } = fileData || {};
-  const { fileID, name, mimeType } = data || {};
+  const { fileID, name, mimeType, url } = data || {};
 
   if (mimeType.startsWith('image/')) {
     return {
       id,
       type: 'img',
       fileName: name,
-      fileID
+      url,
+      fileID,
     };
   }
 
@@ -26,21 +31,27 @@ export const formatFile = (fileData: ServerFileRes): IFileType => {
     type: 'file',
     fileName: name,
     mimeType,
-    fileID
+    fileID,
   };
 };
 
 /** 检查是否是可输入的 DOM 元素 */
 export const isInputDom = (target: EventTarget | null) => {
   if (target instanceof HTMLElement) {
-    return target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement;
+    return (
+      target instanceof HTMLInputElement ||
+      target instanceof HTMLTextAreaElement
+    );
   }
 
   return false;
 };
 
 // 合并两个数组的函数
-export const mergeArrays = (arr1: IFileType[], arr2: IFileType[]): IFileType[] => {
+export const mergeArrays = (
+  arr1: IFileType[],
+  arr2: IFileType[]
+): IFileType[] => {
   const merged = [...arr1];
 
   arr2.forEach((obj2) => {
@@ -53,10 +64,13 @@ export const mergeArrays = (arr1: IFileType[], arr2: IFileType[]): IFileType[] =
   return merged;
 };
 
-export const splitFiles = ({ file, chunkSize = FILE_CHUNK_SIZE }: {
-  file: File,
+export const splitFiles = ({
+  file,
+  chunkSize = FILE_CHUNK_SIZE,
+}: {
+  file: File;
   /** 每个切片的大小, 默认 1MB */
-  chunkSize?: number
+  chunkSize?: number;
 }) => {
   const chunks = [];
 
@@ -88,10 +102,26 @@ export const convertFileSize = (bytes: number) => {
   if (bytes >= megabyte) {
     return (bytes / megabyte).toFixed(2) + ' MB';
   } else if (bytes >= kilobyte) {
-    return (bytes / kilobyte) + ' KB';
+    return bytes / kilobyte + ' KB';
   } else if (bytes > 0) {
     return bytes + ' bytes';
   } else {
     return '--';
   }
+};
+
+export const getFileFromUrl = async (url, fileName) => {
+  // 使用 fetch 获取图像数据
+  const blobRes = await fetch(url, { credentials: 'omit' })
+    .then((res) => res.blob())
+    .catch(console.error);
+
+  if (!blobRes) {
+    return null;
+  }
+
+  // 创建 File 对象
+  const file = new File([blobRes], fileName, { type: blobRes.type });
+
+  return file;
 };

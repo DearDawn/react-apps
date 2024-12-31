@@ -8,6 +8,8 @@ export type Comp<T = Record<string, any>> = {
   } & T): JSX.Element;
   /** 小卡时的缩放比例 */
   scale?: number;
+  /** 不能放大 */
+  single?: boolean;
   /** 大卡时容器是否适应高度 */
   fitHeight?: boolean;
 };

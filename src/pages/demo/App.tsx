@@ -5,7 +5,7 @@ import React, { useRef } from 'react';
 import { useCardDetailModal } from '@/utils/hooks';
 import clsx from 'clsx';
 
-const Item = ({ Component, onClick, modalVisible }) => {
+const Item = ({ Component, single, onClick, modalVisible }) => {
   const parentRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -16,11 +16,13 @@ const Item = ({ Component, onClick, modalVisible }) => {
           visible={!modalVisible}
           parent={parentRef}
         />
-        <Icon
-          className={styles.detail}
-          type={ICON.magicBar}
-          onClick={onClick}
-        />
+        {!single && (
+          <Icon
+            className={styles.detail}
+            type={ICON.magicBar}
+            onClick={onClick}
+          />
+        )}
       </div>
     </div>
   );
@@ -46,6 +48,7 @@ export const App = () => {
           <Item
             key={key}
             Component={Component}
+            single={Component.single}
             onClick={handleClickCard(key)}
             modalVisible={modalVisible}
           />

@@ -4,9 +4,10 @@ import { Comp } from '../type';
 import { useSocket } from '@/components/chatSDK/hooks';
 import { socket } from './socket';
 import { ROOM_ID } from './constant';
-import { SendBox } from './components/sendBox';
+import { SendBox } from '../../../../components/chatSDK/components/sendBox';
 import { ChatContext } from '@/components/chatSDK/context';
-import { MessageList } from './components/messageList';
+import { MessageList } from '../../../../components/chatSDK/components/messageList';
+import { imageUploader } from '@/utils/image';
 
 export const Chat: Comp = ({ style }) => {
   const { form } = useFormState();
@@ -25,6 +26,7 @@ export const Chat: Comp = ({ style }) => {
   } = useSocket({
     socket,
     roomID: ROOM_ID,
+    imageUploader,
     onSendEnd: () => {
       form.resetField();
     },
@@ -54,9 +56,11 @@ export const Chat: Comp = ({ style }) => {
           onClose={closeModal}
         >
           <div className={styles.content}>
-            <Title align='center'>Live ({onlineCount}人在线)</Title>
+            <Title align='center'>
+              Live ({isOnline ? `${onlineCount}人在线` : '离线中'})
+            </Title>
             <MessageList enableCopy={false} enableDownload={false} />
-            <SendBox onSend={sendData} form={form} />
+            <SendBox fileAccept='image/*' onSend={sendData} form={form} />
           </div>
         </Modal>
       </div>
@@ -65,3 +69,4 @@ export const Chat: Comp = ({ style }) => {
 };
 
 Chat.scale = 0.8;
+Chat.single = true;

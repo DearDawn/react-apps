@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { Socket } from 'socket.io-client';
-import { loading, showModal, toast } from 'sweet-me';
+import { loading, toast } from 'sweet-me';
 import {
   convertFileSize,
   formatFile,
@@ -12,21 +12,25 @@ import {
   ServerTextRes,
   ServerHistory,
   IFileType,
-  MAX_FILE_SIZE,
   ServerFileRes,
   ServerFileContentRes,
+  MAX_FILE_SIZE,
 } from './constants';
-import { ImageCompress } from '@/components/imageCompress';
+import { showImageCompress } from '@/components/imageCompress';
 import { fileStore } from './fileStore';
 
 export const useSocket = ({
   socket,
   roomID,
+  fileMaxSize = MAX_FILE_SIZE,
   onSendEnd,
+  imageUploader,
 }: {
   socket: Socket;
   roomID: string;
+  fileMaxSize?: number;
   onSendEnd?: () => void;
+  imageUploader?: (file: File) => Promise<string>;
 }) => {
   const [isOnline, setIsOnline] = React.useState(false);
   const [onlineCount, setOnlineCount] = useState(0);
@@ -49,6 +53,7 @@ export const useSocket = ({
   const sendData = async (values: { text: string; file: File }) => {
     const { text = '', file: _file } = values || {};
     let file = _file;
+    let url = '';
 
     if (text.trim()) {
       socket.emit('text', text);
@@ -57,35 +62,30 @@ export const useSocket = ({
 
     if (file) {
       if (file.type.startsWith('image/')) {
-        await showModal(
-          ({ onClose }) => (
-            <ImageCompress
-              imgFile={file}
-              onClose={(res) => {
-                if (res) {
-                  const { file: tempFile } = res || {};
-                  file = tempFile;
-                } else {
-                  file = null;
-                }
-                onClose();
-              }}
-            />
-          ),
-          {
-            maskClosable: false,
-          }
-        );
+        await showImageCompress({
+          imgFile: _file,
+          maxSize: fileMaxSize,
+          uploader: imageUploader,
+          onClose: (res) => {
+            if (res) {
+              const { file: tempFile, url: cdnUrl } = res || {};
+              file = tempFile;
+              url = cdnUrl;
+            } else {
+              file = null;
+            }
+          },
+        });
       }
 
-      if (!file) {
+      if (!file && !url) {
         toast('发送取消');
         onSendEnd?.();
         return;
       }
 
-      if (file.size >= MAX_FILE_SIZE) {
-        toast(`文件过大，最大 ${convertFileSize(MAX_FILE_SIZE)}`);
+      if (file.size >= fileMaxSize) {
+        toast(`文件过大，最大 ${convertFileSize(fileMaxSize)}`);
         onSendEnd?.();
         return;
       }
@@ -94,6 +94,7 @@ export const useSocket = ({
       chunks.forEach((chunk, index) => {
         socket.emit('file', {
           file: chunk,
+          url,
           name: file.name,
           mimeType: file.type,
           index,
@@ -106,9 +107,12 @@ export const useSocket = ({
     onSendEnd?.();
   };
 
-  const getFileInfo = useCallback((fileID) => {
-    socket.emit('fileContent', fileID, 0);
-  }, [socket]);
+  const getFileInfo = useCallback(
+    (fileID) => {
+      socket.emit('fileContent', fileID, 0);
+    },
+    [socket]
+  );
 
   React.useEffect(() => {
     // 连接到服务器

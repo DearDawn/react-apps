@@ -14,11 +14,12 @@ import { FileList } from '../fileList';
 
 interface IProps {
   onSend: (value: { text: string; file: File }) => void;
+  fileAccept?: string;
   form: ReturnType<typeof useFormState>['form'];
 }
 
 export const SendBox = (props: IProps) => {
-  const { form, onSend } = props || {};
+  const { form, onSend, fileAccept } = props || {};
 
   const handleFileChange = React.useCallback(
     async (_file: any) => {
@@ -47,7 +48,7 @@ export const SendBox = (props: IProps) => {
         <Textarea className={styles.input} placeholder='请输入...' />
       </Form.Item>
       <Form.Item noMargin field='file' className={styles.inputFile}>
-        <Input.File onValueChange={handleFileChange}>
+        <Input.File accept={fileAccept} onValueChange={handleFileChange}>
           <Button className={styles.inputFileBtn}>
             <Icon type={ICON.file} />
           </Button>

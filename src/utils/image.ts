@@ -89,7 +89,7 @@ export const getBlob = (imgPath: string): Promise<Blob> => {
   });
 };
 
-export const imageUploader = async (file: File) => {
+export const imageUploader = async (file: File): Promise<string> => {
   const formData = new FormData();
 
   formData.append('file', file);
@@ -110,3 +110,5 @@ export const imageUploader = async (file: File) => {
       });
   });
 };
+
+export const uploadImage = imageUploader;

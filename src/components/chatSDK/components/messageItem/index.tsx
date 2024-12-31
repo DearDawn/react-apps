@@ -1,6 +1,6 @@
 import React from 'react';
 import * as styles from './index.module.less';
-import { IFileType } from '../../../../../../components/chatSDK/constants';
+import { IFileType } from '../../constants';
 import { FileItem } from './fileItem';
 import { TextItem } from './textItem';
 

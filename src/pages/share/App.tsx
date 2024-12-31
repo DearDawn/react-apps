@@ -24,9 +24,9 @@ import {
 import clsx from 'clsx';
 import { ROOM_ID, PageContext } from './constants';
 import { useSocket } from '@/components/chatSDK';
-import { SendBox } from '../demo/components/chat/components/sendBox';
+import { SendBox } from '../../components/chatSDK/components/sendBox';
 import { ChatContext } from '@/components/chatSDK/context';
-import { MessageList } from '../demo/components/chat/components/messageList';
+import { MessageList } from '../../components/chatSDK/components/messageList';
 
 export const App = () => {
   const { form } = useFormState();
