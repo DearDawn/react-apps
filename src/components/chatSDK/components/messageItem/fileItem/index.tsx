@@ -106,9 +106,13 @@ export const FileItem = (props: IProps) => {
             {`加载中...(${progress}%)\n约 ${fileSize}`}
           </div>
         ) : (
-          <Image imgRef={imgRef} src={url} alt={fileName} />
+          <Image
+            imgRef={imgRef}
+            src={url}
+            alt={fileName}
+          />
         )}
-        {(enableCopy || !enableDownload) && (
+        {(enableCopy || enableDownload) && (
           <Icon
             className={styles.copyIcon}
             type={ICON.copy}
@@ -116,7 +120,7 @@ export const FileItem = (props: IProps) => {
             onClick={handleCopyImage}
           />
         )}
-        {!enableDownload && (
+        {enableDownload && (
           <Icon
             className={styles.saveIcon}
             type={ICON.download}
@@ -130,7 +134,11 @@ export const FileItem = (props: IProps) => {
 
   return (
     <div className={clsx(styles.fileItem, className)}>
-      <Icon className={styles.fileIcon} type={ICON.file} size={40} />
+      <Icon
+        className={styles.fileIcon}
+        type={ICON.file}
+        size={40}
+      />
       {loading ? `加载中...(${progress}% 约 ${fileSize})` : fileName}
       {enableDownload && (
         <Icon

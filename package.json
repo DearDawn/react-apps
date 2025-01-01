@@ -67,7 +67,7 @@
     "react-dom": "^18.2.0",
     "run-script-os": "^1.1.6",
     "socket.io-client": "^4.7.2",
-    "sweet-me": "^0.1.17",
+    "sweet-me": "^0.1.23",
     "three": "^0.168.0",
     "vconsole": "^3.15.1",
     "weixin-js-sdk-ts": "^1.6.1"

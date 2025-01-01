@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { Socket } from 'socket.io-client';
-import { loading, toast } from 'sweet-me';
+import { loading, showImageCompressModal, toast } from 'sweet-me';
 import {
   convertFileSize,
   formatFile,
@@ -16,7 +16,6 @@ import {
   ServerFileContentRes,
   MAX_FILE_SIZE,
 } from './constants';
-import { showImageCompress } from '@/components/imageCompress';
 import { fileStore } from './fileStore';
 
 export const useSocket = ({
@@ -62,7 +61,7 @@ export const useSocket = ({
 
     if (file) {
       if (file.type.startsWith('image/')) {
-        await showImageCompress({
+        await showImageCompressModal({
           imgFile: _file,
           maxSize: fileMaxSize,
           uploader: imageUploader,
