@@ -16,6 +16,7 @@ export type TextT = {
   id: string;
   type: 'text';
   content: string;
+  date: string;
 };
 export type ImgT = {
   id: string;
@@ -23,6 +24,7 @@ export type ImgT = {
   fileID: string;
   fileName: string;
   url?: string;
+  date: string;
 };
 
 export type FileT = {
@@ -32,6 +34,7 @@ export type FileT = {
   fileName: string;
   mimeType: string;
   url?: string;
+  date: string;
 };
 
 export type IFileType = TextT | ImgT | FileT;
@@ -43,8 +46,18 @@ export type ServerFile = {
   mimeType: string;
   url?: string;
 };
-export type ServerTextRes = { type: 'text'; data: ServerText; id: string };
-export type ServerFileRes = { type: 'file'; data: ServerFile; id: string };
+export type ServerTextRes = {
+  type: 'text';
+  data: ServerText;
+  id: string;
+  date: number;
+};
+export type ServerFileRes = {
+  type: 'file';
+  data: ServerFile;
+  id: string;
+  date: number;
+};
 export type ServerFileContentRes = {
   fileID: string;
   chunk: Buffer;

@@ -48,6 +48,7 @@ export const useSocket = ({
   const onScrollToBottomRef = useRef(() => {
     setScrollCounter((scrollCounter) => scrollCounter + 1);
   });
+  const STORAGE_KEY = `${roomID}-socket-client-id`;
 
   const sendData = async (values: { text: string; file: File }) => {
     const { text = '', file: _file } = values || {};
@@ -116,13 +117,19 @@ export const useSocket = ({
   React.useEffect(() => {
     // 连接到服务器
     socket.on('connect', () => {
-      socket.emit('join', roomID);
+      socket.emit('join', roomID, localStorage.getItem(STORAGE_KEY));
       setIsOnline(true);
       setSocketID(socket.id);
     });
 
     socket.on('disconnect', () => {
       setIsOnline(false);
+    });
+
+    // 连接到服务器
+    socket.on('userinfo', (userInfo = {}) => {
+      // eslint-disable-next-line no-console
+      console.log('[dodo] ', 'userInfo', userInfo);
     });
 
     socket.on('rooms', (rooms) => {
@@ -180,7 +187,7 @@ export const useSocket = ({
     return () => {
       socket.removeAllListeners();
     };
-  }, [roomID, socket]);
+  }, [STORAGE_KEY, roomID, socket]);
 
   return {
     isOnline,

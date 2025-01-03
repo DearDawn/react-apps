@@ -3,6 +3,7 @@ import * as styles from './index.module.less';
 import { IFileType } from '../../constants';
 import { FileItem } from './fileItem';
 import { TextItem } from './textItem';
+import { ItemHeader } from './itemHeader';
 
 interface IProps {
   message: IFileType;
@@ -16,6 +17,7 @@ export const MessageItem = (props: IProps) => {
   if (message.type === 'text') {
     return (
       <div className={styles.messageItem} draggable={false}>
+        <ItemHeader info={message} />
         <TextItem info={message} enableCopy={enableCopy} />
       </div>
     );
@@ -24,6 +26,7 @@ export const MessageItem = (props: IProps) => {
   if (message.type === 'img') {
     return (
       <div className={styles.messageItem} draggable={false}>
+        <ItemHeader info={message} />
         <FileItem
           info={message}
           enableCopy={enableCopy}
@@ -35,6 +38,7 @@ export const MessageItem = (props: IProps) => {
 
   return (
     <div className={styles.messageItem} draggable={false}>
+      <ItemHeader info={message} />
       暂不支持的消息类型: {message.mimeType}
     </div>
   );

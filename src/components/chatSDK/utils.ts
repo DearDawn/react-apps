@@ -4,17 +4,42 @@ import {
   ServerFileRes,
   ServerTextRes,
 } from './constants';
+import dayjs from 'dayjs';
+
+export const formatTime = (_inputTime: number) => {
+  const inputTime = _inputTime * 1000;
+  const now = dayjs(); // 当前时间
+  const targetTime = dayjs(inputTime); // 目标时间
+
+  // 判断是否是同一年
+  const isSameYear = now.year() === targetTime.year();
+
+  // 判断是否是昨天
+  const isToday = now.isSame(targetTime, 'day');
+
+  if (isToday) {
+    return targetTime.format('HH:mm:ss');
+  } else if (isSameYear) {
+    // 如果是更早的日期但在同一年，显示 MM-DD HH:mm
+    return targetTime.format('MM-DD HH:mm');
+  } else {
+    // 如果不是同一年，显示 YYYY-MM-DD HH:mm
+    return targetTime.format('YYYY-MM-DD HH:mm');
+  }
+};
 
 export const formatText = (textData: ServerTextRes): IFileType => {
-  const { data, id } = textData || {};
+  const { data, id, date } = textData || {};
   const { content = '' } = data || {};
+  const formatDate = formatTime(date);
 
-  return { type: 'text', content, id };
+  return { type: 'text', content, id, date: formatDate };
 };
 
 export const formatFile = (fileData: ServerFileRes): IFileType => {
-  const { data, id } = fileData || {};
+  const { data, id, date } = fileData || {};
   const { fileID, name, mimeType, url } = data || {};
+  const formatDate = formatTime(date);
 
   if (mimeType.startsWith('image/')) {
     return {
@@ -23,6 +48,7 @@ export const formatFile = (fileData: ServerFileRes): IFileType => {
       fileName: name,
       url,
       fileID,
+      date: formatDate,
     };
   }
 
@@ -32,6 +58,7 @@ export const formatFile = (fileData: ServerFileRes): IFileType => {
     fileName: name,
     mimeType,
     fileID,
+    date: formatDate,
   };
 };
 
@@ -125,3 +152,18 @@ export const getFileFromUrl = async (url, fileName) => {
 
   return file;
 };
+
+export function shortenSocketId(socketId) {
+  // 将字符转换为 ASCII 码并拼接成数字
+  let numericId = '';
+  let sum = 0;
+
+  for (let i = 0; i < socketId.length; i++) {
+    const num = socketId.charCodeAt(i);
+    numericId += num.toString();
+    sum += num;
+  }
+
+  // 截取前 6 位
+  return `${sum.toString().substring(0, 3).padStart(3, '0')}${numericId.substring(0, 2)}`;
+}
