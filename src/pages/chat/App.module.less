@@ -1,0 +1,102 @@
+@import url('/src/assets/mixin.less');
+
+.app {
+  font-size: 20px !important;
+  box-sizing: border-box;
+  overflow: hidden;
+  .dfxc();
+
+  &.isOffline {
+    &::after {
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.7);
+      content: '离线中';
+      color: #999;
+      .posa();
+      .dfx();
+      font-size: 50px;
+      z-index: 9999;
+      opacity: 0;
+      animation: fade_in 0.1s linear forwards;
+    }
+  }
+
+  @media (any-hover: hover) {
+
+    &.isDragging,
+    &.blur {
+      &::after {
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.7);
+        content: '页面失焦';
+        color: #999;
+        .posa();
+        .dfx();
+        font-size: 50px;
+        z-index: 9999;
+        opacity: 0;
+        animation: fade_in 0.1s linear forwards;
+        pointer-events: none;
+      }
+    }
+  }
+
+  &.isDragging {
+    &::after {
+      background-color: rgba(212, 221, 255, 0.7);
+      content: '粘贴到此';
+      color: #777;
+      z-index: 1000002;
+    }
+  }
+}
+
+.title {
+  cursor: pointer;
+}
+
+.footer {
+  flex: none;
+  padding: 10px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: stretch;
+  box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2);
+  width: 100%;
+  gap: 10px;
+  padding-bottom: 30px;
+  padding-bottom: env(safe-area-inset-bottom, 30px);
+  padding-bottom: max(env(safe-area-inset-bottom, 30px), 30px);
+  flex-wrap: wrap;
+
+  .fileList {
+    flex: 1 0 100%;
+  }
+
+  .inputWrap {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .inputFile {
+    height: fit-content;
+
+    .inputFileBtn {
+      width: 40px;
+      height: 40px;
+      min-width: 0;
+      padding: 0;
+    }
+  }
+
+  .input {
+    flex: 1;
+    max-height: 200px;
+  }
+
+  .submit {
+    flex: none;
+  }
+}
