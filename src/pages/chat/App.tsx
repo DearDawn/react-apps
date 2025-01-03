@@ -58,7 +58,7 @@ export const App = () => {
             rightPart={null}
           />
           <MessageList enableDownload={false} enableCopy={false} />
-          <SendBox onSend={sendData} form={form} />
+          <SendBox onSend={sendData} form={form} fileAccept='image/*' />
         </Page>
       </ChatContext.Provider>
     </PageContext.Provider>
